@@ -6,7 +6,22 @@ https://github.com/Hatsanay/VueProject-dormitory-repair.git
 
 
 
+//add user
+git config --global user.email "hatsanay022com@gmail.com"
+git config --global user.name "hatsanai"
 
+//ดู users
+git config --global --list
+
+//สร้าง local repositories 
+git init
+
+//เพิ่มไฟล์เข้า staged
+git add . 		//ทั้งหมด
+git add index.php	//ไฟล์เดียว
+
+//ดูไฟล์ใน staged
+git status
 
 //เพิ่มไฟล์เข้าไปใน local repositories
 git commit -m "commit1"
@@ -22,10 +37,32 @@ git reset --soft 920b9e4568b799387ff8514b4174af3c487ff854	// ย้อนแต�
 git remote -v
 
 //เชื่อมต่อกับ github
-git remote add origin https://github.com/Hatsanay/VueProject-dormitory-repair.git
+git remote add origin https://github.com/Hatsanay/git-tutorial.git
 
 //โยนไฟล์ขึ้น github
 git push -u origin master
 
 //เปลี่ยนแปลง version จากเว็บมาทับใน  local
 git pull origin master
+
+////////////////////////////////////////////////////////////////////
+//ดู branch
+git branch
+
+//สร้าง branch develop
+git branch develop
+
+//ดู branch develop
+git branch
+
+//เลือก branch 
+git checkout develop
+
+//ดูข้อแตกต่างระหว่าง master และ develop
+git diff develop
+
+//รวมโค๊ดของ develop มา master
+git merge –no-ff develop
+git add .
+git commit -m ""
+git push -u origin master
