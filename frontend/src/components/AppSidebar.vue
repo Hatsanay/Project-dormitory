@@ -1,8 +1,8 @@
 <script setup>
-import { RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router';
 
-import { AppSidebarNav } from '@/components/AppSidebarNav.js'
-import { useSidebarStore } from '@/stores/sidebar.js'
+import { AppSidebarNav } from '@/components/AppSidebarNav.js';
+import { useSidebarStore } from '@/stores/sidebar.js';
 
 const sidebar = useSidebarStore()
 </script>

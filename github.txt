@@ -50,19 +50,29 @@ git pull origin master
 git branch
 
 //สร้าง branch develop
-git branch develop
+git branch devdik
+
 
 //ดู branch develop
 git branch
 
 //เลือก branch 
-git checkout develop
+git checkout master
+git checkout devdik
+
+//อัพขึ้น branch
+git add .
+git commit -m ""
+git pull origin devdik
+
 
 //ดูข้อแตกต่างระหว่าง master และ develop
-git diff develop
+git diff devdik
+
+
 
 //รวมโค๊ดของ develop มา master
-git merge –no-ff develop
+git merge --no-ff devdik
 git add .
 git commit -m ""
 git push -u origin master

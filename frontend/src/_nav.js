@@ -32,7 +32,7 @@ export default [
       {
         component: 'CNavItem',
         name: 'ตั้งค่าโปรไฟล์',
-        to: '#',
+        to: '/UserSetView',
       },
     ],
   },

@@ -18,6 +18,11 @@ const routes = [
         name: 'แจ้งซ่อมบำรุง',
         component: () => import('../views/user/UserReqView.vue'),
       },
+      {
+        path: '/UserSetView',
+        name: 'ตั้งค่า',
+        component: () => import('../views/user/UserSetView.vue'),
+      },
     ],
   },
   {
