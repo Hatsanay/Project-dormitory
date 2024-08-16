@@ -67,4 +67,4 @@ git diff devdik
 git merge --no-ff devdik
 git add .
 git commit -m ""
-git push -u origin mastergi
+git push -u origin master
