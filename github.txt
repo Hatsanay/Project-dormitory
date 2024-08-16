@@ -1,0 +1,31 @@
+// git hub link
+https://github.com/Hatsanay/VueProject-dormitory-repair.git
+
+
+
+
+
+
+
+
+//เพิ่มไฟล์เข้าไปใน local repositories
+git commit -m "commit1"
+
+//แสดงประวัติการ commit
+git log
+
+//ย้อน version commit
+git reset --hard 920b9e4568b799387ff8514b4174af3c487ff854 	// ย้อนแล้วลบ commit อื่น
+git reset --soft 920b9e4568b799387ff8514b4174af3c487ff854	// ย้อนแต่ไม่ลบ commit อื่น
+
+// ตรวจสอบการเชื่อมต่อกับ github
+git remote -v
+
+//เชื่อมต่อกับ github
+git remote add origin https://github.com/Hatsanay/VueProject-dormitory-repair.git
+
+//โยนไฟล์ขึ้น github
+git push -u origin master
+
+//เปลี่ยนแปลง version จากเว็บมาทับใน  local
+git pull origin master
