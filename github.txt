@@ -69,9 +69,12 @@ git pull origin devdik
 //ดูข้อแตกต่างระหว่าง master และ develop
 git diff devdik
 
-
+รวม master มา devdik
+git checkout devdik
+git merge --no-ff master
 
 //รวมโค๊ดของ develop มา master
+git checkout master
 git merge --no-ff devdik
 git add .
 git commit -m ""

@@ -6,7 +6,6 @@ export default [
     icon: 'cil-speedometer',
     badge: {
       color: 'primary',
-      // text: 'NEW',
     },
   },
   {

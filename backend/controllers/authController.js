@@ -4,9 +4,9 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const login = (req, res) => {
-  const { username, password } = req.body;
+  const { username, password,Permissions } = req.body;
 
-  const query = 'SELECT * FROM users WHERE user_Name = ?'; //หาว่ามี username ไหม
+  const query = 'SELECT * FROM users INNER JOIN roles on users.user_Role_ID = roles.role_ID INNER JOIN permissions on roles.role_permissions = permissions.permission_id WHERE user_Name = ?'; //หาว่ามี username ไหม
   db.query(query, [username], async (err, results) => {
     if (err) {
       console.error('Database query error:', err);
@@ -22,16 +22,18 @@ const login = (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user.user_ID, username: user.user_Name }, process.env.JWT_SECRET, { expiresIn: '30m' }); // สร้าง JWT token
+    const token = jwt.sign({ id: user.user_ID, username: user.user_Name, Permissions: user.permission_name }, process.env.JWT_SECRET, { expiresIn: '30m' }); // สร้าง JWT token
 
     res.status(200).json({
-      message: "welcome",
       id: user.user_ID,
       username: user.user_Name,
-      role: user.user_roleID,
+      roles: user.role_Name,
+      Permissions: user.permission_name,
       token
     });
   });
+
+  //ทำเก็บ Log ตรงนั้
 };
 
 const registerUser = (req, res) => {
@@ -48,11 +50,11 @@ const registerUser = (req, res) => {
       maxId = 0; 
     } else {
       const lastUserId = result[0].user_ID;
-      maxId = parseInt(lastUserId.slice(-3)) || 0; 
+      maxId = parseInt(lastUserId.slice(-6)) || 0; 
     }
 
     const num = maxId + 1; // เพิ่มค่า
-    const userID = "USE" + String(num).padStart(3, '0'); // สร้าง user_ID ใหม่ USE001, USE002, 
+    const userID = "USE" + String(num).padStart(6, '0'); // สร้าง user_ID ใหม่ USE001, USE002, 
 
     bcrypt.hash(password, 10, (err, hash) => {
       if (err) {

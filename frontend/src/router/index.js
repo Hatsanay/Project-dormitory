@@ -23,6 +23,13 @@ const routes = [
         name: 'ตั้งค่า',
         component: () => import('../views/user/UserSetView.vue'),
       },
+      
+    //admin
+    {
+      path: '/addminDashboard',
+      name: 'AdminDashboard',
+      component: () => import('../views/Admin/Dashboard.vue'),
+    },
     ],
   },
   {
