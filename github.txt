@@ -60,8 +60,16 @@ git branch
 git checkout master
 git checkout devdik
 
+//อัพขึ้น branch
+git add .
+git commit -m ""
+git pull origin devdik
+
+
 //ดูข้อแตกต่างระหว่าง master และ develop
 git diff devdik
+
+
 
 //รวมโค๊ดของ develop มา master
 git merge --no-ff devdik
