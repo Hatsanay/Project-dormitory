@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const login = (req, res) => {
-  const { username, password,Permissions } = req.body;
+  const { username, password, } = req.body;
 
   const query = 'SELECT * FROM users INNER JOIN roles on users.user_Role_ID = roles.role_ID INNER JOIN permissions on roles.role_permissions = permissions.permission_id WHERE user_Name = ?'; //หาว่ามี username ไหม
   db.query(query, [username], async (err, results) => {
@@ -22,7 +22,7 @@ const login = (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user.user_ID, username: user.user_Name, Permissions: user.permission_name }, process.env.JWT_SECRET, { expiresIn: '30m' }); // สร้าง JWT token
+    const token = jwt.sign({ id: user.user_ID, username: user.user_Name }, process.env.JWT_SECRET, { expiresIn: '30m' }); // สร้าง JWT token
 
     res.status(200).json({
       id: user.user_ID,
@@ -37,7 +37,7 @@ const login = (req, res) => {
 };
 
 const registerUser = (req, res) => {
-  const { username, password } = req.body;
+  const { userFname, userLname,userEmail,userPhone,userBdate=Date.now(),userDateAdd=Date.now(),userDateEdit=Date.now(),userRole_ID,userStatus_ID, username, password } = req.body;
   const query = 'SELECT user_ID FROM users ORDER BY user_ID DESC LIMIT 1';
   db.query(query, [], (err, result) => {
     if (err) {
@@ -62,8 +62,8 @@ const registerUser = (req, res) => {
         return res.status(500).json({ error: 'Password hashing error' });
       }
 
-      const query = 'INSERT INTO users (user_ID, user_Name, user_Password) VALUES (?, ?, ?)';
-      db.query(query, [userID, username, hash], (err, results) => {
+      const query = 'INSERT INTO users (user_ID, user_Fname, user_Lname, user_Email, user_Phone, user_Name, user_Password, user_Bdate, user_DateAdd, user_DateEdit, user_Role_ID, user_Status_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+      db.query(query, [userID, userFname, userLname, userEmail, userPhone, username, hash, userBdate, userDateAdd, userDateEdit,userRole_ID,userStatus_ID], (err, results) => {
         if (err) {
           console.error('Database insertion error:', err);
           return res.status(500).json({ error: 'Database insertion error' });

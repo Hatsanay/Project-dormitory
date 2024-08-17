@@ -65,7 +65,8 @@ import { CCol } from "@coreui/vue";
 </template>
 
 <style scoped>
-.card-header {
-  background-color: #ffa500;
-}
+/* .card-header {
+  background-color: gray;
+  color: white;
+} */
 </style>
