@@ -65,20 +65,38 @@ export default {
   },
   methods: {
     login() {
-      axios.post('/api/auth/login', {
-        username: this.username,
-        password: this.password
-      })
-      .then(response => {
-        localStorage.setItem('token', response.data.token);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-        this.$router.push('/dashboard');
-      })
-      .catch(error => {
-        console.error('Login error:', error);
-        alert('Login failed! Please check your credentials.');
-      });
-    }
-  }
+      axios
+        .post("/api/auth/login", {
+          username: this.username,
+          password: this.password,
+        })
+        .then((response) => {
+          const { token, permissions } = response.data;
+          localStorage.setItem("token", token);
+          localStorage.setItem("permissions", JSON.stringify(permissions)); // Store permissions as a JSON string
+          this.$router.push("/dashboard");
+        })
+        .catch((error) => {
+          console.error("Login error:", error);
+          alert("Login failed! Please check your credentials.");
+        });
+    },
+  },
+  //   login() {
+  //     axios.post('/api/auth/login', {
+  //       username: this.username,
+  //       password: this.password
+  //     })
+  //     .then(response => {
+  //       localStorage.setItem('token', response.data.token);
+  //       axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+  //       this.$router.push('/dashboard');
+  //     })
+  //     .catch(error => {
+  //       console.error('Login error:', error);
+  //       alert('Login failed! Please check your credentials.');
+  //     });
+  //   }
+  // }
 };
 </script>
