@@ -72,7 +72,7 @@
 
 <script>
 export default {
-  name: "ReqComponent",
+  name: "RegisResComponents",
   // computed: {
   //   userPermissions() {
   //     return JSON.parse(localStorage.getItem("permissions")) || [];

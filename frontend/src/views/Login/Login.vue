@@ -9,6 +9,7 @@
                 <CForm @submit.prevent="login">
                   <h1>Login</h1>
                   <p class="text-body-secondary">Sign In to your account</p>
+
                   <CInputGroup class="mb-3">
                     <CInputGroupText>
                       <CIcon icon="cil-user" />
@@ -20,6 +21,7 @@
                       required
                     />
                   </CInputGroup>
+
                   <CInputGroup class="mb-4">
                     <CInputGroupText>
                       <CIcon icon="cil-lock-locked" />
@@ -32,14 +34,21 @@
                       required
                     />
                   </CInputGroup>
+
                   <CRow>
                     <CCol :xs="6">
-                      <CButton type="submit" color="primary" class="px-4">Login</CButton>
+                      <CButton
+                        type="submit"
+                        color="primary"
+                        class="px-4"
+                        :disabled="isLoading"
+                      >
+                        <span v-if="isLoading"> <CSpinner size="sm" /> Loading... </span>
+                        <span v-else>Login</span>
+                      </CButton>
                     </CCol>
                     <CCol :xs="6" class="text-right">
-                      <CButton color="link" class="px-0">
-                        Forgot password?
-                      </CButton>
+                      <!-- <CButton color="link" class="px-0"> Forgot password? </CButton> -->
                     </CCol>
                   </CRow>
                 </CForm>
@@ -49,22 +58,41 @@
         </CCol>
       </CRow>
     </CContainer>
+
+
+    <CToaster class="p-3" placement="top-end">
+      <CToast v-for="(toast, index) in toasts" :key="index" visible>
+        <CToastHeader closeButton>
+          <span class="me-auto fw-bold">{{ toast.title }}</span>
+          <!-- <small>7 min ago</small> -->
+        </CToastHeader>
+        <CToastBody>{{ toast.content }}</CToastBody>
+      </CToast>
+    </CToaster>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-
+import axios from "axios";
 export default {
-  name: 'LoginFormComponent',
+  name: "LoginFormComponent",
   data() {
     return {
-      username: '',
-      password: ''
+      username: "",
+      password: "",
+      isLoading: false,
+      toasts: [],
     };
   },
   methods: {
+    createToast(st,er) {
+      this.toasts.push({
+        title: st,
+        content: er,
+      });
+    },
     login() {
+      this.isLoading = true;
       axios
         .post("/api/auth/login", {
           username: this.username,
@@ -73,30 +101,24 @@ export default {
         .then((response) => {
           const { token, permissions } = response.data;
           localStorage.setItem("token", token);
-          localStorage.setItem("permissions", JSON.stringify(permissions)); // Store permissions as a JSON string
+          axios.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${response.data.token}`;
+          localStorage.setItem("permissions", JSON.stringify(permissions));
           this.$router.push("/dashboard");
         })
         .catch((error) => {
           console.error("Login error:", error);
-          alert("Login failed! Please check your credentials.");
+          const errorstatus = 'เกิดข้อผิดพลาด Status '+ error.response.status;
+          const errorMessage = error.response && error.response.data && error.response.data.error
+            ? error.response.data.error
+            : 'An error occurred during login. Please try again.';
+          this.createToast(errorstatus,errorMessage);
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
   },
-  //   login() {
-  //     axios.post('/api/auth/login', {
-  //       username: this.username,
-  //       password: this.password
-  //     })
-  //     .then(response => {
-  //       localStorage.setItem('token', response.data.token);
-  //       axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-  //       this.$router.push('/dashboard');
-  //     })
-  //     .catch(error => {
-  //       console.error('Login error:', error);
-  //       alert('Login failed! Please check your credentials.');
-  //     });
-  //   }
-  // }
 };
 </script>

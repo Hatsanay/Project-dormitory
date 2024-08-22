@@ -1,5 +1,6 @@
 import DefaultLayout from '@/layouts/DefaultLayout';
 import { createRouter, createWebHashHistory } from 'vue-router';
+import RegisResView from '../views/Admin/RegisResView.vue';
 import userDasboard from '../views/dashboard/Dashboard.vue';
 import ReqView from '../views/user/UserReqView.vue';
 
@@ -15,21 +16,21 @@ const routes = [
         path: '/dashboard',
         name: 'Dashboard',
         id: '1',
-        meta: { permission: 'view_users_dashboard' },
+        meta: { permission: 'view_users_dashboard', requiresAuth: true},
         component: userDasboard,
       },
       {
         path: '/UserReqView',
         name: 'แจ้งซ่อมบำรุง',
         id: '2',
-        meta: { permission: 'view_users_reques' },
+        meta: { permission: 'view_users_reques', requiresAuth: true },
         component: ReqView,
       },
       {
         path: '/UserSetView',
         name: 'ตั้งค่า',
         id: '3',
-        meta: { permission: 'view_users_Setting' },
+        meta: { permission: 'view_users_Setting', requiresAuth: true },
         component: () => import('../views/user/UserSetView.vue'),
       },
       // Admin
@@ -37,8 +38,15 @@ const routes = [
         path: '/adminDashboard',
         name: 'AdminDashboard',
         id: '4',
-        meta: { permission: 'view_admin_dashboard' },
+        meta: { permission: 'view_admin_dashboard', requiresAuth: true },
         component: () => import('../views/Admin/Dashboard.vue'),
+      },
+      {
+        path: '/RegisResident',
+        name: 'RegisResident',
+        id: '5',
+        meta: { permission: 'view_RegisResident', requiresAuth: true },
+        component: RegisResView,
       },
     ],
   },
@@ -49,19 +57,17 @@ const routes = [
   },
 ];
 
-
 const permissionsMap = [
   'view_users_dashboard',  // Bit 1
   'view_users_reques',     // Bit 2
   'view_users_Setting',    // Bit 3
   'view_admin_dashboard',  // Bit 4
+  'view_RegisResident',    // Bit 5
 ];
 
-const permissionString = '1111110000000000';
-
+const permissionString = '111111111111111111';
 
 const permissions = permissionString.split('').map(bit => bit === '1');
-
 
 function hasPermission(permission) {
   const index = permissionsMap.indexOf(permission);
@@ -73,13 +79,12 @@ function hasPermission(permission) {
 }
 
 function clearToken() {
-  localStorage.removeItem('token'); // Adjust based on where you store your token
-  sessionStorage.removeItem('token'); // If you're using sessionStorage as well
+  localStorage.removeItem('token');
+  sessionStorage.removeItem('token');
 }
 
 function isAuthenticated() {
-  // Check for token in localStorage or sessionStorage
-  return !!localStorage.getItem('token') || !!sessionStorage.getItem('token');
+  return  !!localStorage.getItem('token') || !!sessionStorage.getItem('token');
 }
 
 const router = createRouter({
@@ -95,8 +100,7 @@ router.beforeEach((to, from, next) => {
     clearToken();
   }
   
-  
-  if (to.meta.permission && !isAuthenticated()) {
+  if (to.meta.requiresAuth && !isAuthenticated()) {
     next('/login');
   } else if (to.meta.permission && isAuthenticated()) {
     if (hasPermission(to.meta.permission)) {

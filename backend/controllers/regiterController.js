@@ -7,8 +7,7 @@ require('dotenv').config();
         //////////registerUser/////////
         ///////////////////////////////
 const registerUser = async (req, res) => {
-    const { userFname, userLname, userEmail, userPhone, userBdate = Date.now(), userDateAdd = Date.now(), userDateEdit = Date.now(), userRole_ID, userStatus_ID, username, password } = req.body; //เพิ่มตัวแปลรับข้อมูลที่กรอกเขามา
-
+    const { userFname, userLname, userEmail, userPhone, userBdate = Date.now(), userDateAdd = Date.now(), userDateEdit = Date.now(), userRole_ID, userStatus_ID, username, password,token } = req.body; //เพิ่มตัวแปลรับข้อมูลที่กรอกเขามา
     try {
 
         ////////////Autoid/////////////
