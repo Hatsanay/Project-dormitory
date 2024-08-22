@@ -65,7 +65,7 @@ git checkout devbas
 git add .
 git commit -m ""
 git pull origin devdik
-
+git pull origin devbas
 
 //ดูข้อแตกต่างระหว่าง master และ develop
 git diff devdik
@@ -77,6 +77,8 @@ git merge --no-ff master
 //รวมโค๊ดของ develop มา master
 git checkout master
 git merge --no-ff devdik
+git merge --no-ff master
+git merge --no-ff devbas
 git add .
 git commit -m ""
 git push -u origin master
