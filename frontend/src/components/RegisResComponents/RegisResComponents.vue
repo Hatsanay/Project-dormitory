@@ -14,7 +14,7 @@
               <CCol md="12">
                 <CRow class="mb-3">
                   <CFormLabel for="staticEmail" class="col-sm-2 col-form-label"
-                    >หมายเลขห้อง</CFormLabel
+                    >หมายเลข</CFormLabel
                   >
                   <div class="col-sm-10">
                     <CFormInput
