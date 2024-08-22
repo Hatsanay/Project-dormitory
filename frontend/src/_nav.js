@@ -6,7 +6,6 @@ export default [
     icon: 'cil-speedometer',
     badge: {
       color: 'primary',
-      // text: 'NEW',
     },
   },
   {
@@ -19,6 +18,46 @@ export default [
     to: '/UserReqView',
     icon: 'cil-people',
   },
+
+
+  {
+    component: 'CNavTitle',
+    name: 'จัดการผู้ใช้งาน',
+  },
+
+  {
+    component: 'CNavGroup',
+    name: 'จัดการผู้ใช้งาน',
+    to: '#',
+    icon: 'cil-people',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'จัดการผู้พักอาศัย',
+        to: '/RegisResident',
+      },
+    
+      {
+        component: 'CNavItem',
+        name: 'จัดการนิติบุคคล',
+        to: '#',
+      },
+    
+      {
+        component: 'CNavItem',
+        name: 'จัดการเจ้าหน้าที่ซ่อมบำรุง',
+        to: '#',
+      },
+    
+      {
+        component: 'CNavItem',
+        name: 'จัดการผู้จัดการ',
+        to: '#',
+      },
+    ],
+  },
+  
+
   {
     component: 'CNavTitle',
     name: 'ตั้งค่า',

@@ -1,5 +1,5 @@
 <script setup>
-import avatar from '@/assets/images/avatars/8.jpg'
+import avatar from '@/assets/images/avatars/8.jpg';
 
 const itemsCount = 42
 </script>
@@ -14,7 +14,7 @@ const itemsCount = 42
         component="h6"
         class="bg-body-secondary text-body-secondary fw-semibold mb-2 rounded-top"
       >
-        Account
+        <!-- Account
       </CDropdownHeader>
       <CDropdownItem>
         <CIcon icon="cil-bell" /> Updates
@@ -35,12 +35,12 @@ const itemsCount = 42
       <CDropdownHeader
         component="h6"
         class="bg-body-secondary text-body-secondary fw-semibold my-2"
-      >
+      > -->
         Settings
       </CDropdownHeader>
       <CDropdownItem> <CIcon icon="cil-user" /> Profile </CDropdownItem>
       <CDropdownItem> <CIcon icon="cil-settings" /> Settings </CDropdownItem>
-      <CDropdownItem>
+      <!-- <CDropdownItem>
         <CIcon icon="cil-dollar" /> Payments
         <CBadge color="secondary" class="ms-auto">{{ itemsCount }}</CBadge>
       </CDropdownItem>
@@ -49,8 +49,9 @@ const itemsCount = 42
         <CBadge color="primary" class="ms-auto">{{ itemsCount }}</CBadge>
       </CDropdownItem>
       <CDropdownDivider />
-      <CDropdownItem> <CIcon icon="cil-shield-alt" /> Lock Account </CDropdownItem>
-      <CDropdownItem> <CIcon icon="cil-lock-locked" /> Logout </CDropdownItem>
+      <CDropdownItem> <CIcon icon="cil-shield-alt" /> Lock Account </CDropdownItem> -->
+      <RouterLink to="/login"><CDropdownItem> <CIcon icon="cil-lock-locked" /> Logout </CDropdownItem></RouterLink>
+      
     </CDropdownMenu>
   </CDropdown>
 </template>

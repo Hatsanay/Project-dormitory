@@ -1,17 +1,17 @@
 <script setup>
-import ReqComponent from "../../components/ReqComponent/ReqComponent.vue";
+import RegisResComponents from "../../components/RegisResComponents/RegisResComponents.vue";
 </script>
 
 <template>
   <div>
-    <ReqComponent></ReqComponent>
+    <RegisResComponents></RegisResComponents>
   </div>
 </template>
 
 <script>
 // console.log(token);
 export default {
-  name: "ReqView",
+  name: "RegisResView",
 };
 </script>
 

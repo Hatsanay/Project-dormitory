@@ -5,9 +5,9 @@ import avatar3 from '@/assets/images/avatars/3.jpg'
 import avatar4 from '@/assets/images/avatars/4.jpg'
 import avatar5 from '@/assets/images/avatars/5.jpg'
 import avatar6 from '@/assets/images/avatars/6.jpg'
-import MainChart from './MainChart.vue'
 import WidgetsStatsA from './../widgets/WidgetsStatsTypeA.vue'
 import WidgetsStatsD from './../widgets/WidgetsStatsTypeD.vue'
+import MainChart from './MainChart.vue'
 
 const progressGroupExample1 = [
   { title: 'Monday', value1: 34, value2: 78 },
@@ -335,3 +335,20 @@ const tableExample = [
     </CRow>
   </div>
 </template>
+
+
+<script>
+export default {
+  name: 'userDasboard',
+  // computed: {
+  //   userPermissions() {
+  //     return JSON.parse(localStorage.getItem('permissions')) || [];
+  //   }
+  // },
+  // methods: {
+  //   checkPermission(permission) {
+  //     return this.userPermissions.includes(permission);
+  //   }
+  // }
+};
+</script>

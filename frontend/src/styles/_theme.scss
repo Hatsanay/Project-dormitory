@@ -51,6 +51,9 @@ body {
   min-height: calc(3rem + 1px); // stylelint-disable-line function-disallowed-list
 }
 
+// .sidebar{
+//   background-color: red;
+// }
 @if $enable-dark-mode {
   @include color-mode(dark) {
     body {
