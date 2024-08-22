@@ -19,37 +19,44 @@ export default [
     icon: 'cil-people',
   },
 
+
   {
     component: 'CNavTitle',
     name: 'จัดการผู้ใช้งาน',
   },
-  {
-    component: 'CNavItem',
-    name: 'จัดการผู้พักอาศัย',
-    to: '/RegisResident',
-    icon: 'cil-people',
-  },
 
   {
-    component: 'CNavItem',
-    name: 'จัดการนิติบุคคล',
+    component: 'CNavGroup',
+    name: 'จัดการผู้ใช้งาน',
     to: '#',
     icon: 'cil-people',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'จัดการผู้พักอาศัย',
+        to: '/RegisResident',
+      },
+    
+      {
+        component: 'CNavItem',
+        name: 'จัดการนิติบุคคล',
+        to: '#',
+      },
+    
+      {
+        component: 'CNavItem',
+        name: 'จัดการเจ้าหน้าที่ซ่อมบำรุง',
+        to: '#',
+      },
+    
+      {
+        component: 'CNavItem',
+        name: 'จัดการผู้จัดการ',
+        to: '#',
+      },
+    ],
   },
-
-  {
-    component: 'CNavItem',
-    name: 'จัดการเจ้าหน้าที่ซ่อมบำรุง',
-    to: '#',
-    icon: 'cil-people',
-  },
-
-  {
-    component: 'CNavItem',
-    name: 'จัดการผู้จัดการ',
-    to: '#',
-    icon: 'cil-people',
-  },
+  
 
   {
     component: 'CNavTitle',
