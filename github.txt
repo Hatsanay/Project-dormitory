@@ -59,6 +59,7 @@ git branch
 //เลือก branch 
 git checkout master
 git checkout devdik
+git checkout devbas
 
 //อัพขึ้น branch
 git add .
