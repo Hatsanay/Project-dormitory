@@ -10,7 +10,7 @@ const registerRoom = async (req, res) => {
         }
         ///////บันทึกลงฐานข้อมล//////////                
         const insertQuery = 'INSERT INTO room (room_ID) VALUES (?)';
-        await db.promise().query(insertQuery, [roomID]);
+        await db.promise().query(insertQuery, [RoomID]);
         res.status(201).json({ message: 'ลงทะเบียนห้องพักเรียบร้อยแล้ว!' });
     } catch (err) {
         console.error('เกิดข้อผิดพลาด:', err);
@@ -31,4 +31,4 @@ async function checkroom(RoomID) {
     }
 }
 
-module.exports = { registerRoom } ;
+moduleodule.exports = { registerRoom } ;

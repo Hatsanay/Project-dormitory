@@ -71,7 +71,7 @@ export default {
 
     const handleSubmitTooltip01 = (event) => {
       validatedTooltip01.value = true;
-
+      
       if (
         isRoomIDInvalid.value 
       ) {
