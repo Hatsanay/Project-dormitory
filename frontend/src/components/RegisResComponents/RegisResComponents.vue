@@ -100,16 +100,6 @@
                     <CFormLabel for="">เลือกวันที่</CFormLabel>
                     <Datepicker v-model="selectedDate" :type="'date'" :format="'yyyy-MM-dd'"/>
                   </CCol>
-                  <!-- <CCol md="3">
-                      <CFormLabel for="">สิทธิ์การเข้าถึง</CFormLabel>
-                      <CFormSelect id="" disabled>
-                        <option>Choose...</option>
-                        <option>...</option>
-                        <option>...</option>
-                        <option>...</option>
-                        <option>...</option>
-                      </CFormSelect>
-                    </CCol> -->
                     <CCol md="3">
                       <CFormLabel for="">ห้องพัก</CFormLabel >
                       <CFormSelect id="">
