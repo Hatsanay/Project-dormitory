@@ -9,7 +9,6 @@
             <CForm class="row g-3">
               <CCol md="12">
                 <CRow class="mb-3">
-<<<<<<< HEAD
                   <CCol md="2">
                     <CFormLabel for="">รหัสผู้ใช้งาน</CFormLabel>
                     <CFormInput type="text" id="" disabled />
