@@ -41,11 +41,12 @@ const routes = [
         meta: { permission: 'view_admin_dashboard', requiresAuth: true },
         component: () => import('../views/Admin/Dashboard.vue'),
       },
+      
       {
         path: '/RegisResident',
-        name: 'RegisResident',
+        name: 'จัดการผู้พักอาศัย',
         id: '5',
-        meta: { permission: 'view_RegisResident', requiresAuth: true },
+        meta: { permission: 'edit_RegisResident', requiresAuth: true },
         component: RegisResView,
       },
     ],
@@ -63,6 +64,7 @@ const permissionsMap = [
   'view_users_Setting',    // Bit 3
   'view_admin_dashboard',  // Bit 4
   'view_RegisResident',    // Bit 5
+  'edit_RegisResident',
 ];
 
 const permissionString = '111111111111111111';
