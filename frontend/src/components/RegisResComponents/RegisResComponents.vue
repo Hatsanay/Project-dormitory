@@ -9,30 +9,117 @@
             <CForm class="row g-3">
               <CCol md="12">
                 <CRow class="mb-3">
-                  <CFormLabel for="staticEmail" class="col-sm-2 col-form-label"
-                    >หมายเลขห้อง</CFormLabel
-                  >
-                  <div class="col-sm-10">
-                    <CFormInput
-                      type="text"
-                      id="staticEmail"
-                      value="001"
-                      readonly
-                      plain-text
-                    />
-                  </div>
-                  <CFormLabel for="staticEmail" class="col-sm-2 col-form-label"
-                    >ชิ่อ-สกุล</CFormLabel
-                  >
-                  <div class="col-sm-10">
-                    <CFormInput
-                      type="text"
-                      id="staticEmail"
-                      value="หัสนัย หม้อยา"
-                      readonly
-                      plain-text
-                    />
-                  </div>
+                  <CCol md="2">
+                    <CFormLabel for="">รหัสผู้ใช้งาน</CFormLabel>
+                    <CFormInput type="text" id="" disabled />
+                  </CCol>
+                  <CCol md="5">
+                    <CFormLabel for="">ชื่อ</CFormLabel>
+                    <CFormInput type="text" id="inputPassword4" />
+                  </CCol>
+                  <CCol md="5">
+                    <CFormLabel for="">นามสกุล</CFormLabel>
+                    <CFormInput type="text" id="" />
+                  </CCol>
+                  <CCol md="7">
+                    <CFormLabel for="">อีเมล์</CFormLabel>
+                    <CFormInput type="email" id="" />
+                  </CCol>
+                  <CCol md="5">
+                    <CFormLabel for="">เบอร์โทร</CFormLabel>
+                    <CFormInput type="text" id="" />
+                  </CCol>
+                  <CCol md="6">
+                    <CFormLabel for="">Username</CFormLabel>
+                    <CFormInput type="text" id="" />
+                  </CCol>
+                  <CCol md="6">
+                    <CFormLabel for="">Password</CFormLabel>
+                    <CFormInput type="password" id="" />
+                  </CCol>
+
+                  <CCol md="2">
+                    <CFormLabel for="">เลขที่</CFormLabel>
+                    <CFormInput type="text" id="" />
+                  </CCol>
+                  <CCol md="2">
+                    <CFormLabel for="">หมู่</CFormLabel>
+                    <CFormInput type="text" id="" />
+                  </CCol>
+                  <CCol md="4">
+                    <CFormLabel for="">ซอย</CFormLabel>
+                    <CFormInput type="text" id="" />
+                  </CCol>
+                  <CCol md="4">
+                    <CFormLabel for="">ถนน</CFormLabel>
+                    <CFormInput type="text" id="" />
+                  </CCol>
+
+
+                  <CCol md="3">
+                      <CFormLabel for="">ตำบล</CFormLabel>
+                      <CFormSelect id="">
+                        <option>Choose...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                      </CFormSelect>
+                    </CCol>
+                    <CCol md="3">
+                      <CFormLabel for="">อำเภอ</CFormLabel>
+                      <CFormSelect id="">
+                        <option>Choose...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                      </CFormSelect>
+                    </CCol>
+                    <CCol md="3">
+                      <CFormLabel for="">จังหวัด</CFormLabel>
+                      <CFormSelect id="">
+                        <option>Choose...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                      </CFormSelect>
+                    </CCol>
+                    <CCol md="3">
+                      <CFormLabel for="">รหัสไปรษณีย์</CFormLabel>
+                      <CFormSelect id="">
+                        <option>Choose...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                      </CFormSelect>
+                    </CCol>
+                  <CCol md="6">
+                    <CFormLabel for="">เลือกวันที่</CFormLabel>
+                    <Datepicker v-model="selectedDate" :type="'date'" :format="'yyyy-MM-dd'"/>
+                  </CCol>
+                  <!-- <CCol md="3">
+                      <CFormLabel for="">สิทธิ์การเข้าถึง</CFormLabel>
+                      <CFormSelect id="" disabled>
+                        <option>Choose...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                      </CFormSelect>
+                    </CCol> -->
+                    <CCol md="3">
+                      <CFormLabel for="">ห้องพัก</CFormLabel >
+                      <CFormSelect id="">
+                        <option>Choose...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                        <option>...</option>
+                      </CFormSelect>
+                    </CCol>
                 </CRow>
               </CCol>
               <CButton type="submit" color="primary">บันทึก</CButton>
