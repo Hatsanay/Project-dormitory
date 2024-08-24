@@ -1,7 +1,3 @@
-<script setup>
- let token = localStorage.token;
-</script>
-
 <template>
   <div>
     <WidgetsStatsD class="mb-4" />
@@ -14,7 +10,7 @@
               <CCol md="12">
                 <CRow class="mb-3">
                   <CFormLabel for="staticEmail" class="col-sm-2 col-form-label"
-                    >หมายเลข</CFormLabel
+                    >หมายเลขห้อง</CFormLabel
                   >
                   <div class="col-sm-10">
                     <CFormInput
@@ -39,30 +35,8 @@
                   </div>
                 </CRow>
               </CCol>
-              <CCol md="12">
-                <CFormLabel for="titleRepair">หัวข้อ</CFormLabel>
-                <CFormInput v-model="titleRepair" type="text" id="titleRepair" />
-              </CCol>
-              <CCol md="12">
-                <CFormTextarea
-                  id="exampleFormControlTextarea1"
-                  label="รายละเอียด"
-                  rows="3"
-                  text="กรุณากรอกปัญหาเบื้องต้น"
-                ></CFormTextarea>
-              </CCol>
-              <CCol md="12">
-                <CFormInput
-                  type="file"
-                  id="formFileMultiple"
-                  label="กรุณาเลือกรูปภาพเบื้องต้น"
-                  multiple
-                />
-                <CFormInput v-if="visable" v-model="token" type="text" id="token" />
-              </CCol>
-              <CButton type="submit" color="primary" >บันทึก</CButton>
+              <CButton type="submit" color="primary">บันทึก</CButton>
             </CForm>
-            <CForm> </CForm>
           </CCardBody>
         </CCard>
       </CCol>
@@ -71,12 +45,20 @@
 </template>
 
 <script>
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+import { ref } from 'vue';
+
 export default {
   name: "RegisResComponents",
-  // computed: {
-  //   userPermissions() {
-  //     return JSON.parse(localStorage.getItem("permissions")) || [];
-  //   },
-  // },
-};
+  components: {
+    Datepicker
+  },
+  setup() {
+    const selectedDate = ref(null);
+    return {
+      selectedDate
+    };
+  }
+}
 </script>
