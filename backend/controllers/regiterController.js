@@ -52,9 +52,48 @@ async function checkUsername(username) {
         const [rows] = await db.promise().query(query, [username]);
         return rows[0].count > 0;                                               // username มี มากกว่า 0 หรือไม่ ถ้ามี ส่ง True
     } catch (err) {
-        console.error('ไม่สามารถตรวจสอบ username ได้:', err);
+        console.error('ไม่สามารถตรวจสอบ username ddddได้:', err);
         throw err;
     }
 }
 
-module.exports = { registerUser };
+
+        //////////////API//////////////
+        ///////////getAutotid///////////
+        ///////////////////////////////
+const getAutotid = async (req, res) => {
+    try {
+
+        ////////////Autoid/////////////
+        const query = 'SELECT user_ID FROM users ORDER BY user_ID DESC LIMIT 1'; //หาว่ารหัสแถวสุดท้ายคืออะไร
+        const [result] = await db.promise().query(query);                       //Call กับฐานข้อมูล
+        let maxId;                                                              //ตัวแปลใข้เก็บรหัสท้ายสุด
+        if (result.length === 0) {                                              //Check ข้อมูล
+            maxId = 0;                                                           //maxId = 0
+        } else {
+            const lastUserId = result[0].user_ID;                               //รหัสแถวท้ายสุด
+            maxId = parseInt(lastUserId.slice(-6)) || 0;                        //ตัดสตริงเอา 6 ตัวหลัง เช่น USE000001 จะเป็น 000001 เก็บใน maxId
+        }
+        const num = maxId + 1;                                                  // maxId มา บวก 1
+        const userID = "USE" + String(num).padStart(6, '0');                    // สร้าง user_ID ใหม่ เช่น USE000001, USE000002
+        res.status(200).json(userID);
+    } catch (err) {
+        console.error('เกิดข้อผิดพลาด:', err);
+        res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดำเนินการ' });
+    }
+}
+
+// const getUser = async (req, res) => {
+//     try {
+//         // สร้างคำสั่ง SQL สำหรับดึงข้อมูลผู้ใช้ทั้งหมดจากตาราง users
+//         const query = 'SELECT user_ID, user_Fname, user_Lname, user_Email, user_Phone, user_Name, user_Bdate, user_DateAdd, user_DateEdit, user_Role_ID, user_Status_ID FROM users';
+//         const [rows] = await db.promise().query(query);  // เรียกใช้งานคำสั่ง SQL ผ่าน db
+
+//         res.status(200).json(rows);  // ส่งผลลัพธ์กลับไปในรูปแบบ JSON
+//     } catch (err) {
+//         console.error('เกิดข้อผิดพลาด:', err);
+//         res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้' });
+//     }
+// };
+
+module.exports = { registerUser, getAutotid };
