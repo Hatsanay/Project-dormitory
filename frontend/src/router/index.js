@@ -1,6 +1,7 @@
 import DefaultLayout from '@/layouts/DefaultLayout';
 import { createRouter, createWebHashHistory } from 'vue-router';
 import RegisResView from '../views/Admin/RegisResView.vue';
+import Room from '../views/Admin/Room.vue';
 import userDasboard from '../views/dashboard/Dashboard.vue';
 import ReqView from '../views/user/UserReqView.vue';
 
@@ -41,12 +42,20 @@ const routes = [
         meta: { permission: 'view_admin_dashboard', requiresAuth: true },
         component: () => import('../views/Admin/Dashboard.vue'),
       },
+      
       {
         path: '/RegisResident',
-        name: 'RegisResident',
+        name: 'จัดการผู้พักอาศัย',
         id: '5',
-        meta: { permission: 'view_RegisResident', requiresAuth: true },
+        meta: { permission: 'edit_RegisResident', requiresAuth: true },
         component: RegisResView,
+      },
+      {
+        path: '/Room',
+        name: 'Room',
+        id: '6',
+        meta: { permission: 'edit_RegisRoom', requiresAuth: true },
+        component: Room,
       },
     ],
   },
@@ -63,6 +72,8 @@ const permissionsMap = [
   'view_users_Setting',    // Bit 3
   'view_admin_dashboard',  // Bit 4
   'view_RegisResident',    // Bit 5
+  'edit_RegisResident',
+  'edit_RegisRoom',
 ];
 
 const permissionString = '111111111111111111';
