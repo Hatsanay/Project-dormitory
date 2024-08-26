@@ -1,9 +1,9 @@
 import DefaultLayout from '@/layouts/DefaultLayout';
 import { createRouter, createWebHashHistory } from 'vue-router';
 import RegisResView from '../views/Admin/RegisResView.vue';
+import Room from '../views/Admin/Room.vue';
 import userDasboard from '../views/dashboard/Dashboard.vue';
 import ReqView from '../views/user/UserReqView.vue';
-import Room from '../views/Admin/Room.vue';
 
 // Define routes
 const routes = [
@@ -73,6 +73,7 @@ const permissionsMap = [
   'view_admin_dashboard',  // Bit 4
   'view_RegisResident',    // Bit 5
   'edit_RegisResident',
+  'edit_RegisRoom',
 ];
 
 const permissionString = '111111111111111111';
