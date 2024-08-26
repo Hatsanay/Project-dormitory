@@ -8,7 +8,7 @@ const registerRoom = async (req, res) => {
         if (roomchecked){
             return res.status(400).json({ error: 'มีเลขห้องนี้อยู่เเล้วนี้อยู่แล้ว' });
         }
-        ///////บันทึกลงฐานข้อมล//////////                
+        ///////บันทึกลงฐานข้อมล//////////
         const insertQuery = 'INSERT INTO room (room_ID) VALUES (?)';
         await db.promise().query(insertQuery, [RoomID]);
         res.status(201).json({ message: 'ลงทะเบียนห้องพักเรียบร้อยแล้ว!' });
