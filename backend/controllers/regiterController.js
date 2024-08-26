@@ -53,6 +53,7 @@ async function checkUsername(username) {
         return rows[0].count > 0;                                               // username มี มากกว่า 0 หรือไม่ ถ้ามี ส่ง True
     } catch (err) {
         console.error('ไม่สามารถตรวจสอบ username ddddได้:', err);
+        console.error('ไม่สามารถตรวจสอบ username ddddได้:', err);
         throw err;
     }
 }

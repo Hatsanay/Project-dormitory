@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import RegisResView from '../views/Admin/RegisResView.vue';
 import userDasboard from '../views/dashboard/Dashboard.vue';
 import ReqView from '../views/user/UserReqView.vue';
+import Room from '../views/Admin/Room.vue';
 
 // Define routes
 const routes = [
@@ -48,6 +49,13 @@ const routes = [
         id: '5',
         meta: { permission: 'edit_RegisResident', requiresAuth: true },
         component: RegisResView,
+      },
+      {
+        path: '/Room',
+        name: 'Room',
+        id: '6',
+        meta: { permission: 'edit_RegisRoom', requiresAuth: true },
+        component: Room,
       },
     ],
   },
