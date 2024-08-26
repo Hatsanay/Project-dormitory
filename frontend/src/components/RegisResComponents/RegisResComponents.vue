@@ -441,6 +441,7 @@ export default {
     };
 
     const fetchAmphures = async () => {
+      const token = localStorage.getItem("token");
       if (!resProvinces.value) return;
 
       try {
