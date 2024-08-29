@@ -76,10 +76,38 @@ const permissionsMap = [
   'edit_RegisRoom',
 ];
 
-const permissionString = '111111111111111111';
 
-const permissions = permissionString.split('').map(bit => bit === '1');
+const decodeJWTTH = (token) => {
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var payload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(payload);
+};
 
+const token = localStorage.getItem("token");
+
+let permissionsToken = "";
+if (token) {
+  const decodedPayload = decodeJWTTH(token);
+  // console.log(decodedPayload);
+  permissionsToken = decodedPayload.permissions;
+  // console.log("permissions:", permissions);
+} else {
+  console.log("Token not found");
+}
+
+
+permissionsToken = "1111111111111111111111111111";
+// console.log(permissionsToken);
+
+let permissions = permissionsToken.split('').map(bit => bit === '1');
 function hasPermission(permission) {
   const index = permissionsMap.indexOf(permission);
   if (index === -1) {

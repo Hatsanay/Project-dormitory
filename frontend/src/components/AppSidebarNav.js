@@ -176,9 +176,9 @@ if (token) {
   // console.log(decodedPayload);
   const permissions = decodedPayload.permissions;
 
-  console.log("permissions:", permissions);
+  // console.log("permissions:", permissions);
 } else {
-  console.log("Token not found in localStorage");
+  console.log("Token not found");
 }
 
 

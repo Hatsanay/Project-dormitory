@@ -150,12 +150,7 @@
 
                   <CCol md="3">
                     <CFormLabel for="resProvinces">จังหวัด</CFormLabel>
-                    <CFormSelect
-                      v-model="resProvinces"
-                      id="resProvinces"
-                      required
-                      @change="fetchAmphures"
-                    >
+                    <CFormSelect v-model="resProvinces" id="resProvinces" required>
                       <option value="">กรุณาเลือกจังหวัด</option>
                       <option
                         v-for="province in provinces"
@@ -183,14 +178,30 @@
                     <CFormLabel for="resTambons">ตำบล/แขวง</CFormLabel>
                     <CFormSelect v-model="resTambons" id="resTambons" required>
                       <option disabled value="">กรุณาเลือกตำบล/แขวง</option>
+                      <option
+                        v-for="Tambon in Tambons"
+                        :key="Tambon.id"
+                        :value="Tambon.id"
+                      >
+                        {{ Tambon.name_th }}
+                      </option>
                     </CFormSelect>
                   </CCol>
+
                   <CCol md="3">
                     <CFormLabel for="resPost">รหัสไปรษณีย์</CFormLabel>
-                    <CFormSelect v-model="resPost" id="resPost" required>
-                      <option>Choose...</option>
-                    </CFormSelect>
+                    <CFormInput
+                      v-model="resPost"
+                      type="text"
+                      id="resPost"
+                      required
+                      :class="{ 'is-invalid': isPostInvalid }"
+                    />
+                    <CFormFeedback invalid>
+                      {{ resPostErrorMessage }}
+                    </CFormFeedback>
                   </CCol>
+
                   <CCol md="6">
                     <CFormLabel for="resBdate">เลือกวันที่</CFormLabel>
                     <Datepicker
@@ -201,12 +212,12 @@
                       required
                     />
                   </CCol>
-                  <CCol md="3">
+                  <!-- <CCol md="3">
                     <CFormLabel for="resRoom">ห้องพัก</CFormLabel>
                     <CFormSelect v-model="resRoom" id="resRoom" required>
                       <option>Choose...</option>
                     </CFormSelect>
-                  </CCol>
+                  </CCol> -->
                 </CRow>
               </CCol>
               <CButton type="submit" color="primary">บันทึก</CButton>
@@ -230,7 +241,7 @@
 <script>
 import Datepicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import axios from "axios";
 
 export default {
@@ -256,13 +267,13 @@ export default {
     const resAmphures = ref("");
     const resTambons = ref("");
     const resPost = ref("");
-    const resRoom = ref("");
+    // const resRoom = ref("");
     const validatedTooltip01 = ref(false);
     const toasts = ref([]);
 
     const provinces = ref([]);
     const amphures = ref([]);
-    // const tambons = ref([]);
+    const Tambons = ref([]);
 
     const isFnameInvalid = computed(() => {
       return (
@@ -409,6 +420,16 @@ export default {
       return "";
     });
 
+    const isPostInvalid = computed(() => {
+      return validatedTooltip01.value && resPost.value.trim() === "";
+    });
+    const resPostErrorMessage = computed(() => {
+      if (resPost.value.trim() === "") {
+        return "กรุณากรอกรหัสไปรษณีย์";
+      }
+      return "";
+    });
+
     const handleSubmitTooltip01 = (event) => {
       validatedTooltip01.value = true;
 
@@ -422,10 +443,56 @@ export default {
         isHnumberInvalid.value ||
         isGroupInvalid.value ||
         isAlleyInvalid.value ||
-        isRoadInvalid.value
+        isRoadInvalid.value ||
+        isPostInvalid.value
       ) {
         event.preventDefault();
         event.stopPropagation();
+      } else {
+        handleSubmit();
+      }
+    };
+
+    const handleSubmit = async () => {
+      try {
+        // ส่งข้อมูลลงทะเบียนผู้ใช้ไปยังเซิร์ฟเวอร์
+        const response = await axios.post("/api/auth/registerUser", {
+          userFname: resFname.value,
+          userLname: resLname.value,
+          userEmail: resEmail.value,
+          userPhone: resPhone.value,
+          username: resName.value,
+          password: resPassword.value,
+          userHnumber: resHnumber.value,
+          userGroup: resGroup.value,
+          userAlley: resAlley.value,
+          userRoad: resRoad.value,
+          user_ProvincesID: resProvinces.value,
+          user_AmphuresID: resAmphures.value,
+          user_TambonsID: resTambons.value,
+          // userPost: resPost.value,
+          userBdate: selectedDate.value,
+          userRole_ID: "ROL000002",
+          userStatus_ID: "STA000003",
+        });
+
+        // แสดงข้อความสำเร็จ
+        createToast("Success", response.data.message);
+
+        // หน่วงเวลา 1 วินาที (1000 มิลลิวินาที) ก่อนรีเฟรชหน้า
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } catch (error) {
+        let errorMessage = "เกิดข้อผิดพลาดในการลงทะเบียนผู้ใช้";
+
+        if (error.response && error.response.data && error.response.data.error) {
+          errorMessage = error.response.data.error;
+        }
+
+        // แสดงข้อความผิดพลาด
+        createToast("Error", errorMessage);
+        console.error("Error:", error);
       }
     };
 
@@ -440,11 +507,51 @@ export default {
       }, 5000);
     };
 
-    const fetchAmphures = async () => {
-      const token = localStorage.getItem("token");
+    const fetchZipcode = async (tambonId) => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`/api/auth/getZipcode`, {
+          params: { tambonId },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        resPost.value = response.data.zip_code || ""; // Update postal code field
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการดึงรหัสไปรษณีย์:", error);
+        resPost.value = ""; // Clear the postal code field on error
+      }
+    };
+
+    const fetchTambons = async () => {
+      resTambons.value = "";
+      Tambons.value = [];
+
       if (!resProvinces.value) return;
 
       try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`/api/auth/getTambons`, {
+          params: { amphureId: resAmphures.value },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        Tambons.value = response.data;
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลตำบล/แขวง:", error);
+      }
+    };
+
+    const fetchAmphures = async () => {
+      resAmphures.value = "";
+      amphures.value = [];
+      resTambons.value = "";
+
+      if (!resProvinces.value) return;
+
+      try {
+        const token = localStorage.getItem("token");
         const response = await axios.get(`/api/auth/getAmphures`, {
           params: { provinceId: resProvinces.value },
           headers: {
@@ -453,7 +560,7 @@ export default {
         });
         amphures.value = response.data;
       } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลอำเภอ/เขต:', error);
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลอำเภอ/เขต:", error);
       }
     };
 
@@ -467,11 +574,7 @@ export default {
         });
         provinces.value = response.data;
       } catch (error) {
-        if (error.response && error.response.data && error.response.data.error) {
-          createToast("ดึงข้อมูลจังหวัดเกิดข้อผิดพลาด", error.response.data.error);
-        } else {
-          createToast("เกิดข้อผิดพลาดในการดึงข้อมูลจังหวัด", error.message || error);
-        }
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจังหวัด:", error);
       }
     };
 
@@ -499,6 +602,20 @@ export default {
       fetchProvince();
     });
 
+    watch(resProvinces, () => {
+      fetchAmphures();
+    });
+
+    watch(resAmphures, () => {
+      fetchTambons();
+    });
+
+    watch(resTambons, async () => {
+      if (resTambons.value) {
+        await fetchZipcode(resTambons.value);
+      }
+    });
+
     return {
       selectedDate,
       autoID,
@@ -516,10 +633,13 @@ export default {
       resAmphures,
       resTambons,
       resPost,
-      resRoom,
+      // resRoom,
       toasts,
       validatedTooltip01,
       handleSubmitTooltip01,
+      provinces,
+      amphures,
+      Tambons,
       isFnameInvalid,
       fnameErrorMessage,
       isLnameInvalid,
@@ -540,11 +660,10 @@ export default {
       resAlleyErrorMessage,
       isRoadInvalid,
       resRoadErrorMessage,
-      provinces,
-      amphures,
-      // tambons,
+      isPostInvalid,
+      resPostErrorMessage,
       fetchAmphures,
-      // fetchTambons,
+      fetchTambons,
     };
   },
 };
