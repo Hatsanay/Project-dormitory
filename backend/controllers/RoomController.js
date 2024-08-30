@@ -31,4 +31,4 @@ async function checkroom(RoomID) {
     }
 }
 
-moduleodule.exports = { registerRoom } ;
+module.exports = { registerRoom } ;
