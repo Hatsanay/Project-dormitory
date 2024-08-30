@@ -144,47 +144,4 @@ const AppSidebarNav = defineComponent({
   },
 })
 
-
-<<<<<<< HEAD
-=======
-
-const decodeJWTNOTTH = (token) => {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const payload = JSON.parse(atob(base64));
-  return payload;
-}
-
-
-const decodeJWTTH = (token) => {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-  var payload = decodeURIComponent(
-    atob(base64)
-      .split("")
-      .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-      })
-      .join("")
-  );
-  return JSON.parse(payload);
-};
-
-const token = localStorage.getItem("token");
-
-if (token) {
-  const decodedPayload = decodeJWTTH(token);
-  
-  // console.log(decodedPayload);
-  const permissions = decodedPayload.permissions;
-
-  // console.log("permissions:", permissions);
-} else {
-  console.log("Token not found");
-}
-
-
-
-
->>>>>>> 28f7e248bb1180d1ff34c4289470a03f424b9112
 export { AppSidebarNav }

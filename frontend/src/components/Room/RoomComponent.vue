@@ -14,23 +14,41 @@
               @submit="handleSubmitTooltip01"
               >
               <CCol md="12">
-                <CRow class="mb-1">
-                  <CFormLabel for="resRoomID" class="col-sm-2 col-form-label">Room ID</CFormLabel>
-                  <CFormInput  
-                    v-model="resRoomID"
-                    type="text" 
-                    id="resRoomID" 
-                    style="width: 200px;" 
-                    required
-                      :class="{ 'is-invalid': isRoomIDInvalid }"
-                      />
+                <CRow class="mb-3">
+                  <CCol md="2">
+                  <CFormLabel for="resRoomID" class="">รหัสห้องพัก</CFormLabel>
+                  <CFormInput  v-model="autoID" type="text" id="resRoomID" disabled />
+                </CCol>
+                <CCol md="5">
+                    <CFormLabel for="resRoom_Name">เลขห้อง</CFormLabel>
+                    <CFormInput
+                      v-model="resRoom_Name"
+                      type="text"
+                      id="resRoom_Name"
+                      required
+                      :class="{ 'is-invalid': isRoomInvalid }"
+                    />
                     <CFormFeedback invalid>
-                      {{ RoomIDErrorMessage }}
-                </CFormFeedback>
+                      {{ RoomErrorMessage }}
+                    </CFormFeedback>
+                  </CCol>
+                  <!-- <CCol md="3">
+                    <CFormLabel for="resTambons">สถานะห้องพัก</CFormLabel>
+                      <CFormSelect v-model="resTambons" id="resStatus" required>
+                        <option disabled value="">กรุณาเลือกสถานะห้องพัก</option>
+                        <option
+                        v-for="Tambon in Tambons"
+                        :key="Tambon.id"
+                        :value="Tambon.id"
+                      >
+                        {{ Tambon.name_th }}
+                      </option>
+                    </CFormSelect>
+                  </CCol>-->
                 </CRow>
                 <CFormInput v-if="visable" v-model="token" type="text" id="token" />
               </CCol>
-              <CButton type="submit" color="primary" class="col-sm-2">บันทึก</CButton>
+              <CButton type="submit" color="primary" class="">บันทึก</CButton>
             </CForm>
           </CCardBody>
         </CCard>
@@ -50,10 +68,11 @@ export default {
   //   },
   // },
   setup() {
+    const autoID = ref("");
     const resRoomID = ref("");
     const validatedTooltip01 = ref(false);
 
-    const isRoomIDInvalid = computed(() => {
+    const isRoomNameInvalid = computed(() => {
       return (
         validatedTooltip01.value &&
         (resRoomID.value.trim() === "" || !/^\d{3}$/.test(resRoomID.value))
