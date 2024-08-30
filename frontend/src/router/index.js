@@ -1,9 +1,9 @@
 import DefaultLayout from '@/layouts/DefaultLayout';
 import { createRouter, createWebHashHistory } from 'vue-router';
 import RegisResView from '../views/Admin/RegisResView.vue';
+import Room from '../views/Admin/Room.vue';
 import userDasboard from '../views/dashboard/Dashboard.vue';
 import ReqView from '../views/user/UserReqView.vue';
-import Room from '../views/Admin/Room.vue';
 
 // Define routes
 const routes = [
@@ -42,11 +42,12 @@ const routes = [
         meta: { permission: 'view_admin_dashboard', requiresAuth: true },
         component: () => import('../views/Admin/Dashboard.vue'),
       },
+      
       {
         path: '/RegisResident',
-        name: 'RegisResident',
+        name: 'จัดการผู้พักอาศัย',
         id: '5',
-        meta: { permission: 'view_RegisResident', requiresAuth: true },
+        meta: { permission: 'edit_RegisResident', requiresAuth: true },
         component: RegisResView,
       },
       {
@@ -71,13 +72,42 @@ const permissionsMap = [
   'view_users_Setting',    // Bit 3
   'view_admin_dashboard',  // Bit 4
   'view_RegisResident',    // Bit 5
-   'edit_RegisRoom',
+  'edit_RegisResident',
+  'edit_RegisRoom',
 ];
 
-const permissionString = '111111111111111111';
 
-const permissions = permissionString.split('').map(bit => bit === '1');
+const decodeJWTTH = (token) => {
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var payload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+  return JSON.parse(payload);
+};
 
+const token = localStorage.getItem("token");
+
+let permissionsToken = "";
+if (token) {
+  const decodedPayload = decodeJWTTH(token);
+  // console.log(decodedPayload);
+  permissionsToken = decodedPayload.permissions;
+  // console.log("permissions:", permissions);
+} else {
+  console.log("Token not found");
+}
+
+
+permissionsToken = "1111111111111111111111111111";
+// console.log(permissionsToken);
+
+let permissions = permissionsToken.split('').map(bit => bit === '1');
 function hasPermission(permission) {
   const index = permissionsMap.indexOf(permission);
   if (index === -1) {
