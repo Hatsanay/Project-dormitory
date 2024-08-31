@@ -4,7 +4,7 @@
     <CRow>
       <CCol :md="12">
         <CCard class="mb-4">
-          <CCardHeader>เพิ่มผู้ใช้งานระบบ</CCardHeader>
+          <CCardHeader>แก้ไขผู้ใช้งานระบบ</CCardHeader>
           <CCardBody>
             <CForm
               class="row g-3 needs-validation"
@@ -97,7 +97,7 @@
                   </CCol>
 
                   <CCol md="2">
-                    <CFormLabel for="resHnumber">เลขที่</CFormLabel>
+                    <CFormLabel for="resHnumber">ที่</CFormLabel>
                     <CFormInput
                       v-model="resHnumber"
                       type="text"
@@ -162,9 +162,9 @@
                     </CFormSelect>
                   </CCol>
                   <CCol md="3">
-                    <CFormLabel for="resAmphures">อำเภอ/เขต</CFormLabel>
+                    <CFormLabel for="resAmphures">อำเภอ</CFormLabel>
                     <CFormSelect v-model="resAmphures" id="resAmphures" required>
-                      <option disabled value="">กรุณาเลือกอำเภอ/เขต</option>
+                      <option disabled value="">กรุณาเลือกอำเภอ</option>
                       <option
                         v-for="amphure in amphures"
                         :key="amphure.id"
@@ -175,9 +175,9 @@
                     </CFormSelect>
                   </CCol>
                   <CCol md="3">
-                    <CFormLabel for="resTambons">ตำบล/แขวง</CFormLabel>
+                    <CFormLabel for="resTambons">ตำบล</CFormLabel>
                     <CFormSelect v-model="resTambons" id="resTambons" required>
-                      <option disabled value="">กรุณาเลือกตำบล/แขวง</option>
+                      <option disabled value="">กรุณาเลือกตำบล</option>
                       <option
                         v-for="Tambon in Tambons"
                         :key="Tambon.id"
@@ -189,7 +189,7 @@
                   </CCol>
 
                   <CCol md="3">
-                    <CFormLabel for="resPost">รหัสไปรษณีย์</CFormLabel>
+                    <CFormLabel for="resPost">ไปรษณีย์</CFormLabel>
                     <CFormInput
                       v-model="resPost"
                       type="text"
@@ -252,7 +252,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import axios from "axios";
 
 export default {
-  name: "RegisResComponents",
+  name: "miniRegisComponent",
   components: {
     Datepicker,
   },
@@ -463,7 +463,6 @@ export default {
 
     const handleSubmit = async () => {
       try {
-       
         const response = await axios.post("/api/auth/registerUser", {
           userFname: resFname.value,
           userLname: resLname.value,
@@ -484,11 +483,10 @@ export default {
           userStatus_ID: "STA000003",
         });
 
-        
         createToast("Success", response.data.message);
         setTimeout(() => {
           window.location.reload();
-        }, 1500);
+        }, 1000);
       } catch (error) {
         let errorMessage = "เกิดข้อผิดพลาดในการลงทะเบียนผู้ใช้";
 
@@ -496,7 +494,6 @@ export default {
           errorMessage = error.response.data.error;
         }
 
-        
         createToast("Error", errorMessage);
         console.error("Error:", error);
       }
@@ -525,7 +522,7 @@ export default {
         resPost.value = response.data.zip_code || "";
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการดึงรหัสไปรษณีย์:", error);
-        resPost.value = ""; 
+        resPost.value = "";
       }
     };
 
@@ -627,8 +624,6 @@ export default {
       fetchAmphures();
     });
 
-
-
     watch(resAmphures, () => {
       fetchTambons();
     });
@@ -638,7 +633,6 @@ export default {
         await fetchZipcode(resTambons.value);
       }
     });
-
 
     return {
       selectedDate,

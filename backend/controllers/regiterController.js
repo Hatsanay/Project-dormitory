@@ -145,6 +145,47 @@ const getRole = async (req, res) => {
   }
 }
 
+const getUser = async (req, res) => {
+  try {
+
+
+      // const query = 'SELECT user_ID,user_Fname,user_Lname,user_Email,user_Phone,user_Name,user_Hnumber,user_Group,user_Alley,user_Road,user_Provinces_ID,user_Amphures_ID,user_Tambons_ID,user_Bdate,user_DateAdd,user_DateEdit,user_Role_ID,	user_Status_ID FROM users';
+      const query = `SELECT
+      user_ID,
+      user_Fname,
+      user_Lname,
+      user_Email,
+      user_Phone,
+      user_Name,
+      CONCAT(user_Hnumber, ' ม.', user_Group, ' ', user_Alley, ' ', user_Road, ' ', thai_tambons.name_th, ' ', thai_amphures.name_th, ' ', thai_provinces.name_th, ' ', thai_tambons.zip_code) AS address, 
+      user_Bdate,
+      user_DateAdd,
+      user_DateEdit,
+      user_Role_ID,
+      roles.role_Name as roleName,
+      user_Status_ID
+  FROM
+      users
+  INNER JOIN
+      thai_provinces ON users.user_Provinces_ID = thai_provinces.id
+  INNER JOIN
+      thai_amphures ON users.user_Amphures_ID = thai_amphures.id
+  INNER JOIN
+      thai_tambons ON users.user_Tambons_ID = thai_tambons.id
+  INNER JOIN
+      roles ON users.user_Role_ID = roles.role_ID`;
+  
+      const [result] = await db.promise().query(query);
+      res.status(200).json(result);
+  } catch (err) {
+      console.error('เกิดข้อผิดพลาด:', err);
+      res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดำเนินการ' });
+  }
+}
+
+
+
+
 // const getUser = async (req, res) => {
 //     try {
 //         // สร้างคำสั่ง SQL สำหรับดึงข้อมูลผู้ใช้ทั้งหมดจากตาราง users
@@ -158,4 +199,4 @@ const getRole = async (req, res) => {
 //     }
 // };
 
-module.exports = { registerUser, getAutotid, getRole };
+module.exports = { registerUser, getAutotid, getRole, getUser};
