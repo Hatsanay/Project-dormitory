@@ -131,6 +131,20 @@ const getAutotid = async (req, res) => {
   }
 };
 
+
+const getRole = async (req, res) => {
+  try {
+
+
+      const query = 'SELECT role_id,role_Name FROM roles';
+      const [result] = await db.promise().query(query);
+      res.status(200).json(result);
+  } catch (err) {
+      console.error('เกิดข้อผิดพลาด:', err);
+      res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดำเนินการ' });
+  }
+}
+
 // const getUser = async (req, res) => {
 //     try {
 //         // สร้างคำสั่ง SQL สำหรับดึงข้อมูลผู้ใช้ทั้งหมดจากตาราง users
@@ -144,4 +158,4 @@ const getAutotid = async (req, res) => {
 //     }
 // };
 
-module.exports = { registerUser, getAutotid };
+module.exports = { registerUser, getAutotid, getRole };

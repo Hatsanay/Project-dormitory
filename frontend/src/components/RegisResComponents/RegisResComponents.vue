@@ -4,7 +4,7 @@
     <CRow>
       <CCol :md="12">
         <CCard class="mb-4">
-          <CCardHeader>จัดการผู้พักอาศัย</CCardHeader>
+          <CCardHeader>เพิ่มผู้ใช้งานระบบ</CCardHeader>
           <CCardBody>
             <CForm
               class="row g-3 needs-validation"
@@ -14,7 +14,7 @@
               <CCol md="12">
                 <CRow class="mb-3">
                   <CCol md="2">
-                    <CFormLabel for="resId">รหัสผู้ใช้งาน</CFormLabel>
+                    <CFormLabel for="resId">รหัส</CFormLabel>
                     <CFormInput v-model="autoID" type="text" id="resId" disabled />
                   </CCol>
                   <CCol md="5" class="position-relative">
@@ -212,12 +212,19 @@
                       required
                     />
                   </CCol>
-                  <!-- <CCol md="3">
-                    <CFormLabel for="resRoom">ห้องพัก</CFormLabel>
-                    <CFormSelect v-model="resRoom" id="resRoom" required>
-                      <option>Choose...</option>
+                  <CCol md="3">
+                    <CFormLabel for="resRole">ตำแหน่ง</CFormLabel>
+                    <CFormSelect v-model="resRole" id="resRole" required>
+                      <option value="">กรุณาเลือกตำแหน่ง</option>
+                      <option
+                        v-for="role in roles"
+                        :key="role.role_id"
+                        :value="role.role_id"
+                      >
+                        {{ role.role_Name }}
+                      </option>
                     </CFormSelect>
-                  </CCol> -->
+                  </CCol>
                 </CRow>
               </CCol>
               <CButton type="submit" color="primary">บันทึก</CButton>
@@ -267,13 +274,14 @@ export default {
     const resAmphures = ref("");
     const resTambons = ref("");
     const resPost = ref("");
-    // const resRoom = ref("");
+    const resRole = ref("");
     const validatedTooltip01 = ref(false);
     const toasts = ref([]);
 
     const provinces = ref([]);
     const amphures = ref([]);
     const Tambons = ref([]);
+    const roles = ref([]);
 
     const isFnameInvalid = computed(() => {
       return (
@@ -455,7 +463,7 @@ export default {
 
     const handleSubmit = async () => {
       try {
-        // ส่งข้อมูลลงทะเบียนผู้ใช้ไปยังเซิร์ฟเวอร์
+       
         const response = await axios.post("/api/auth/registerUser", {
           userFname: resFname.value,
           userLname: resLname.value,
@@ -472,14 +480,14 @@ export default {
           user_TambonsID: resTambons.value,
           // userPost: resPost.value,
           userBdate: selectedDate.value,
-          userRole_ID: "ROL000002",
+          userRole_ID: resRole.value,
           userStatus_ID: "STA000003",
         });
 
-        // แสดงข้อความสำเร็จ
+        
         createToast("Success", response.data.message);
 
-        // หน่วงเวลา 1 วินาที (1000 มิลลิวินาที) ก่อนรีเฟรชหน้า
+        
         setTimeout(() => {
           window.location.reload();
         }, 1000);
@@ -490,7 +498,7 @@ export default {
           errorMessage = error.response.data.error;
         }
 
-        // แสดงข้อความผิดพลาด
+        
         createToast("Error", errorMessage);
         console.error("Error:", error);
       }
@@ -516,10 +524,10 @@ export default {
             Authorization: `Bearer ${token}`,
           },
         });
-        resPost.value = response.data.zip_code || ""; // Update postal code field
+        resPost.value = response.data.zip_code || "";
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการดึงรหัสไปรษณีย์:", error);
-        resPost.value = ""; // Clear the postal code field on error
+        resPost.value = ""; 
       }
     };
 
@@ -578,6 +586,20 @@ export default {
       }
     };
 
+    const fetchRole = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("/api/auth/getRole", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        roles.value = response.data;
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจังหวัด:", error);
+      }
+    };
+
     const fetchAutoID = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -600,11 +622,14 @@ export default {
     onMounted(() => {
       fetchAutoID();
       fetchProvince();
+      fetchRole();
     });
 
     watch(resProvinces, () => {
       fetchAmphures();
     });
+
+
 
     watch(resAmphures, () => {
       fetchTambons();
@@ -615,6 +640,7 @@ export default {
         await fetchZipcode(resTambons.value);
       }
     });
+
 
     return {
       selectedDate,
@@ -633,7 +659,8 @@ export default {
       resAmphures,
       resTambons,
       resPost,
-      // resRoom,
+      resRole,
+      roles,
       toasts,
       validatedTooltip01,
       handleSubmitTooltip01,
@@ -664,6 +691,7 @@ export default {
       resPostErrorMessage,
       fetchAmphures,
       fetchTambons,
+      fetchRole,
     };
   },
 };

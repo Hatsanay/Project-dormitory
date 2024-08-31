@@ -25,31 +25,37 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'จัดการผู้พักอาศัย',
-    to: '/RegisResident',
+    name: 'จัดการผู้ใช้งาน',
+    to: '/ViewResident',
     icon: 'cil-people',
   },
+  // {
+  //   component: 'CNavItem',
+  //   name: 'จัดการผู้ใช้งานในระบบ',
+  //   to: '/RegisResident',
+  //   icon: 'cil-people',
+  // },
 
-  {
-    component: 'CNavItem',
-    name: 'จัดการนิติบุคคล',
-    to: '#',
-    icon: 'cil-people',
-  },
+  // {
+  //   component: 'CNavItem',
+  //   name: 'จัดการนิติบุคคล',
+  //   to: '#',
+  //   icon: 'cil-people',
+  // },
 
-  {
-    component: 'CNavItem',
-    name: 'จัดการเจ้าหน้าที่ซ่อมบำรุง',
-    to: '#',
-    icon: 'cil-people',
-  },
+  // {
+  //   component: 'CNavItem',
+  //   name: 'จัดการเจ้าหน้าที่ซ่อมบำรุง',
+  //   to: '#',
+  //   icon: 'cil-people',
+  // },
 
-  {
-    component: 'CNavItem',
-    name: 'จัดการผู้จัดการ',
-    to: '#',
-    icon: 'cil-people',
-  },
+  // {
+  //   component: 'CNavItem',
+  //   name: 'จัดการผู้จัดการ',
+  //   to: '#',
+  //   icon: 'cil-people',
+  // },
 
   {
     component: 'CNavTitle',

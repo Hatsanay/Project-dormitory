@@ -1,6 +1,7 @@
 import DefaultLayout from '@/layouts/DefaultLayout';
 import { createRouter, createWebHashHistory } from 'vue-router';
 import RegisResView from '../views/Admin/RegisResView.vue';
+import ViewResView from '../views/Admin/ViewResView.vue';
 import Room from '../views/Admin/Room.vue';
 import userDasboard from '../views/dashboard/Dashboard.vue';
 import ReqView from '../views/user/UserReqView.vue';
@@ -45,17 +46,28 @@ const routes = [
       
       {
         path: '/RegisResident',
-        name: 'จัดการผู้พักอาศัย',
+        name: 'เพิ่มผู้ใช้งาน',
         id: '5',
         meta: { permission: 'edit_RegisResident', requiresAuth: true },
         component: RegisResView,
       },
+
+      
+      
       {
         path: '/Room',
         name: 'Room',
         id: '6',
         meta: { permission: 'edit_RegisRoom', requiresAuth: true },
         component: Room,
+      },
+
+      {
+        path: '/ViewResident',
+        name: 'จัดการผู้ใช้งาน',
+        id: '7',
+        meta: { permission: 'view_RegisResident', requiresAuth: true },
+        component: ViewResView,
       },
     ],
   },

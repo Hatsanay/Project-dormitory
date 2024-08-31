@@ -32,6 +32,7 @@
     "pinia": "^2.1.7",
     "simplebar-vue": "^2.3.5",
     "vue": "^3.4.28",
+    "vue-good-table": "^2.21.11",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
