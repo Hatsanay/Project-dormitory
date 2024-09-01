@@ -1,6 +1,6 @@
 const express = require('express');
 const { login } = require('../controllers/authController');
-const { registerUser, getAutotid ,getRole ,getUser} = require('../controllers/regiterController');
+const { registerUser, getAutotid ,getRole ,getUser, getUserById} = require('../controllers/regiterController');
 const { getProvince,getAmphures,getTambons,getZipcode } = require('../controllers/addressControler');
 // const { registerRoom } = require('../controllers/RoomController');
 const authenticateToken = require('../middleware/auth');
@@ -11,6 +11,7 @@ router.post('/registerUser', authenticateToken, registerUser);
 router.get('/getAutotid',authenticateToken, getAutotid);
 router.get('/getRole',authenticateToken, getRole);
 router.get('/getUser',authenticateToken, getUser);
+router.get('/getUserById',authenticateToken, getUserById);
 router.get('/getProvince',authenticateToken, getProvince);
 router.get('/getAmphures', authenticateToken, getAmphures);
 router.get('/getTambons',authenticateToken, getTambons);

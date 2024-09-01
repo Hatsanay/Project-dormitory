@@ -1,8 +1,9 @@
 import DefaultLayout from '@/layouts/DefaultLayout';
 import { createRouter, createWebHashHistory } from 'vue-router';
+import EditResView from '../views/Admin/EditResView.vue';
 import RegisResView from '../views/Admin/RegisResView.vue';
-import ViewResView from '../views/Admin/ViewResView.vue';
 import Room from '../views/Admin/Room.vue';
+import ViewResView from '../views/Admin/ViewResView.vue';
 import userDasboard from '../views/dashboard/Dashboard.vue';
 import ReqView from '../views/user/UserReqView.vue';
 
@@ -48,11 +49,9 @@ const routes = [
         path: '/RegisResident',
         name: 'เพิ่มผู้ใช้งาน',
         id: '5',
-        meta: { permission: 'edit_RegisResident', requiresAuth: true },
+        meta: { permission: 'add_RegisResident', requiresAuth: true },
         component: RegisResView,
       },
-
-      
       
       {
         path: '/Room',
@@ -69,6 +68,13 @@ const routes = [
         meta: { permission: 'view_RegisResident', requiresAuth: true },
         component: ViewResView,
       },
+      {
+        path: '/EditResView',
+        name: 'แก้ไขข้อมูลผู้ใช้งาน',
+        id: '8',
+        meta: { permission: 'edit_Resident', requiresAuth: true },
+        component: EditResView,
+      },
     ],
   },
   {
@@ -84,7 +90,8 @@ const permissionsMap = [
   'view_users_Setting',    // Bit 3
   'view_admin_dashboard',  // Bit 4
   'view_RegisResident',    // Bit 5
-  'edit_RegisResident',
+  'add_RegisResident',
+  'edit_Resident',
   'edit_RegisRoom',
 ];
 

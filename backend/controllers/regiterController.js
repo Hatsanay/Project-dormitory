@@ -6,7 +6,6 @@ require("dotenv").config();
 //////////registerUser/////////
 ///////////////////////////////
 const registerUser = async (req, res) => {
-    const toDate = Date.now();
   const {
     userFname,
     userLname,
@@ -21,8 +20,8 @@ const registerUser = async (req, res) => {
     user_TambonsID,
     userPost,
     userBdate,
-    userDateAdd = toDate,
-    userDateEdit = toDate,
+    userDateAdd = new Date().toISOString(),
+    userDateEdit = new Date().toISOString(),
     userRole_ID,
     userStatus_ID,
     username,
@@ -58,30 +57,28 @@ const registerUser = async (req, res) => {
             user_DateEdit, user_Role_ID, user_Status_ID)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-    await db
-      .promise()
-      .query(insertQuery, [
-        userID,
-        userFname,
-        userLname,
-        userEmail,
-        userPhone,
-        username,
-        hashedPassword,
-        userHnumber,
-        userGroup,
-        userAlley,
-        userRoad,
-        user_ProvincesID,
-        user_AmphuresID,
-        user_TambonsID,
-        // userPost,
-        userBdate,
-        userDateAdd,
-        userDateEdit,
-        userRole_ID,
-        userStatus_ID,
-      ]);
+    await db.promise().query(insertQuery, [
+      userID,
+      userFname,
+      userLname,
+      userEmail,
+      userPhone,
+      username,
+      hashedPassword,
+      userHnumber,
+      userGroup,
+      userAlley,
+      userRoad,
+      user_ProvincesID,
+      user_AmphuresID,
+      user_TambonsID,
+      // userPost,
+      userBdate,
+      userDateAdd,
+      userDateEdit,
+      userRole_ID,
+      userStatus_ID,
+    ]);
 
     res.status(201).json({ message: "ลงทะเบียนผู้ใช้เรียบร้อยแล้ว!" });
   } catch (err) {
@@ -131,39 +128,46 @@ const getAutotid = async (req, res) => {
   }
 };
 
-
 const getRole = async (req, res) => {
   try {
-
-
-      const query = 'SELECT role_id,role_Name FROM roles';
-      const [result] = await db.promise().query(query);
-      res.status(200).json(result);
+    const query = "SELECT role_id,role_Name FROM roles";
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
   } catch (err) {
-      console.error('เกิดข้อผิดพลาด:', err);
-      res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดำเนินการ' });
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
-}
+};
 
 const getUser = async (req, res) => {
   try {
-
-
-      // const query = 'SELECT user_ID,user_Fname,user_Lname,user_Email,user_Phone,user_Name,user_Hnumber,user_Group,user_Alley,user_Road,user_Provinces_ID,user_Amphures_ID,user_Tambons_ID,user_Bdate,user_DateAdd,user_DateEdit,user_Role_ID,	user_Status_ID FROM users';
-      const query = `SELECT
+    // const query = 'SELECT user_ID,user_Fname,user_Lname,user_Email,user_Phone,user_Name,user_Hnumber,user_Group,user_Alley,user_Road,user_Provinces_ID,user_Amphures_ID,user_Tambons_ID,user_Bdate,user_DateAdd,user_DateEdit,user_Role_ID,	user_Status_ID FROM users';
+    const query = `SELECT
       user_ID,
       user_Fname,
       user_Lname,
       user_Email,
       user_Phone,
       user_Name,
+      user_Hnumber,
+      user_Group,
+      user_Alley,
+      user_Road,
+      user_Tambons_ID,
+      user_Amphures_ID,
+      user_Provinces_ID,
+      thai_tambons.name_th AS user_Tambons,
+      thai_amphures.name_th AS user_Amphures,
+      thai_provinces.name_th AS user_Provinces,
+      thai_tambons.zip_code AS user_Zipcode,
       CONCAT(user_Hnumber, ' ม.', user_Group, ' ', user_Alley, ' ', user_Road, ' ', thai_tambons.name_th, ' ', thai_amphures.name_th, ' ', thai_provinces.name_th, ' ', thai_tambons.zip_code) AS address, 
       user_Bdate,
       user_DateAdd,
       user_DateEdit,
       user_Role_ID,
       roles.role_Name as roleName,
-      user_Status_ID
+      user_Status_ID,
+      status.stat_Name
   FROM
       users
   INNER JOIN
@@ -173,17 +177,81 @@ const getUser = async (req, res) => {
   INNER JOIN
       thai_tambons ON users.user_Tambons_ID = thai_tambons.id
   INNER JOIN
+      status ON users.user_Status_ID = status.stat_ID
+  INNER JOIN
       roles ON users.user_Role_ID = roles.role_ID`;
-  
-      const [result] = await db.promise().query(query);
-      res.status(200).json(result);
+
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
   } catch (err) {
-      console.error('เกิดข้อผิดพลาด:', err);
-      res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดำเนินการ' });
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
-}
+};
 
+const getUserById = async (req, res) => {
+  try {
+    const userId = req.query.id;
 
+    if (!userId) {
+      return res.status(400).json({ error: "โปรดระบุ id" });
+    }
+
+    const query = `
+      SELECT
+        user_ID,
+        user_Fname,
+        user_Lname,
+        user_Email,
+        user_Phone,
+        user_Name,
+        user_Hnumber,
+        user_Group,
+        user_Alley,
+        user_Road,
+        user_Tambons_ID,
+        user_Amphures_ID,
+        user_Provinces_ID,
+        thai_tambons.name_th AS user_Tambons,
+        thai_amphures.name_th AS user_Amphures,
+        thai_provinces.name_th AS user_Provinces,
+        thai_tambons.zip_code AS user_Zipcode,
+        CONCAT(user_Hnumber, ' ม.', user_Group, ' ', user_Alley, ' ', user_Road, ' ', thai_tambons.name_th, ' ', thai_amphures.name_th, ' ', thai_provinces.name_th, ' ', thai_tambons.zip_code) AS address, 
+        user_Bdate,
+        user_DateAdd,
+        user_DateEdit,
+        user_Role_ID,
+        roles.role_Name as roleName,
+        user_Status_ID,
+        status.stat_Name
+      FROM
+        users
+      INNER JOIN
+        thai_provinces ON users.user_Provinces_ID = thai_provinces.id
+      INNER JOIN
+        thai_amphures ON users.user_Amphures_ID = thai_amphures.id
+      INNER JOIN
+        thai_tambons ON users.user_Tambons_ID = thai_tambons.id
+      INNER JOIN
+        status ON users.user_Status_ID = status.stat_ID
+      INNER JOIN
+        roles ON users.user_Role_ID = roles.role_ID
+      WHERE
+        user_ID = ?
+    `;
+
+    const [result] = await db.promise().query(query, [userId]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลผู้ใช้" });
+    }
+
+    res.status(200).json(result[0]); // ส่งกลับเฉพาะรายการเดียว
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
 
 
 // const getUser = async (req, res) => {
@@ -199,4 +267,4 @@ const getUser = async (req, res) => {
 //     }
 // };
 
-module.exports = { registerUser, getAutotid, getRole, getUser};
+module.exports = { registerUser, getAutotid, getRole, getUser, getUserById };
