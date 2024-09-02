@@ -58,7 +58,7 @@ export default [
   {
     component: 'CNavItem',
     name: 'จัดการห้องพักอาศัย',
-    to: '/Room',
+    to: '/RegisRoom',
     icon: 'cil-people',
   },
 

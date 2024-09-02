@@ -1,7 +1,6 @@
 <script setup>
 import { useColorModes } from '@coreui/vue';
 import { onBeforeMount } from 'vue';
-
 import { useThemeStore } from '@/stores/theme.js';
 
 const { isColorModeSet, setColorMode } = useColorModes(

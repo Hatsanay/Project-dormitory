@@ -11,7 +11,7 @@ import RoomComponent from "../../components/Room/RoomComponent.vue";
 <script>
 // console.log(token);
 export default {
-  name: "Room",
+  name: "RegisRoom",
 };
 </script>
 

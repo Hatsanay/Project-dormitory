@@ -7,8 +7,8 @@ require("dotenv").config();
 const registerRoom = async (req, res) => {
     const toDate = Date.now();
   const {
-    room_Number,
-    room_DateAdd = toDate,
+    roomnumber,
+    roomDateAdd = new Date().toISOString(),
     userPost,
     RoomStatus_ID,
   } = req.body; //เพิ่มตัวแปลรับข้อมูลที่กรอกเขามา
@@ -22,14 +22,14 @@ const registerRoom = async (req, res) => {
       maxId = 0; //maxId = 0
     } else {
       const lastRoomId = result[0].room_ID; //รหัสแถวท้ายสุด
-      maxId = parseInt(lastRoomId.slice(-3)) || 0; //ตัดสตริงเอา 6 ตัวหลัง เช่น R001 จะเป็น 001 เก็บใน maxId
+      maxId = parseInt(lastRoomId.slice(-3)) || 0; //ตัดสตริงเอา 3 ตัวหลัง เช่น R001 จะเป็น 001 เก็บใน maxId
     }
     const num = maxId + 1; // maxId มา บวก 1
-    const roomID = "R" + String(num).padStart(6, "0"); // สร้าง room_ID ใหม่ เช่น R001, R002
+    const roomID = "R" + String(num).padStart(3, "0"); // สร้าง room_ID ใหม่ เช่น R001, R002
 
-    const Roomchecked = await checkRoom(); //Call กับ function Roomname เพื่อหา True False ว่ามี room อยู่แลวไหม
+    const Roomchecked = await checkRoom(roomnumber); //Call กับ function Roomname เพื่อหา True False ว่ามี room อยู่แลวไหม
     if (Roomchecked) {
-      return res.status(400).json({ error: "มี Room นี้อยู่แล้ว" });
+      return res.status(400).json({ error: "มีเลขห้องนี้อยู่แล้ว" });
     }
 
     ///////บันทึกลงฐานข้อมล//////////
@@ -42,8 +42,8 @@ const registerRoom = async (req, res) => {
       .promise()
       .query(insertQuery, [
         roomID,
-        room_Number,
-        room_DateAdd,
+        roomnumber,
+        roomDateAdd,
         userPost,
         RoomStatus_ID,
       ]);
@@ -56,13 +56,11 @@ const registerRoom = async (req, res) => {
 };
 
 ///////////function/////////////
-////////checkUsername///////////
 ////////////////////////////////
-async function checkRoom(room_Number) {
+async function checkRoom(roomnumber) {
   try {
-    /////หาจำนวนของ username////////
-    const query = "SELECT COUNT(*) as count FROM users WHERE user_Name = ?";
-    const [rows] = await db.promise().query(query, [room_Number]);
+    const query = "SELECT COUNT(*) as count FROM room WHERE room_Number = ?";
+    const [rows] = await db.promise().query(query, [roomnumber]);
     return rows[0].count > 0; // Room มี มากกว่า 0 หรือไม่ ถ้ามี ส่ง True
   } catch (err) {
     console.error("ไม่สามารถตรวจสอบ room_Number ddddได้:", err);
@@ -74,7 +72,7 @@ async function checkRoom(room_Number) {
 //////////////API//////////////
 ///////////getAutotid///////////
 ///////////////////////////////
-const getAutotid = async (req, res) => {
+const getAutotidRoom = async (req, res) => {
   try {
     ////////////Autoid/////////////
     const query = "SELECT room_ID FROM room ORDER BY room_ID DESC LIMIT 1"; //หาว่ารหัสแถวสุดท้ายคืออะไร
@@ -109,4 +107,4 @@ const getAutotid = async (req, res) => {
 //     }
 // };
 
-module.exports = { registerRoom, getAutotid };
+module.exports = { registerRoom, getAutotidRoom };
