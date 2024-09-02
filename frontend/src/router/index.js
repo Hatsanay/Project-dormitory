@@ -74,6 +74,7 @@ const permissionsMap = [
   'view_RegisResident',    // Bit 5
   'edit_RegisResident',
   'edit_RegisRoom',
+  'view_RegisRoom',
 ];
 
 
