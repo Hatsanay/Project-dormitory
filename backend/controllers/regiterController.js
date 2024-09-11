@@ -254,6 +254,8 @@ const getUserById = async (req, res) => {
 };
 
 
+
+
 // const getUser = async (req, res) => {
 //     try {
 //         // สร้างคำสั่ง SQL สำหรับดึงข้อมูลผู้ใช้ทั้งหมดจากตาราง users

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <WidgetsStatsD class="mb-4" />
     <CRow>
       <CCol :md="12">
         <CCard class="mb-4">
@@ -11,223 +10,248 @@
               novalidate
               @submit="handleSubmitTooltip01"
             >
-              <CCol md="12">
-                <CRow class="mb-3">
-                  <CCol md="2">
-                    <CFormLabel for="resId">รหัส</CFormLabel>
-                    <CFormInput v-model="userId" type="text" id="resId" disabled />
-                  </CCol>
-                  <CCol md="5" class="position-relative">
-                    <CFormLabel for="resFname">ชื่อ</CFormLabel>
-                    <CFormInput
-                      v-model="resFname"
-                      type="text"
-                      id="resFname"
-                      required
-                      :class="{ 'is-invalid': isFnameInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ fnameErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-                  <CCol md="5">
-                    <CFormLabel for="resLname">นามสกุล</CFormLabel>
-                    <CFormInput
-                      v-model="resLname"
-                      type="text"
-                      id="resLname"
-                      required
-                      :class="{ 'is-invalid': isLnameInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ lnameErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-                  <CCol md="7">
-                    <CFormLabel for="resEmail">อีเมล์</CFormLabel>
-                    <CFormInput
-                      v-model="resEmail"
-                      type="email"
-                      id="resEmail"
-                      required
-                      :class="{ 'is-invalid': isEmailInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ emailErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-                  <CCol md="5">
-                    <CFormLabel for="resPhone">เบอร์โทร</CFormLabel>
-                    <CFormInput
-                      v-model="resPhone"
-                      type="text"
-                      id="resPhone"
-                      required
-                      :class="{ 'is-invalid': isPhoneInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ phoneErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-                  <CCol md="6">
-                    <CFormLabel for="resName">Username</CFormLabel>
-                    <CFormInput
-                      v-model="resName"
-                      type="text"
-                      id="resName"
-                      required
-                      :class="{ 'is-invalid': isNameInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ nameErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-                  <CCol md="6">
-                    <CFormLabel for="resPassword">Password</CFormLabel>
-                    <CFormInput
-                      v-model="resPassword"
-                      type="password"
-                      id="resPassword"
-                      required
-                      :class="{ 'is-invalid': isPasswordInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ passwordErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-
-                  <CCol md="2">
-                    <CFormLabel for="resHnumber">เลขที่</CFormLabel>
-                    <CFormInput
-                      v-model="resHnumber"
-                      type="text"
-                      id="resHnumber"
-                      :class="{ 'is-invalid': isHnumberInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ HnumberErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-                  <CCol md="2">
-                    <CFormLabel for="resGroup">หมู่</CFormLabel>
-                    <CFormInput
-                      v-model="resGroup"
-                      type="text"
-                      id="resGroup"
-                      required
-                      :class="{ 'is-invalid': isGroupInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ resGroupErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-                  <CCol md="4">
-                    <CFormLabel for="resAlley">ซอย</CFormLabel>
-                    <CFormInput
-                      v-model="resAlley"
-                      type="text"
-                      id="resAlley"
-                      required
-                      :class="{ 'is-invalid': isAlleyInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ resAlleyErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-                  <CCol md="4">
-                    <CFormLabel for="resRoad">ถนน</CFormLabel>
-                    <CFormInput
-                      v-model="resRoad"
-                      type="text"
-                      id="resRoad"
-                      required
-                      :class="{ 'is-invalid': isRoadInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ resRoadErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-
-                  <CCol md="3">
-                    <CFormLabel for="resProvinces">จังหวัด</CFormLabel>
-                    <CFormSelect v-model="resProvinces" id="resProvinces" required>
-                      <option value="">กรุณาเลือกจังหวัด</option>
-                      <option
-                        v-for="province in provinces"
-                        :key="province.id"
-                        :value="province.id"
-                      >
-                        {{ province.name_th }}
-                      </option>
-                    </CFormSelect>
-                  </CCol>
-                  <CCol md="3">
-                    <CFormLabel for="resAmphures">อำเภอ/เขต</CFormLabel>
-                    <CFormSelect v-model="resAmphures" id="resAmphures" required>
-                      <option disabled value="">กรุณาเลือกอำเภอ/เขต</option>
-                      <option
-                        v-for="amphure in amphures"
-                        :key="amphure.id"
-                        :value="amphure.id"
-                      >
-                        {{ amphure.name_th }}
-                      </option>
-                    </CFormSelect>
-                  </CCol>
-                  <CCol md="3">
-                    <CFormLabel for="resTambons">ตำบล/แขวง</CFormLabel>
-                    <CFormSelect v-model="resTambons" id="resTambons" required>
-                      <option disabled value="">กรุณาเลือกตำบล/แขวง</option>
-                      <option
-                        v-for="Tambon in Tambons"
-                        :key="Tambon.id"
-                        :value="Tambon.id"
-                      >
-                        {{ Tambon.name_th }}
-                      </option>
-                    </CFormSelect>
-                  </CCol>
-
-                  <CCol md="3">
-                    <CFormLabel for="resPost">รหัสไปรษณีย์</CFormLabel>
-                    <CFormInput
-                      v-model="resPost"
-                      type="text"
-                      id="resPost"
-                      required
-                      :class="{ 'is-invalid': isPostInvalid }"
-                    />
-                    <CFormFeedback invalid>
-                      {{ resPostErrorMessage }}
-                    </CFormFeedback>
-                  </CCol>
-
-                  <CCol md="6">
-                    <CFormLabel for="resBdate">เลือกวันที่</CFormLabel>
-                    <Datepicker
-                      v-model="selectedDate"
-                      :type="'date'"
-                      :format="'yyyy-MM-dd'"
-                      id="resBdate"
-                      required
-                    />
-                  </CCol>
-                  <CCol md="3">
-                    <CFormLabel for="resRole">ตำแหน่ง</CFormLabel>
-                    <CFormSelect v-model="resRole" id="resRole" required>
-                      <option value="">กรุณาเลือกตำแหน่ง</option>
-                      <option
-                        v-for="role in roles"
-                        :key="role.role_id"
-                        :value="role.role_id"
-                      >
-                        {{ role.role_Name }}
-                      </option>
-                    </CFormSelect>
-                  </CCol>
-                </CRow>
+              <!-- ฟิลด์รหัสผู้ใช้งาน -->
+              <CCol md="2">
+                <CFormLabel for="resId">รหัส</CFormLabel>
+                <CFormInput v-model="userId" type="text" id="resId" disabled />
               </CCol>
-              <CButton type="submit" color="primary">บันทึก</CButton>
+
+              <!-- ฟิลด์ชื่อ -->
+              <CCol md="5">
+                <CFormLabel for="resFname">ชื่อ</CFormLabel>
+                <CFormInput
+                  v-model="resFname"
+                  type="text"
+                  id="resFname"
+                  required
+                  :class="{ 'is-invalid': isFnameInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ fnameErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์นามสกุล -->
+              <CCol md="5">
+                <CFormLabel for="resLname">นามสกุล</CFormLabel>
+                <CFormInput
+                  v-model="resLname"
+                  type="text"
+                  id="resLname"
+                  required
+                  :class="{ 'is-invalid': isLnameInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ lnameErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์อีเมล -->
+              <CCol md="7">
+                <CFormLabel for="resEmail">อีเมล์</CFormLabel>
+                <CFormInput
+                  v-model="resEmail"
+                  type="email"
+                  id="resEmail"
+                  required
+                  :class="{ 'is-invalid': isEmailInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ emailErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์เบอร์โทร -->
+              <CCol md="5">
+                <CFormLabel for="resPhone">เบอร์โทร</CFormLabel>
+                <CFormInput
+                  v-model="resPhone"
+                  type="text"
+                  id="resPhone"
+                  required
+                  :class="{ 'is-invalid': isPhoneInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ phoneErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์ Username -->
+              <CCol md="6">
+                <CFormLabel for="resName">Username</CFormLabel>
+                <CFormInput
+                  v-model="resName"
+                  type="text"
+                  id="resName"
+                  required
+                  :class="{ 'is-invalid': isNameInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ nameErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์ Password -->
+              <CCol md="6">
+                <CFormLabel for="resPassword">Password</CFormLabel>
+                <CFormInput
+                  v-model="resPassword"
+                  type="password"
+                  id="resPassword"
+                  required
+                  :class="{ 'is-invalid': isPasswordInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ passwordErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์ที่อยู่ เลขที่ -->
+              <CCol md="2">
+                <CFormLabel for="resHnumber">เลขที่</CFormLabel>
+                <CFormInput
+                  v-model="resHnumber"
+                  type="text"
+                  id="resHnumber"
+                  required
+                  :class="{ 'is-invalid': isHnumberInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ HnumberErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์หมู่ -->
+              <CCol md="2">
+                <CFormLabel for="resGroup">หมู่</CFormLabel>
+                <CFormInput
+                  v-model="resGroup"
+                  type="text"
+                  id="resGroup"
+                  required
+                  :class="{ 'is-invalid': isGroupInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ groupErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์ซอย -->
+              <CCol md="4">
+                <CFormLabel for="resAlley">ซอย</CFormLabel>
+                <CFormInput
+                  v-model="resAlley"
+                  type="text"
+                  id="resAlley"
+                  required
+                  :class="{ 'is-invalid': isAlleyInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ alleyErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์ถนน -->
+              <CCol md="4">
+                <CFormLabel for="resRoad">ถนน</CFormLabel>
+                <CFormInput
+                  v-model="resRoad"
+                  type="text"
+                  id="resRoad"
+                  required
+                  :class="{ 'is-invalid': isRoadInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ roadErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์จังหวัด -->
+              <CCol md="3">
+                <CFormLabel for="resProvinces">จังหวัด</CFormLabel>
+                <CFormSelect v-model="resProvinces" id="resProvinces" required>
+                  <option value="">กรุณาเลือกจังหวัด</option>
+                  <option
+                    v-for="province in provinces"
+                    :key="province.id"
+                    :value="String(province.id)"
+                  >
+                    {{ province.name_th }}
+                  </option>
+                </CFormSelect>
+              </CCol>
+
+              <!-- ฟิลด์อำเภอ/เขต -->
+              <CCol md="3">
+                <CFormLabel for="resAmphures">อำเภอ/เขต</CFormLabel>
+                <CFormSelect v-model="resAmphures" id="resAmphures" required>
+                  <option disabled value="">กรุณาเลือกอำเภอ/เขต</option>
+                  <option
+                    v-for="amphure in amphures"
+                    :key="amphure.id"
+                    :value="String(amphure.id)"
+                  >
+                    {{ amphure.name_th }}
+                  </option>
+                </CFormSelect>
+              </CCol>
+
+              <!-- ฟิลด์ตำบล/แขวง -->
+              <CCol md="3">
+                <CFormLabel for="resTambons">ตำบล/แขวง</CFormLabel>
+                <CFormSelect v-model="resTambons" id="resTambons" required>
+                  <option disabled value="">กรุณาเลือกตำบล/แขวง</option>
+                  <option
+                    v-for="Tambon in Tambons"
+                    :key="Tambon.id"
+                    :value="String(Tambon.id)"
+                  >
+                    {{ Tambon.name_th }}
+                  </option>
+                </CFormSelect>
+              </CCol>
+
+              <!-- ฟิลด์รหัสไปรษณีย์ -->
+              <CCol md="3">
+                <CFormLabel for="resPost">รหัสไปรษณีย์</CFormLabel>
+                <CFormInput
+                  v-model="resPost"
+                  type="text"
+                  id="resPost"
+                  required
+                  :class="{ 'is-invalid': isPostInvalid }"
+                />
+                <CFormFeedback invalid>
+                  {{ postErrorMessage }}
+                </CFormFeedback>
+              </CCol>
+
+              <!-- ฟิลด์วันเกิด -->
+              <CCol md="6">
+                <CFormLabel for="resBdate">วันเกิด</CFormLabel>
+                <Datepicker
+                  v-model="selectedDate"
+                  :type="'date'"
+                  :format="'yyyy-MM-dd'"
+                  id="resBdate"
+                  required
+                />
+              </CCol>
+
+              <!-- ฟิลด์ตำแหน่ง -->
+              <CCol md="3">
+                <CFormLabel for="resRole">ตำแหน่ง</CFormLabel>
+                <CFormSelect v-model="resRole" id="resRole" required>
+                  <option value="">กรุณาเลือกตำแหน่ง</option>
+                  <option
+                    v-for="role in roles"
+                    :key="role.role_id"
+                    :value="String(role.role_id)"
+                  >
+                    {{ role.role_Name }}
+                  </option>
+                </CFormSelect>
+              </CCol>
             </CForm>
           </CCardBody>
         </CCard>
@@ -260,7 +284,6 @@ export default {
 
   setup() {
     const selectedDate = ref(null);
-    const autoID = ref("");
     const resFname = ref("");
     const resLname = ref("");
     const resEmail = ref("");
@@ -336,7 +359,7 @@ export default {
         return "กรุณากรอกอีเมล์";
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resEmail.value)) {
         return "กรุณากรอกอีเมล์ให้ถูกต้อง";
-      } else if (resEmail.value.length < 2 || resEmail.value.length > 30) {
+      } else if (resEmail.value.length < 2 || resEmail.value.length > 50) {
         return "อีเมล์ควรมีความยาวระหว่าง 2 ถึง 50 ตัวอักษร";
       }
       return "";
@@ -405,7 +428,7 @@ export default {
     const isGroupInvalid = computed(() => {
       return validatedTooltip01.value && resGroup.value.trim() === "";
     });
-    const resGroupErrorMessage = computed(() => {
+    const groupErrorMessage = computed(() => {
       if (resGroup.value.trim() === "") {
         return "กรุณากรอกหมู่";
       }
@@ -415,7 +438,7 @@ export default {
     const isAlleyInvalid = computed(() => {
       return validatedTooltip01.value && resAlley.value.trim() === "";
     });
-    const resAlleyErrorMessage = computed(() => {
+    const alleyErrorMessage = computed(() => {
       if (resAlley.value.trim() === "") {
         return "กรุณากรอกซอย";
       }
@@ -425,7 +448,7 @@ export default {
     const isRoadInvalid = computed(() => {
       return validatedTooltip01.value && resRoad.value.trim() === "";
     });
-    const resRoadErrorMessage = computed(() => {
+    const roadErrorMessage = computed(() => {
       if (resRoad.value.trim() === "") {
         return "กรุณากรอกถนน";
       }
@@ -435,7 +458,7 @@ export default {
     const isPostInvalid = computed(() => {
       return validatedTooltip01.value && resPost.value.trim() === "";
     });
-    const resPostErrorMessage = computed(() => {
+    const postErrorMessage = computed(() => {
       if (resPost.value.trim() === "") {
         return "กรุณากรอกรหัสไปรษณีย์";
       }
@@ -460,65 +483,14 @@ export default {
       ) {
         event.preventDefault();
         event.stopPropagation();
-      } else {
-        handleSubmit();
       }
-    };
-
-    const handleSubmit = async () => {
-      try {
-        const response = await axios.post("/api/auth/registerUser", {
-          userFname: resFname.value,
-          userLname: resLname.value,
-          userEmail: resEmail.value,
-          userPhone: resPhone.value,
-          username: resName.value,
-          password: resPassword.value,
-          userHnumber: resHnumber.value,
-          userGroup: resGroup.value,
-          userAlley: resAlley.value,
-          userRoad: resRoad.value,
-          user_ProvincesID: resProvinces.value,
-          user_AmphuresID: resAmphures.value,
-          user_TambonsID: resTambons.value,
-          // userPost: resPost.value,
-          userBdate: selectedDate.value,
-          userRole_ID: resRole.value,
-          userStatus_ID: "STA000003",
-        });
-
-        createToast("Success", response.data.message);
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      } catch (error) {
-        let errorMessage = "เกิดข้อผิดพลาดในการลงทะเบียนผู้ใช้";
-
-        if (error.response && error.response.data && error.response.data.error) {
-          errorMessage = error.response.data.error;
-        }
-
-        createToast("Error", errorMessage);
-        console.error("Error:", error);
-      }
-    };
-
-    const createToast = (title, content) => {
-      toasts.value.push({
-        title: title,
-        content: content,
-      });
-
-      setTimeout(() => {
-        toasts.value.shift();
-      }, 5000);
     };
 
     const fetchZipcode = async (tambonsId) => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`/api/auth/getZipcode`, {
-          params: { tambonId: tambonsId},
+        const response = await axios.get("/api/auth/getZipcode", {
+          params: { tambonId: tambonsId },
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -549,7 +521,7 @@ export default {
 
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`/api/auth/getAmphures`, {
+        const response = await axios.get("/api/auth/getAmphures", {
           params: { provinceId: resProvinces.value },
           headers: {
             Authorization: `Bearer ${token}`,
@@ -565,7 +537,7 @@ export default {
 
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`/api/auth/getTambons`, {
+        const response = await axios.get("/api/auth/getTambons", {
           params: { amphureId: resAmphures.value },
           headers: {
             Authorization: `Bearer ${token}`,
@@ -587,44 +559,29 @@ export default {
         });
         roles.value = response.data;
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลจังหวัด:", error);
-      }
-    };
-
-    const fetchAutoID = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getAutotid", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        autoID.value = response.data;
-      } catch (error) {
-        if (error.response && error.response.data && error.response.data.error) {
-          console.error("เกิดข้อผิดพลาด:", error.response.data.error);
-          createToast("ดึงข้อมูล ID เกิดข้อผิดพลาด:", error.response.data.error);
-        } else {
-          console.error("เกิดข้อผิดพลาดในการทำ Auto id:", error.message || error);
-        }
+        console.error("Error fetching roles:", error);
       }
     };
 
     const fetchUserById = async (uid) => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`/api/auth/getUserById`, {
+        const response = await axios.get("/api/auth/getUserById", {
           params: { id: uid },
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
+
         const userData = response.data;
+
+        // ฟิลด์ทั่วไป
         resFname.value = userData.user_Fname || "";
         resLname.value = userData.user_Lname || "";
         resEmail.value = userData.user_Email || "";
         resPhone.value = userData.user_Phone || "";
         resName.value = userData.user_Name || "";
+        resPassword.value = userData.user_Password || "";
         resHnumber.value = userData.user_Hnumber || "";
         resGroup.value = userData.user_Group || "";
         resAlley.value = userData.user_Alley || "";
@@ -633,19 +590,28 @@ export default {
         resAmphures.value = userData.user_Amphures_ID || "";
         resTambons.value = userData.user_Tambons_ID || "";
         resPost.value = userData.user_Zipcode || "";
-        selectedDate.value = userData.user_Bdate || "";
+
+        // วันเกิด
+        if (userData.user_Bdate) {
+          selectedDate.value = new Date(userData.user_Bdate);
+        }
+
+        // ตำแหน่ง
+        await fetchRole();
         resRole.value = userData.user_Role_ID || "";
+
+        if (resProvinces.value) {
+          await fetchAmphures();
+        }
+        if (resAmphures.value) {
+          await fetchTambons();
+        }
       } catch (error) {
-        console.error(
-          "เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้:",
-          error.response || error.message || error
-        );
-        createToast("Error", "เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้");
+        console.error("Error fetching user data:", error);
       }
     };
 
     onMounted(() => {
-      fetchAutoID();
       fetchProvince();
       fetchRole();
       fetchUserById(userId.value);
@@ -667,7 +633,6 @@ export default {
 
     return {
       selectedDate,
-      autoID,
       resFname,
       resLname,
       resEmail,
@@ -705,13 +670,13 @@ export default {
       isHnumberInvalid,
       HnumberErrorMessage,
       isGroupInvalid,
-      resGroupErrorMessage,
+      groupErrorMessage,
       isAlleyInvalid,
-      resAlleyErrorMessage,
+      alleyErrorMessage,
       isRoadInvalid,
-      resRoadErrorMessage,
+      roadErrorMessage,
       isPostInvalid,
-      resPostErrorMessage,
+      postErrorMessage,
       fetchAmphures,
       fetchTambons,
       fetchRole,

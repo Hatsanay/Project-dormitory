@@ -76,6 +76,4 @@ const getZipcode = async (req, res) => {
 };
 
 
-
-
 module.exports = {getProvince,getAmphures,getTambons,getZipcode};
