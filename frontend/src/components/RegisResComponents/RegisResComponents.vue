@@ -431,6 +431,7 @@ export default {
     const isPostInvalid = computed(() => {
       return validatedTooltip01.value && resPost.value.trim() === "";
     });
+    
     const resPostErrorMessage = computed(() => {
       if (resPost.value.trim() === "") {
         return "กรุณากรอกรหัสไปรษณีย์";

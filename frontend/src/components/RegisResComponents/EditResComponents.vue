@@ -10,13 +10,11 @@
               novalidate
               @submit="handleSubmitTooltip01"
             >
-              <!-- ฟิลด์รหัสผู้ใช้งาน -->
               <CCol md="2">
                 <CFormLabel for="resId">รหัส</CFormLabel>
                 <CFormInput v-model="userId" type="text" id="resId" disabled />
               </CCol>
 
-              <!-- ฟิลด์ชื่อ -->
               <CCol md="5">
                 <CFormLabel for="resFname">ชื่อ</CFormLabel>
                 <CFormInput
@@ -31,7 +29,6 @@
                 </CFormFeedback>
               </CCol>
 
-              <!-- ฟิลด์นามสกุล -->
               <CCol md="5">
                 <CFormLabel for="resLname">นามสกุล</CFormLabel>
                 <CFormInput
@@ -46,7 +43,6 @@
                 </CFormFeedback>
               </CCol>
 
-              <!-- ฟิลด์อีเมล -->
               <CCol md="7">
                 <CFormLabel for="resEmail">อีเมล์</CFormLabel>
                 <CFormInput
@@ -61,7 +57,6 @@
                 </CFormFeedback>
               </CCol>
 
-              <!-- ฟิลด์เบอร์โทร -->
               <CCol md="5">
                 <CFormLabel for="resPhone">เบอร์โทร</CFormLabel>
                 <CFormInput
@@ -76,7 +71,6 @@
                 </CFormFeedback>
               </CCol>
 
-              <!-- ฟิลด์ Username -->
               <CCol md="6">
                 <CFormLabel for="resName">Username</CFormLabel>
                 <CFormInput
@@ -91,22 +85,22 @@
                 </CFormFeedback>
               </CCol>
 
-              <!-- ฟิลด์ Password -->
               <CCol md="6">
                 <CFormLabel for="resPassword">Password</CFormLabel>
-                <CFormInput
-                  v-model="resPassword"
-                  type="password"
-                  id="resPassword"
-                  required
-                  :class="{ 'is-invalid': isPasswordInvalid }"
-                />
-                <CFormFeedback invalid>
-                  {{ passwordErrorMessage }}
-                </CFormFeedback>
+                <CInputGroup class="mb-3">
+                  <CFormInput
+                    v-model="resPassword"
+                    type="password"
+                    id="resPassword"
+                    :disabled="!isPasswordEditable"
+                    aria-describedby="resPassword"
+                  />
+                  <CButton @click="togglePasswordEditable" color="primary">
+                    {{ isPasswordEditable ? "ปิดการแก้ไข" : "แก้ไข" }}
+                  </CButton>
+                </CInputGroup>
               </CCol>
 
-              <!-- ฟิลด์ที่อยู่ เลขที่ -->
               <CCol md="2">
                 <CFormLabel for="resHnumber">เลขที่</CFormLabel>
                 <CFormInput
@@ -121,7 +115,6 @@
                 </CFormFeedback>
               </CCol>
 
-              <!-- ฟิลด์หมู่ -->
               <CCol md="2">
                 <CFormLabel for="resGroup">หมู่</CFormLabel>
                 <CFormInput
@@ -136,7 +129,6 @@
                 </CFormFeedback>
               </CCol>
 
-              <!-- ฟิลด์ซอย -->
               <CCol md="4">
                 <CFormLabel for="resAlley">ซอย</CFormLabel>
                 <CFormInput
@@ -151,7 +143,6 @@
                 </CFormFeedback>
               </CCol>
 
-              <!-- ฟิลด์ถนน -->
               <CCol md="4">
                 <CFormLabel for="resRoad">ถนน</CFormLabel>
                 <CFormInput
@@ -166,7 +157,6 @@
                 </CFormFeedback>
               </CCol>
 
-              <!-- ฟิลด์จังหวัด -->
               <CCol md="3">
                 <CFormLabel for="resProvinces">จังหวัด</CFormLabel>
                 <CFormSelect v-model="resProvinces" id="resProvinces" required>
@@ -181,7 +171,6 @@
                 </CFormSelect>
               </CCol>
 
-              <!-- ฟิลด์อำเภอ/เขต -->
               <CCol md="3">
                 <CFormLabel for="resAmphures">อำเภอ/เขต</CFormLabel>
                 <CFormSelect v-model="resAmphures" id="resAmphures" required>
@@ -196,7 +185,6 @@
                 </CFormSelect>
               </CCol>
 
-              <!-- ฟิลด์ตำบล/แขวง -->
               <CCol md="3">
                 <CFormLabel for="resTambons">ตำบล/แขวง</CFormLabel>
                 <CFormSelect v-model="resTambons" id="resTambons" required>
@@ -211,7 +199,6 @@
                 </CFormSelect>
               </CCol>
 
-              <!-- ฟิลด์รหัสไปรษณีย์ -->
               <CCol md="3">
                 <CFormLabel for="resPost">รหัสไปรษณีย์</CFormLabel>
                 <CFormInput
@@ -226,7 +213,6 @@
                 </CFormFeedback>
               </CCol>
 
-              <!-- ฟิลด์วันเกิด -->
               <CCol md="6">
                 <CFormLabel for="resBdate">วันเกิด</CFormLabel>
                 <Datepicker
@@ -238,7 +224,6 @@
                 />
               </CCol>
 
-              <!-- ฟิลด์ตำแหน่ง -->
               <CCol md="3">
                 <CFormLabel for="resRole">ตำแหน่ง</CFormLabel>
                 <CFormSelect v-model="resRole" id="resRole" required>
@@ -252,6 +237,7 @@
                   </option>
                 </CFormSelect>
               </CCol>
+              <CButton type="submit" color="primary">บันทึก</CButton>
             </CForm>
           </CCardBody>
         </CCard>
@@ -299,6 +285,7 @@ export default {
     const resTambons = ref("");
     const resPost = ref("");
     const resRole = ref("");
+    const resStatus = ref("");
     const validatedTooltip01 = ref(false);
     const toasts = ref([]);
 
@@ -309,6 +296,7 @@ export default {
 
     const route = useRoute();
     const userId = ref(route.query.id || "");
+    const isPasswordEditable = ref(false);
 
     const isFnameInvalid = computed(() => {
       return (
@@ -402,14 +390,13 @@ export default {
     const isPasswordInvalid = computed(() => {
       return (
         validatedTooltip01.value &&
-        (resPassword.value.trim() === "" || resPassword.value.length < 6)
+        resPassword.value.trim() !== "" &&
+        resPassword.value.length < 6
       );
     });
 
     const passwordErrorMessage = computed(() => {
-      if (resPassword.value.trim() === "") {
-        return "กรุณากรอกรหัสผ่าน";
-      } else if (resPassword.value.length < 6) {
+      if (resPassword.value.trim() !== "" && resPassword.value.length < 6) {
         return "รหัสผ่านควรมีความยาวอย่างน้อย 6 ตัวอักษร";
       }
       return "";
@@ -456,34 +443,121 @@ export default {
     });
 
     const isPostInvalid = computed(() => {
-      return validatedTooltip01.value && resPost.value.trim() === "";
+      return (
+        validatedTooltip01.value &&
+        typeof resPost.value === "string" &&
+        resPost.value.trim() === ""
+      );
     });
+
     const postErrorMessage = computed(() => {
-      if (resPost.value.trim() === "") {
+      if (typeof resPost.value === "string" && resPost.value.trim() === "") {
         return "กรุณากรอกรหัสไปรษณีย์";
       }
       return "";
     });
 
-    const handleSubmitTooltip01 = (event) => {
+    const handleSubmitTooltip01 = async (event) => {
       validatedTooltip01.value = true;
-
       if (
         isFnameInvalid.value ||
         isLnameInvalid.value ||
         isEmailInvalid.value ||
         isPhoneInvalid.value ||
         isNameInvalid.value ||
-        isPasswordInvalid.value ||
         isHnumberInvalid.value ||
         isGroupInvalid.value ||
         isAlleyInvalid.value ||
         isRoadInvalid.value ||
-        isPostInvalid.value
+        isPostInvalid.value ||
+        isPasswordInvalid.value
       ) {
         event.preventDefault();
         event.stopPropagation();
+      } else {
+        try {
+          const payload = {
+            userFname: resFname.value,
+            userLname: resLname.value,
+            userEmail: resEmail.value,
+            userPhone: resPhone.value,
+            userHnumber: resHnumber.value,
+            userGroup: resGroup.value,
+            userAlley: resAlley.value,
+            userRoad: resRoad.value,
+            user_ProvincesID: resProvinces.value,
+            user_AmphuresID: resAmphures.value,
+            user_TambonsID: resTambons.value,
+            userPost: resPost.value,
+            userBdate: selectedDate.value,
+            userRole_ID: resRole.value,
+            userStatus_ID: resStatus.value,
+            username: resName.value,
+          };
+          if (resPassword.value.trim() !== "") {
+            payload.password = resPassword.value;
+          }
+
+          await axios.put(`/api/auth/updateUser?userID=${userId.value}`, payload);
+          toasts.value.push({
+            title: "สำเร็จ",
+            content: "ข้อมูลถูกบันทึกเรียบร้อยแล้ว",
+          });
+          setTimeout(() => {
+            this.$router.push("/ViewResident");
+          }, 1000);
+        } catch (error) {
+          toasts.value.push({
+            title: "ข้อผิดพลาด",
+            content: "เกิดข้อผิดพลาดในการบันทึกข้อมูล",
+          });
+        }
       }
+    };
+
+    const fetchUserById = async (uid) => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("/api/auth/getUserById", {
+          params: { id: uid },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const userData = response.data;
+        resFname.value = userData.user_Fname || "";
+        resLname.value = userData.user_Lname || "";
+        resEmail.value = userData.user_Email || "";
+        resPhone.value = userData.user_Phone || "";
+        resName.value = userData.user_Name || "";
+        resPassword.value = "";
+        resHnumber.value = userData.user_Hnumber || "";
+        resGroup.value = userData.user_Group || "";
+        resAlley.value = userData.user_Alley || "";
+        resRoad.value = userData.user_Road || "";
+        resProvinces.value = userData.user_Provinces_ID || "";
+        resAmphures.value = userData.user_Amphures_ID || "";
+        resTambons.value = userData.user_Tambons_ID || "";
+        resPost.value = String(response.data.zip_code || "");
+        resStatus.value = userData.user_Status_ID || "";
+        selectedDate.value = userData.user_Bdate ? new Date(userData.user_Bdate) : null;
+        await fetchRole();
+        resRole.value = userData.user_Role_ID || "";
+
+        if (resProvinces.value) {
+          await fetchAmphures();
+        }
+        if (resAmphures.value) {
+          await fetchTambons();
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    const togglePasswordEditable = () => {
+      isPasswordEditable.value = !isPasswordEditable.value;
     };
 
     const fetchZipcode = async (tambonsId) => {
@@ -532,6 +606,7 @@ export default {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูลอำเภอ/เขต:", error);
       }
     };
+
     const fetchTambons = async () => {
       if (!resAmphures.value) return;
 
@@ -563,53 +638,45 @@ export default {
       }
     };
 
-    const fetchUserById = async (uid) => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getUserById", {
-          params: { id: uid },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    // const fetchUserById = async (uid) => {
+    //   try {
+    //     const token = localStorage.getItem("token");
+    //     const response = await axios.get("/api/auth/getUserById", {
+    //       params: { id: uid },
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     });
 
-        const userData = response.data;
+    //     const userData = response.data;
+    //     resFname.value = userData.user_Fname || "";
+    //     resLname.value = userData.user_Lname || "";
+    //     resEmail.value = userData.user_Email || "";
+    //     resPhone.value = userData.user_Phone || "";
+    //     resName.value = userData.user_Name || "";
+    //     resPassword.value = ""; // Clear password field
+    //     resHnumber.value = userData.user_Hnumber || "";
+    //     resGroup.value = userData.user_Group || "";
+    //     resAlley.value = userData.user_Alley || "";
+    //     resRoad.value = userData.user_Road || "";
+    //     resProvinces.value = userData.user_Provinces_ID || "";
+    //     resAmphures.value = userData.user_Amphures_ID || "";
+    //     resTambons.value = userData.user_Tambons_ID || "";
+    //     resPost.value = String(response.data.zip_code || "");
+    //     selectedDate.value = userData.user_Bdate ? new Date(userData.user_Bdate) : null;
+    //     await fetchRole();
+    //     resRole.value = userData.user_Role_ID || "";
 
-        // ฟิลด์ทั่วไป
-        resFname.value = userData.user_Fname || "";
-        resLname.value = userData.user_Lname || "";
-        resEmail.value = userData.user_Email || "";
-        resPhone.value = userData.user_Phone || "";
-        resName.value = userData.user_Name || "";
-        resPassword.value = userData.user_Password || "";
-        resHnumber.value = userData.user_Hnumber || "";
-        resGroup.value = userData.user_Group || "";
-        resAlley.value = userData.user_Alley || "";
-        resRoad.value = userData.user_Road || "";
-        resProvinces.value = userData.user_Provinces_ID || "";
-        resAmphures.value = userData.user_Amphures_ID || "";
-        resTambons.value = userData.user_Tambons_ID || "";
-        resPost.value = userData.user_Zipcode || "";
-
-        // วันเกิด
-        if (userData.user_Bdate) {
-          selectedDate.value = new Date(userData.user_Bdate);
-        }
-
-        // ตำแหน่ง
-        await fetchRole();
-        resRole.value = userData.user_Role_ID || "";
-
-        if (resProvinces.value) {
-          await fetchAmphures();
-        }
-        if (resAmphures.value) {
-          await fetchTambons();
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
+    //     if (resProvinces.value) {
+    //       await fetchAmphures();
+    //     }
+    //     if (resAmphures.value) {
+    //       await fetchTambons();
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching user data:", error);
+    //   }
+    // };
 
     onMounted(() => {
       fetchProvince();
@@ -648,6 +715,7 @@ export default {
       resTambons,
       resPost,
       resRole,
+      resStatus,
       roles,
       toasts,
       validatedTooltip01,
@@ -681,6 +749,8 @@ export default {
       fetchTambons,
       fetchRole,
       userId,
+      isPasswordEditable,
+      togglePasswordEditable,
     };
   },
 };

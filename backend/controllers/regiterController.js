@@ -246,12 +246,105 @@ const getUserById = async (req, res) => {
       return res.status(404).json({ error: "ไม่พบข้อมูลผู้ใช้" });
     }
 
-    res.status(200).json(result[0]); // ส่งกลับเฉพาะรายการเดียว
+    res.status(200).json(result[0]);
   } catch (err) {
     console.error("เกิดข้อผิดพลาด:", err);
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
 };
+
+
+//////////////API//////////////
+//////////updateUser///////////
+///////////////////////////////
+const updateUser = async (req, res) => {
+  const userID = req.query.userID;
+  const {
+    userFname,
+    userLname,
+    userEmail,
+    userPhone,
+    userHnumber,
+    userGroup,
+    userAlley,
+    userRoad,
+    user_ProvincesID,
+    user_AmphuresID,
+    user_TambonsID,
+    userPost,
+    userBdate,
+    userDateEdit = new Date().toISOString(),
+    userRole_ID,
+    userStatus_ID,
+    username,
+    password
+  } = req.body;
+
+  try {
+    if (!userID) {
+      return res.status(400).json({ error: 'โปรดระบุ userID' });
+    }
+    const [userCheck] = await db.promise().query("SELECT * FROM users WHERE user_ID = ?", [userID]);
+    if (userCheck.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลผู้ใช้" });
+    }
+    const usernamechecked = await checkUsername(username); //Call กับ function checkUsername เพื่อหา True False ว่ามี usename อยู่แลวไหม
+    if (usernamechecked) {
+      return res.status(400).json({ error: "มี Username นี้อยู่แล้ว" });
+    }
+
+    let hashedPassword = userCheck[0].user_Password;    // หากมีการส่ง password มา จะทำการเข้ารหัสใหม่
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+    const updateQuery = `
+      UPDATE users SET 
+        user_Fname = ?, 
+        user_Lname = ?, 
+        user_Email = ?, 
+        user_Phone = ?, 
+        user_Name = ?, 
+        user_Password = ?, 
+        user_Hnumber = ?, 
+        user_Group = ?, 
+        user_Alley = ?, 
+        user_Road = ?, 
+        user_Provinces_ID = ?, 
+        user_Amphures_ID = ?, 
+        user_Tambons_ID = ?, 
+        user_Bdate = ?, 
+        user_DateEdit = ?, 
+        user_Role_ID = ?, 
+        user_Status_ID = ? 
+      WHERE user_ID = ?
+    `;
+    await db.promise().query(updateQuery, [
+      userFname,
+      userLname,
+      userEmail,
+      userPhone,
+      username,
+      hashedPassword,
+      userHnumber,
+      userGroup,
+      userAlley,
+      userRoad,
+      user_ProvincesID,
+      user_AmphuresID,
+      user_TambonsID,
+      userBdate,
+      userDateEdit,
+      userRole_ID,
+      userStatus_ID,
+      userID
+    ]);
+    res.status(200).json({ message: "อัปเดตข้อมูลผู้ใช้เรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
 
 
 
@@ -269,4 +362,4 @@ const getUserById = async (req, res) => {
 //     }
 // };
 
-module.exports = { registerUser, getAutotid, getRole, getUser, getUserById };
+module.exports = { registerUser, getAutotid, getRole, getUser, getUserById, updateUser };

@@ -39,7 +39,7 @@
       <div class="col-md-12">
         <div class="card mb-4">
           <div class="card-header">ตารางผู้ใช้งาน</div>
-          <div class="card-body">
+          <div class="card-body table-responsive p-0">
             <table class="table">
               <thead>
                 <tr>
