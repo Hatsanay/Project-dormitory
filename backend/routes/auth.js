@@ -1,7 +1,8 @@
 const express = require('express');
 const { login } = require('../controllers/authController');
-const { registerUser, getAutotid ,getRole ,getUser, getUserById, updateUser} = require('../controllers/regiterController');
+const { registerUser, getAutotid ,getRole ,getUser, getUserById, updateUser, updateUserStatus} = require('../controllers/regiterController');
 const { getProvince,getAmphures,getTambons,getZipcode } = require('../controllers/addressControler');
+const {getStatus,getStatusUserDelete} = require('../controllers/statusControler');
 // const { registerRoom } = require('../controllers/RoomController');
 const authenticateToken = require('../middleware/auth');
 const router = express.Router();
@@ -17,8 +18,11 @@ router.get('/getProvince',authenticateToken, getProvince);
 router.get('/getAmphures', authenticateToken, getAmphures);
 router.get('/getTambons',authenticateToken, getTambons);
 router.get('/getZipcode',authenticateToken, getZipcode);
+router.get('/getStatus',authenticateToken, getStatus);
+router.get('/getStatusUserDelete',authenticateToken, getStatusUserDelete);
 
 router.put('/updateUser',authenticateToken, updateUser);
+router.put('/updateUserStatus',authenticateToken, updateUserStatus);
 
 // router.post('/registerRoom', authenticateToken, registerRoom);
 

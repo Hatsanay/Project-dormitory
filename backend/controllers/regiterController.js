@@ -179,7 +179,8 @@ const getUser = async (req, res) => {
   INNER JOIN
       status ON users.user_Status_ID = status.stat_ID
   INNER JOIN
-      roles ON users.user_Role_ID = roles.role_ID`;
+      roles ON users.user_Role_ID = roles.role_ID
+  WHERE stat_ID  = "STA000003"`;
 
     const [result] = await db.promise().query(query);
     res.status(200).json(result);
@@ -354,6 +355,35 @@ const updateUser = async (req, res) => {
 
 
 
+//////////////API//////////////
+////updateUserStatus///////////
+///////////////////////////////
+const updateUserStatus = async (req, res) => {
+  const { userID, userStatus_ID } = req.body;
+
+  try {
+ 
+    if (!userID || !userStatus_ID) {
+      return res.status(400).json({ error: "กรุณาระบุ userID และ userStatus_ID" });
+    }
+    const [userCheck] = await db.promise().query("SELECT * FROM users WHERE user_ID = ?", [userID]);
+    if (userCheck.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลผู้ใช้" });
+    }
+
+    const updateQuery = "UPDATE users SET user_Status_ID = ?, user_DateEdit = ? WHERE user_ID = ?";
+    const EditDate = new Date().toISOString();
+    await db.promise().query(updateQuery, [userStatus_ID, EditDate, userID]);
+
+    res.status(200).json({ message: "อัปเดตสถานะของผู้ใช้เรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาดในการอัปเดตสถานะ:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
+
 
 
 
@@ -370,4 +400,4 @@ const updateUser = async (req, res) => {
 //     }
 // };
 
-module.exports = { registerUser, getAutotid, getRole, getUser, getUserById, updateUser };
+module.exports = { registerUser, getAutotid, getRole, getUser, getUserById, updateUser, updateUserStatus };

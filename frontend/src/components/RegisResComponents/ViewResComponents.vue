@@ -69,14 +69,20 @@
                   <td>
                     <button
                       class="btn btn-warning btn-sm fontwhite"
-                      @click="$router.push({ path: '/EditResView', query: { id: item.user_ID } })"                    >
+                      @click="
+                        $router.push({
+                          path: '/EditResView',
+                          query: { id: item.user_ID },
+                        })
+                      "
+                    >
                       แก้ไข
                     </button>
                   </td>
                   <td>
                     <button
                       class="btn btn-danger btn-sm fontwhite"
-                      @click="handleActionClick(item, 'delete')"
+                      @click="showModalDelete(item)"
                     >
                       ลบ
                     </button>
@@ -156,6 +162,30 @@
       </CModalFooter>
     </CModal>
 
+    <CModal
+      alignment="center"
+      :visible="visibleDeleteModal"
+      @close="closeDeleteModal"
+      aria-labelledby="VerticallyCenteredExample"
+      size="lg"
+    >
+      <CModalHeader>
+        <CModalTitle id="VerticallyCenteredExample">ข้อมูลผู้ใช้</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <!-- <modelViewRegisComponents :selectedUser="selectedUser" /> -->
+        <!-- <DeleteResComponent :selectedUser="selectedUser"/> -->
+        <DeleteResComponent
+          :selectedUser="selectedUser"
+          :closeModal="closeDeleteModal"
+          :refreshViewData="fetchUser"
+        />
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeDeleteModal">Close</CButton>
+      </CModalFooter>
+    </CModal>
+
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
@@ -173,12 +203,14 @@ import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from "@co
 import axios from "axios";
 import modelViewRegisComponents from "./modelViewRegisComponents.vue";
 import RegisResComponents from "./RegisResComponents.vue";
+import DeleteResComponent from "./DeleteResComponent.vue";
 
 export default {
   name: "ViewResComponents",
   components: {
     modelViewRegisComponents,
     RegisResComponents,
+    DeleteResComponent,
   },
   setup() {
     const truncateText = (text, maxLength) => {
@@ -206,6 +238,7 @@ export default {
     const rowsPerPage = ref(10);
     const currentPage = ref(1);
     const visibleViewModal = ref(false);
+    const visibleDeleteModal = ref(false);
     const selectedUser = ref({});
 
     const totalPages = computed(() => {
@@ -252,32 +285,6 @@ export default {
       });
     };
 
-    const handleActionClick = (item, action) => {
-      if (action === "delete") {
-      //   try {
-      //     axios
-      //       .delete(`/api/auth/deleteUser/${item.user_ID}`, {
-      //         headers: {
-      //           Authorization: `Bearer ${token}`,
-      //         },
-      //       })
-      //       .then(() => {
-      //         // อัปเดตรายการผู้ใช้งานหลังจากลบ
-      //         users.value = users.value.filter((user) => user.user_ID !== item.user_ID);
-      //         filterItems();
-      //         showToast("ลบผู้ใช้งานสำเร็จ", "success");
-      //       })
-      //       .catch((error) => {
-      //         console.error("เกิดข้อผิดพลาดในการลบผู้ใช้งาน:", error);
-      //         showToast("เกิดข้อผิดพลาดในการลบผู้ใช้งาน", "error");
-      //       });
-      //   } catch (error) {
-      //     console.error("เกิดข้อผิดพลาดในการลบผู้ใช้งาน:", error);
-      //     showToast("เกิดข้อผิดพลาดในการลบผู้ใช้งาน", "error");
-      //   }
-      }
-    };
-
     const filterItems = () => {
       filteredItems.value = users.value
         .filter((item) => {
@@ -306,9 +313,21 @@ export default {
       console.log("View Modal Opened:", visibleViewModal.value);
     };
 
+    const showModalDelete = (item) => {
+      selectedUser.value = item;
+      visibleDeleteModal.value = true;
+      console.log("View Modal Opened:", visibleDeleteModal.value);
+    };
+
     const closeModal = () => {
       visibleViewModal.value = false;
       selectedUser.value = {}; // ล้างข้อมูลเมื่อปิด modal
+    };
+
+    const closeDeleteModal = () => {
+      visibleDeleteModal.value = false;
+      selectedUser.value = {}; // ล้างข้อมูลเมื่อปิด modal
+      fetchUser();
     };
 
     const paginatedItems = computed(() => {
@@ -343,10 +362,12 @@ export default {
       currentPage,
       totalPages,
       setPage,
-      handleActionClick,
       showModal,
+      showModalDelete,
       closeModal,
       visibleViewModal,
+      visibleDeleteModal,
+      closeDeleteModal,
       selectedUser,
     };
   },
