@@ -71,7 +71,7 @@
                 </CFormFeedback>
               </CCol>
 
-              <CCol md="6">
+              <!-- <CCol md="6">
                 <CFormLabel for="resName">Username</CFormLabel>
                 <CFormInput
                   v-model="resName"
@@ -83,6 +83,22 @@
                 <CFormFeedback invalid>
                   {{ nameErrorMessage }}
                 </CFormFeedback>
+              </CCol> -->
+
+              <CCol md="6">
+                <CFormLabel for="resName">Username</CFormLabel>
+                <CInputGroup class="mb-3">
+                  <CFormInput
+                    v-model="resName"
+                    type="text"
+                    id="resName"
+                    :disabled="!isUsernameEditable"
+                    aria-describedby="resName"
+                  />
+                  <CButton @click="toggleUsernameEditable" color="primary">
+                    {{ isUsernameEditable ? "ปิดการแก้ไข" : "แก้ไข" }}
+                  </CButton>
+                </CInputGroup>
               </CCol>
 
               <CCol md="6">
@@ -297,6 +313,9 @@ export default {
     const route = useRoute();
     const userId = ref(route.query.id || "");
     const isPasswordEditable = ref(false);
+    const isUsernameEditable = ref(false);
+
+    const notEditUsername = ref("");
 
     const isFnameInvalid = computed(() => {
       return (
@@ -494,6 +513,13 @@ export default {
             userStatus_ID: resStatus.value,
             username: resName.value,
           };
+
+          // if (resName.value.trim() !== "") {
+          //   payload.username = resName.value;
+          // }
+          if (resName.value == notEditUsername.value) {
+            payload.username = notEditUsername.value;
+          }
           if (resPassword.value.trim() !== "") {
             payload.password = resPassword.value;
           }
@@ -542,6 +568,7 @@ export default {
         resPost.value = String(response.data.zip_code || "");
         resStatus.value = userData.user_Status_ID || "";
         selectedDate.value = userData.user_Bdate ? new Date(userData.user_Bdate) : null;
+        notEditUsername.value = userData.user_Name || "";
         await fetchRole();
         resRole.value = userData.user_Role_ID || "";
 
@@ -558,6 +585,10 @@ export default {
 
     const togglePasswordEditable = () => {
       isPasswordEditable.value = !isPasswordEditable.value;
+    };
+
+    const toggleUsernameEditable = () => {
+      isUsernameEditable.value = !isUsernameEditable.value;
     };
 
     const fetchZipcode = async (tambonsId) => {
@@ -749,8 +780,11 @@ export default {
       fetchTambons,
       fetchRole,
       userId,
+      isUsernameEditable,
+      toggleUsernameEditable,
       isPasswordEditable,
       togglePasswordEditable,
+      notEditUsername,
     };
   },
 };

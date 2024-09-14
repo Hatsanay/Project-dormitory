@@ -284,19 +284,26 @@ const updateUser = async (req, res) => {
     if (!userID) {
       return res.status(400).json({ error: 'โปรดระบุ userID' });
     }
+
+ 
     const [userCheck] = await db.promise().query("SELECT * FROM users WHERE user_ID = ?", [userID]);
     if (userCheck.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลผู้ใช้" });
     }
-    const usernamechecked = await checkUsername(username); //Call กับ function checkUsername เพื่อหา True False ว่ามี usename อยู่แลวไหม
-    if (usernamechecked) {
-      return res.status(400).json({ error: "มี Username นี้อยู่แล้ว" });
+
+    // ตรวจสอบว่า username ที่ส่งมาใหม่ซ้ำกับ user ไหม
+    if (username && username !== userCheck[0].user_Name) {
+      const [usernameCheck] = await db.promise().query("SELECT * FROM users WHERE user_Name = ?", [username]);
+      if (usernameCheck.length > 0) {
+        return res.status(400).json({ error: "มี Username นี้อยู่แล้ว" });
+      }
     }
 
-    let hashedPassword = userCheck[0].user_Password;    // หากมีการส่ง password มา จะทำการเข้ารหัสใหม่
+    let hashedPassword = userCheck[0].user_Password; // หากไม่ได้เปลี่ยน password จะคงค่าเดิมเอาไว้
     if (password) {
       hashedPassword = await bcrypt.hash(password, 10);
     }
+
     const updateQuery = `
       UPDATE users SET 
         user_Fname = ?, 
@@ -323,7 +330,7 @@ const updateUser = async (req, res) => {
       userLname,
       userEmail,
       userPhone,
-      username,
+      username || userCheck[0].user_Name,
       hashedPassword,
       userHnumber,
       userGroup,
@@ -344,6 +351,7 @@ const updateUser = async (req, res) => {
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
 };
+
 
 
 
