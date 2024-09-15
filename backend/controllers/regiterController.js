@@ -203,6 +203,7 @@ const getUserById = async (req, res) => {
         user_ID,
         user_Fname,
         user_Lname,
+        CONCAT(user_Fname, ' ', user_Lname) AS fullname, 
         user_Email,
         user_Phone,
         user_Name,

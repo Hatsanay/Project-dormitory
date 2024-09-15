@@ -1,7 +1,3 @@
-<script setup>
- let token = localStorage.token;
-</script>
-
 <template>
   <div>
     <WidgetsStatsD class="mb-4" />
@@ -13,29 +9,13 @@
             <CForm class="row g-3">
               <CCol md="12">
                 <CRow class="mb-3">
-                  <CFormLabel for="staticEmail" class="col-sm-2 col-form-label"
-                    >หมายเลขห้อง</CFormLabel
-                  >
+                  <CFormLabel for="roomNumber" class="col-sm-2 col-form-label">หมายเลขห้อง</CFormLabel>
                   <div class="col-sm-10">
-                    <CFormInput
-                      type="text"
-                      id="staticEmail"
-                      value="001"
-                      readonly
-                      plain-text
-                    />
+                    <CFormInput v-model="roomNumber" type="text" id="roomNumber" readonly plain-text />
                   </div>
-                  <CFormLabel for="staticEmail" class="col-sm-2 col-form-label"
-                    >ชิ่อ-สกุล</CFormLabel
-                  >
+                  <CFormLabel for="fullName" class="col-sm-2 col-form-label">ชื่อ-สกุล</CFormLabel>
                   <div class="col-sm-10">
-                    <CFormInput
-                      type="text"
-                      id="staticEmail"
-                      value="หัสนัย หม้อยา"
-                      readonly
-                      plain-text
-                    />
+                    <CFormInput v-model="fullName" type="text" id="fullName" readonly plain-text />
                   </div>
                 </CRow>
               </CCol>
@@ -44,25 +24,16 @@
                 <CFormInput v-model="titleRepair" type="text" id="titleRepair" />
               </CCol>
               <CCol md="12">
-                <CFormTextarea
-                  id="exampleFormControlTextarea1"
-                  label="รายละเอียด"
-                  rows="3"
-                  text="กรุณากรอกปัญหาเบื้องต้น"
-                ></CFormTextarea>
+                <CFormLabel for="reqDetail">รายละเอียด</CFormLabel>
+                <CFormTextarea id="reqDetail" rows="3" v-model="reqDetail" placeholder="กรุณากรอกปัญหาเบื้องต้น">
+                </CFormTextarea>
               </CCol>
               <CCol md="12">
-                <CFormInput
-                  type="file"
-                  id="formFileMultiple"
-                  label="กรุณาเลือกรูปภาพเบื้องต้น"
-                  multiple
-                />
-                <CFormInput v-if="visable" v-model="token" type="text" id="token" />
+                <CFormLabel for="formFileMultiple">กรุณาเลือกรูปภาพเบื้องต้น</CFormLabel>
+                <CFormInput type="file" id="formFileMultiple" multiple />
               </CCol>
-              <CButton type="submit" color="primary" >บันทึก</CButton>
+              <CButton type="submit" color="primary">บันทึก</CButton>
             </CForm>
-            <CForm> </CForm>
           </CCardBody>
         </CCard>
       </CCol>
@@ -71,12 +42,52 @@
 </template>
 
 <script>
+import { ref, onMounted } from "vue";
+
 export default {
   name: "ReqComponent",
-  // computed: {
-  //   userPermissions() {
-  //     return JSON.parse(localStorage.getItem("permissions")) || [];
-  //   },
-  // },
+  setup() {
+    const userId =  ref(localStorage.getItem("localUserid"));
+    const roomNumber = ref("");
+    const fullName = ref("");
+    const titleRepair = ref("");
+    const reqDetail = ref("");
+
+
+
+    // const fetchUserById = async (uid) => {
+    //   try {
+    //     const token = localStorage.getItem("token");
+    //     const response = await axios.get("/api/auth/getUserById", {
+    //       params: { id: uid },
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     });
+
+    //     const userData = response.data;
+    //     roomNumber.value = userData.user_Fname || "";
+    //     fullName.value = userData.user_Lname || "";
+    //   } catch (error) {
+    //     console.error("Error fetching user data:", error);
+    //   }
+    // };
+
+
+    onMounted(() => {
+        console.log("User ID:", userId.value);
+    });
+
+
+    return {
+      userId,
+      roomNumber,
+      fullName,
+      titleRepair,
+      reqDetail,
+    };
+  },
 };
 </script>
+
+<style scoped></style>

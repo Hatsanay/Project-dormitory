@@ -110,17 +110,37 @@ const decodeJWTTH = (token) => {
   return JSON.parse(payload);
 };
 
+// const token = localStorage.getItem("token");
+
+// let permissionsToken = "";
+// let localUserID = "";
+// if (token) {
+//   const decodedPayload = decodeJWTTH(token);
+//   // console.log(decodedPayload);
+//   permissionsToken = decodedPayload.permissions;
+//   localUserID = decodedPayload.permissions
+//   localStorage.setItem("localUserid", JlocalUserID);
+//   // localStorage.setItem("localUserid", JSON.stringify(id));
+//   // console.log("permissions:", permissions);
+// } else {
+//   console.log("Token not found");
+// }
+
 const token = localStorage.getItem("token");
 
 let permissionsToken = "";
+let localUserID = "";
 if (token) {
   const decodedPayload = decodeJWTTH(token);
-  // console.log(decodedPayload);
   permissionsToken = decodedPayload.permissions;
-  // console.log("permissions:", permissions);
+  localUserID = decodedPayload.id;
+  localStorage.setItem("localUserid", localUserID);
+  // console.log("permissions:", permissionsToken);
+  // console.log("localUserID:", localUserID);
 } else {
   console.log("Token not found");
 }
+
 
 
 permissionsToken = "1111111111111111111111111111";
@@ -139,6 +159,10 @@ function hasPermission(permission) {
 function clearToken() {
   localStorage.removeItem('token');
   sessionStorage.removeItem('token');
+  localStorage.removeItem('localUserid');
+  sessionStorage.removeItem('localUserid');
+
+
 }
 
 function isAuthenticated() {
