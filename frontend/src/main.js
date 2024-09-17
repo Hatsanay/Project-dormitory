@@ -22,10 +22,37 @@ if (token) {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
 
+// const decodeJWTTH = (token) => {
+//   const base64Url = token.split('.')[1]
+//   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+//   var payload = decodeURIComponent(
+//     atob(base64)
+//       .split('')
+//       .map(function (c) {
+//         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+//       })
+//       .join(''),
+//   )
+//   return JSON.parse(payload)
+// }
+//   // const token = localStorage.getItem('token')
+//   let permissionsToken = ''
+//   let localUserID = ''
+//   if (token) {
+//     const decodedPayload = decodeJWTTH(token)
+//     permissionsToken = decodedPayload.permissions
+//     localUserID = decodedPayload.id
+//     localStorage.setItem('localUserid', localUserID)
+//     console.log("permissions:", permissionsToken);
+//     // console.log('localUserID:', localUserID)
+//   } else {
+//     console.log('Token not found')
+//   }
+// // console.log(permissionsToken);
+
 
 const app = createApp(App)
 app.use(createPinia())
-
 
 app.use(router)
 

@@ -3,7 +3,7 @@ const { login } = require('../controllers/authController');
 const { registerUser, getAutotid ,getRole ,getUser, getUserById, updateUser, updateUserStatus} = require('../controllers/regiterController');
 const { getProvince,getAmphures,getTambons,getZipcode } = require('../controllers/addressControler');
 const {getStatus,getStatusUserDelete} = require('../controllers/statusControler');
-// const {getUserByIdfromReq} = require('../controllers/statusControler');
+const {getUserByIdfromReq} = require('../controllers/reqController');
 // getUserByIdfromReq
 // const { registerRoom } = require('../controllers/RoomController');
 const authenticateToken = require('../middleware/auth');
@@ -23,7 +23,7 @@ router.get('/getZipcode',authenticateToken, getZipcode);
 router.get('/getStatus',authenticateToken, getStatus);
 router.get('/getStatusUserDelete',authenticateToken, getStatusUserDelete);
 
-// router.get('/getUserByIdfromReq',authenticateToken, getUserByIdfromReq);
+router.get('/getUserByIdfromReq',authenticateToken, getUserByIdfromReq);
 
 
 router.put('/updateUser',authenticateToken, updateUser);

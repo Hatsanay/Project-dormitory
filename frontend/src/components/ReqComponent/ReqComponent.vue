@@ -9,13 +9,29 @@
             <CForm class="row g-3">
               <CCol md="12">
                 <CRow class="mb-3">
-                  <CFormLabel for="roomNumber" class="col-sm-2 col-form-label">หมายเลขห้อง</CFormLabel>
+                  <CFormLabel for="roomNumber" class="col-sm-2 col-form-label"
+                    >หมายเลขห้อง</CFormLabel
+                  >
                   <div class="col-sm-10">
-                    <CFormInput v-model="roomNumber" type="text" id="roomNumber" readonly plain-text />
+                    <CFormInput
+                      v-model="roomNumber"
+                      type="text"
+                      id="roomNumber"
+                      readonly
+                      plain-text
+                    />
                   </div>
-                  <CFormLabel for="fullName" class="col-sm-2 col-form-label">ชื่อ-สกุล</CFormLabel>
+                  <CFormLabel for="fullName" class="col-sm-2 col-form-label"
+                    >ชื่อ-สกุล</CFormLabel
+                  >
                   <div class="col-sm-10">
-                    <CFormInput v-model="fullName" type="text" id="fullName" readonly plain-text />
+                    <CFormInput
+                      v-model="fullName"
+                      type="text"
+                      id="fullName"
+                      readonly
+                      plain-text
+                    />
                   </div>
                 </CRow>
               </CCol>
@@ -25,7 +41,12 @@
               </CCol>
               <CCol md="12">
                 <CFormLabel for="reqDetail">รายละเอียด</CFormLabel>
-                <CFormTextarea id="reqDetail" rows="3" v-model="reqDetail" placeholder="กรุณากรอกปัญหาเบื้องต้น">
+                <CFormTextarea
+                  id="reqDetail"
+                  rows="3"
+                  v-model="reqDetail"
+                  placeholder="กรุณากรอกปัญหาเบื้องต้น"
+                >
                 </CFormTextarea>
               </CCol>
               <CCol md="12">
@@ -43,40 +64,39 @@
 
 <script>
 import { ref, onMounted } from "vue";
+import axios from "axios";
 export default {
   name: "ReqComponent",
   setup() {
-    const userId =  ref(localStorage.getItem("localUserid"));
+    const userId = ref(localStorage.getItem("localUserid"));
     const roomNumber = ref("");
     const fullName = ref("");
     const titleRepair = ref("");
     const reqDetail = ref("");
+    const refresh = false;
 
+    const getUserByIdfromReq = async (uid) => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("/api/auth/getUserByIdfromReq", {
+          params: { id: uid },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-
-    // const fetchUserById = async (uid) => {
-    //   try {
-    //     const token = localStorage.getItem("token");
-    //     const response = await axios.get("/api/auth/getUserById", {
-    //       params: { id: uid },
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     });
-
-    //     const userData = response.data;
-    //     roomNumber.value = userData.user_Fname || "";
-    //     fullName.value = userData.user_Lname || "";
-    //   } catch (error) {
-    //     console.error("Error fetching user data:", error);
-    //   }
-    // };
-
+        const userData = response.data;
+        roomNumber.value = userData.room_ID || "";
+        fullName.value = userData.fullname || "";
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
 
     onMounted(() => {
-        console.log("User ID:", userId.value);
+      getUserByIdfromReq(userId.value);
+      // console.log("User ID:", roomNumber.value);
     });
-
 
     return {
       userId,
@@ -84,6 +104,7 @@ export default {
       fullName,
       titleRepair,
       reqDetail,
+      getUserByIdfromReq,
     };
   },
 };

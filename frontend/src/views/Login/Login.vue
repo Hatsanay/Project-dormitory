@@ -99,12 +99,14 @@ export default {
           password: this.password,
         })
         .then((response) => {
-          const { token, permissions } = response.data;
+          const { token, permissions,id } = response.data;
           localStorage.setItem("token", token);
           axios.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${response.data.token}`;
-          localStorage.setItem("permissions", JSON.stringify(permissions));
+          // localStorage.setItem("permissions", JSON.stringify(permissions));
+          // console.log("hatsanai",localStorage.getItem('permissions'));
+          // localStorage.setItem("localUserID", id);
           this.$router.push("/dashboard");
         })
         .catch((error) => {
