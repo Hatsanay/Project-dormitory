@@ -43,7 +43,6 @@
 
 <script>
 import { ref, onMounted } from "vue";
-
 export default {
   name: "ReqComponent",
   setup() {
