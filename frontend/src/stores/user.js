@@ -1,6 +1,6 @@
-// stores/user.js
-import { defineStore } from 'pinia';
-import { decodeJWTTH } from '../router/auth';
+// // stores/user.js
+// import { defineStore } from 'pinia';
+// import { decodeJWTTH } from '../router/auth';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -13,6 +13,7 @@ export const useUserStore = defineStore('user', {
         const decodedPayload = decodeJWTTH(token);
         this.userID = decodedPayload.id || '';
         console.log("userID from store:", this.userID); // ตรวจสอบว่ามีการตั้งค่า userID ถูกต้อง
+        return this.userID;
       }
     },
   },

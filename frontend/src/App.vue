@@ -3,14 +3,14 @@ import { useColorModes } from '@coreui/vue';
 import { onBeforeMount } from 'vue';
 
 import { useThemeStore } from '@/stores/theme.js';
-import { useUserStore } from '@/stores/user';
+// import { useUserStore } from '@/stores/user';
 
 
 const { isColorModeSet, setColorMode } = useColorModes('coreui-free-vue-admin-template-theme');
 const currentTheme = useThemeStore();
-const userStore = useUserStore();
+// const userStore = useUserStore();
 
-userStore.initializeAuth();
+// userStore.initializeAuth();
 
 onBeforeMount(() => {
   const urlParams = new URLSearchParams(window.location.search);

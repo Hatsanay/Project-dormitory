@@ -51,6 +51,10 @@ export const decodeJWTTH = (token) => {
     ];
     
     const permissionsToken = getPermissions();
+    const UserID = getUserID();
+    localStorage.setItem("userID", UserID);
+    let lUserId = localStorage.getItem('userID');
+    console.log("userID "+lUserId)
   
     if (!permissionsToken) {
       console.error('Permissions token not found');
@@ -67,12 +71,15 @@ export const decodeJWTTH = (token) => {
   };
   
   export const isAuthenticated = () => {
-    return !!localStorage.getItem('token') || !!sessionStorage.getItem('token');
+    return localStorage.getItem('token') || sessionStorage.getItem('token');
+    // return !!localStorage.getItem('token') || !!sessionStorage.getItem('token');
   };
   
   export const clearToken = () => {
     localStorage.removeItem('token');
     sessionStorage.removeItem('token');
+    localStorage.removeItem('userID');
+    sessionStorage.removeItem('userID');
     // localStorage.removeItem('localUserid');
     // sessionStorage.removeItem('localUserid');
   };

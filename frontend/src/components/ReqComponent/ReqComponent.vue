@@ -9,29 +9,13 @@
             <CForm class="row g-3">
               <CCol md="12">
                 <CRow class="mb-3">
-                  <CFormLabel for="roomNumber" class="col-sm-2 col-form-label"
-                    >หมายเลขห้อง</CFormLabel
-                  >
+                  <CFormLabel for="roomNumber" class="col-sm-2 col-form-label">หมายเลขห้อง</CFormLabel>
                   <div class="col-sm-10">
-                    <CFormInput
-                      v-model="roomNumber"
-                      type="text"
-                      id="roomNumber"
-                      readonly
-                      plain-text
-                    />
+                    <CFormInput v-model="roomNumber" type="text" id="roomNumber" readonly plain-text />
                   </div>
-                  <CFormLabel for="fullName" class="col-sm-2 col-form-label"
-                    >ชื่อ-สกุล</CFormLabel
-                  >
+                  <CFormLabel for="fullName" class="col-sm-2 col-form-label">ชื่อ-สกุล</CFormLabel>
                   <div class="col-sm-10">
-                    <CFormInput
-                      v-model="fullName"
-                      type="text"
-                      id="fullName"
-                      readonly
-                      plain-text
-                    />
+                    <CFormInput v-model="fullName" type="text" id="fullName" readonly plain-text />
                   </div>
                 </CRow>
               </CCol>
@@ -41,13 +25,7 @@
               </CCol>
               <CCol md="12">
                 <CFormLabel for="reqDetail">รายละเอียด</CFormLabel>
-                <CFormTextarea
-                  id="reqDetail"
-                  rows="3"
-                  v-model="reqDetail"
-                  placeholder="กรุณากรอกปัญหาเบื้องต้น"
-                >
-                </CFormTextarea>
+                <CFormTextarea id="reqDetail" rows="3" v-model="reqDetail" placeholder="กรุณากรอกปัญหาเบื้องต้น" />
               </CCol>
               <CCol md="12">
                 <CFormLabel for="formFileMultiple">กรุณาเลือกรูปภาพเบื้องต้น</CFormLabel>
@@ -65,10 +43,12 @@
 <script>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+
+
 export default {
   name: "ReqComponent",
   setup() {
-    const userId = ref(localStorage.getItem("localUserid"));
+    const userId = ref(localStorage.getItem('userID'));
     const roomNumber = ref("");
     const fullName = ref("");
     const titleRepair = ref("");
@@ -93,8 +73,9 @@ export default {
     };
 
     onMounted(() => {
-      getUserByIdfromReq(userId.value);
-      // console.log("User ID:", roomNumber.value);
+      if (userId.value) {
+        getUserByIdfromReq(userId.value);
+      }
     });
 
     return {
