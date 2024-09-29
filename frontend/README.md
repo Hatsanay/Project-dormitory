@@ -22,19 +22,22 @@ CoreUI is meant to be the UX game changer. Pure & transparent code is devoid of 
 
 ## Table of Contents
 
-* [Versions](#versions)
-* [CoreUI PRO](#coreui-pro)
-* [CoreUI PRO Vue Admin Templates](#coreui-pro-vue-admin-templates)
-* [Quick Start](#quick-start)
-* [Installation](#installation)
-* [Basic usage](#basic-usage)
-* [What's included](#whats-included)
-* [Documentation](#documentation)
-* [Versioning](#versioning)
-* [Creators](#creators)
-* [Community](#community)
-* [Support CoreUI Development](#support-coreui-development)
-* [Copyright and License](#copyright-and-license)
+- [CoreUI Free Vue Admin Template ](#coreui-free-vue-admin-template-)
+  - [Table of Contents](#table-of-contents)
+  - [Versions](#versions)
+  - [CoreUI PRO](#coreui-pro)
+  - [CoreUI PRO Vue Admin Templates](#coreui-pro-vue-admin-templates)
+  - [Quick Start](#quick-start)
+    - [Instalation](#instalation)
+    - [Basic usage](#basic-usage)
+      - [Build](#build)
+  - [What's included](#whats-included)
+  - [Documentation](#documentation)
+  - [Versioning](#versioning)
+  - [Creators](#creators)
+  - [Community](#community)
+  - [Support CoreUI Development](#support-coreui-development)
+  - [Copyright and License](#copyright-and-license)
 
 ## Versions
 
@@ -177,3 +180,30 @@ CoreUI is an MIT-licensed open source project and is completely free to use. How
 copyright 2024 creativeLabs Łukasz Holeczek.   
 
 Code released under [the MIT license](https://github.com/coreui/coreui-free-react-admin-template/blob/main/LICENSE).
+
+
+<!-- <script>
+import { ref } from "vue";
+
+export default {
+  name: "RegisResComponents",
+  setup() {
+    const roomNumber = ref("");
+    const fullName = ref("");
+    const titleRepair = ref("");
+    const reqDetail = ref("");
+
+
+    return {
+      roomNumber,
+      fullName,
+      titleRepair,
+      reqDetail,
+    };
+  },
+};
+</script>
+
+<style scoped>
+
+</style> -->

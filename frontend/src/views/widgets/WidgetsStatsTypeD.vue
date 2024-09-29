@@ -1,5 +1,5 @@
 <script setup>
-import { CChart } from '@coreui/vue-chartjs';
+import { CChart } from '@coreui/vue-chartjs'
 
 const options = {
   elements: {

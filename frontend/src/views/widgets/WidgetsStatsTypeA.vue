@@ -1,7 +1,7 @@
 <script setup>
-import { getStyle } from '@coreui/utils';
-import { CChart } from '@coreui/vue-chartjs';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue'
+import { CChart } from '@coreui/vue-chartjs'
+import { getStyle } from '@coreui/utils'
 
 const widgetChartRef1 = ref()
 const widgetChartRef2 = ref()

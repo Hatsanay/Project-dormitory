@@ -1,11 +1,14 @@
 import DefaultLayout from '@/layouts/DefaultLayout';
 import { createRouter, createWebHashHistory } from 'vue-router';
+import EditResView from '../views/Admin/EditResView.vue';
 import RegisResView from '../views/Admin/RegisResView.vue';
 import Room from '../views/Admin/Room.vue';
+import ViewResView from '../views/Admin/ViewResView.vue';
 import userDasboard from '../views/dashboard/Dashboard.vue';
 import ReqView from '../views/user/UserReqView.vue';
 
-// Define routes
+import { clearToken, hasPermission, isAuthenticated } from './auth';
+
 const routes = [
   {
     path: '/',
@@ -17,7 +20,7 @@ const routes = [
         path: '/dashboard',
         name: 'Dashboard',
         id: '1',
-        meta: { permission: 'view_users_dashboard', requiresAuth: true},
+        meta: { permission: 'view_users_dashboard', requiresAuth: true },
         component: userDasboard,
       },
       {
@@ -34,7 +37,6 @@ const routes = [
         meta: { permission: 'view_users_Setting', requiresAuth: true },
         component: () => import('../views/user/UserSetView.vue'),
       },
-      // Admin
       {
         path: '/adminDashboard',
         name: 'AdminDashboard',
@@ -42,12 +44,11 @@ const routes = [
         meta: { permission: 'view_admin_dashboard', requiresAuth: true },
         component: () => import('../views/Admin/Dashboard.vue'),
       },
-      
       {
         path: '/RegisResident',
-        name: 'จัดการผู้พักอาศัย',
+        name: 'เพิ่มผู้ใช้งาน',
         id: '5',
-        meta: { permission: 'edit_RegisResident', requiresAuth: true },
+        meta: { permission: 'add_RegisResident', requiresAuth: true },
         component: RegisResView,
       },
       {
@@ -57,6 +58,20 @@ const routes = [
         meta: { permission: 'edit_RegisRoom', requiresAuth: true },
         component: Room,
       },
+      {
+        path: '/ViewResident',
+        name: 'จัดการผู้ใช้งาน',
+        id: '7',
+        meta: { permission: 'view_RegisResident', requiresAuth: true },
+        component: ViewResView,
+      },
+      {
+        path: '/EditResView',
+        name: 'แก้ไขข้อมูลผู้ใช้งาน',
+        id: '8',
+        meta: { permission: 'edit_Resident', requiresAuth: true },
+        component: EditResView,
+      },
     ],
   },
   {
@@ -65,38 +80,6 @@ const routes = [
     component: () => import('../views/Login/Login.vue'),
   },
 ];
-
-const permissionsMap = [
-  'view_users_dashboard',  // Bit 1
-  'view_users_reques',     // Bit 2
-  'view_users_Setting',    // Bit 3
-  'view_admin_dashboard',  // Bit 4
-  'view_RegisResident',    // Bit 5
-  'edit_RegisResident',
-  'edit_RegisRoom',
-];
-
-const permissionString = '111111111111111111';
-
-const permissions = permissionString.split('').map(bit => bit === '1');
-
-function hasPermission(permission) {
-  const index = permissionsMap.indexOf(permission);
-  if (index === -1) {
-    console.error('Permission not found:', permission);
-    return false;
-  }
-  return permissions[index] === true;
-}
-
-function clearToken() {
-  localStorage.removeItem('token');
-  sessionStorage.removeItem('token');
-}
-
-function isAuthenticated() {
-  return  !!localStorage.getItem('token') || !!sessionStorage.getItem('token');
-}
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -110,7 +93,7 @@ router.beforeEach((to, from, next) => {
   if (to.path === '/login') {
     clearToken();
   }
-  
+
   if (to.meta.requiresAuth && !isAuthenticated()) {
     next('/login');
   } else if (to.meta.permission && isAuthenticated()) {
