@@ -48,6 +48,7 @@
                       </CButton>
                     </CCol>
                     <CCol :xs="6" class="text-right">
+                      <!-- Uncomment if you need the forgot password feature -->
                       <!-- <CButton color="link" class="px-0"> Forgot password? </CButton> -->
                     </CCol>
                   </CRow>
@@ -59,12 +60,10 @@
       </CRow>
     </CContainer>
 
-
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
           <span class="me-auto fw-bold">{{ toast.title }}</span>
-          <!-- <small>7 min ago</small> -->
         </CToastHeader>
         <CToastBody>{{ toast.content }}</CToastBody>
       </CToast>
@@ -74,6 +73,7 @@
 
 <script>
 import axios from "axios";
+
 export default {
   name: "LoginFormComponent",
   data() {
@@ -85,11 +85,12 @@ export default {
     };
   },
   methods: {
-    createToast(st,er) {
-      this.toasts.push({
-        title: st,
-        content: er,
-      });
+    createToast(st, er) {
+      this.toasts.push({ title: st, content: er });
+      // Remove toast after 5 seconds
+      setTimeout(() => {
+        this.toasts.shift();
+      }, 5000);
     },
     login() {
       this.isLoading = true;
@@ -99,23 +100,22 @@ export default {
           password: this.password,
         })
         .then((response) => {
-          const { token, permissions,id } = response.data;
+          const { token, permissions, id } = response.data;
           localStorage.setItem("token", token);
-          axios.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${response.data.token}`;
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
           // localStorage.setItem("permissions", JSON.stringify(permissions));
-          // console.log("hatsanai",localStorage.getItem('permissions'));
-          // localStorage.setItem("localUserID", id);
+          // localStorage.setItem("userID", JSON.stringify(id));
           this.$router.push("/dashboard");
         })
         .catch((error) => {
           console.error("Login error:", error);
-          const errorstatus = 'เกิดข้อผิดพลาด Status '+ error.response.status;
+          const errorStatus = error.response
+            ? `เกิดข้อผิดพลาด Status ${error.response.status}`
+            : "An error occurred";
           const errorMessage = error.response && error.response.data && error.response.data.error
             ? error.response.data.error
-            : 'An error occurred during login. Please try again.';
-          this.createToast(errorstatus,errorMessage);
+            : "An error occurred during login. Please try again.";
+          this.createToast(errorStatus, errorMessage);
         })
         .finally(() => {
           this.isLoading = false;

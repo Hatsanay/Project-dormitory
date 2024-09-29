@@ -73,7 +73,6 @@ export default {
     const fullName = ref("");
     const titleRepair = ref("");
     const reqDetail = ref("");
-    const refresh = false;
 
     const getUserByIdfromReq = async (uid) => {
       try {

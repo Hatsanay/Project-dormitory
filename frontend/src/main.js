@@ -19,7 +19,10 @@ axios.defaults.baseURL = 'http://localhost:3030'
 
 const token = localStorage.getItem('token')
 if (token) {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  // const decodedPayload = decodeJWTTH(token);
+  // app.config.globalProperties.$permissionsToken = decodedPayload.permissions || '';
+  // app.config.globalProperties.$userID = decodedPayload.id || '';
 }
 
 // const decodeJWTTH = (token) => {

@@ -1,13 +1,14 @@
-import DefaultLayout from '@/layouts/DefaultLayout'
-import { createRouter, createWebHashHistory } from 'vue-router'
-import EditResView from '../views/Admin/EditResView.vue'
-import RegisResView from '../views/Admin/RegisResView.vue'
-import Room from '../views/Admin/Room.vue'
-import ViewResView from '../views/Admin/ViewResView.vue'
-import userDasboard from '../views/dashboard/Dashboard.vue'
-import ReqView from '../views/user/UserReqView.vue'
+import DefaultLayout from '@/layouts/DefaultLayout';
+import { createRouter, createWebHashHistory } from 'vue-router';
+import EditResView from '../views/Admin/EditResView.vue';
+import RegisResView from '../views/Admin/RegisResView.vue';
+import Room from '../views/Admin/Room.vue';
+import ViewResView from '../views/Admin/ViewResView.vue';
+import userDasboard from '../views/dashboard/Dashboard.vue';
+import ReqView from '../views/user/UserReqView.vue';
 
-// Define routes
+import { clearToken, hasPermission, isAuthenticated } from './auth';
+
 const routes = [
   {
     path: '/',
@@ -26,8 +27,7 @@ const routes = [
         path: '/UserReqView',
         name: 'แจ้งซ่อมบำรุง',
         id: '2',
-
-        meta: { permission: 'view_users_reques', requiresAuth: true, },
+        meta: { permission: 'view_users_reques', requiresAuth: true },
         component: ReqView,
       },
       {
@@ -37,7 +37,6 @@ const routes = [
         meta: { permission: 'view_users_Setting', requiresAuth: true },
         component: () => import('../views/user/UserSetView.vue'),
       },
-      // Admin
       {
         path: '/adminDashboard',
         name: 'AdminDashboard',
@@ -45,7 +44,6 @@ const routes = [
         meta: { permission: 'view_admin_dashboard', requiresAuth: true },
         component: () => import('../views/Admin/Dashboard.vue'),
       },
-
       {
         path: '/RegisResident',
         name: 'เพิ่มผู้ใช้งาน',
@@ -53,7 +51,6 @@ const routes = [
         meta: { permission: 'add_RegisResident', requiresAuth: true },
         component: RegisResView,
       },
-
       {
         path: '/Room',
         name: 'Room',
@@ -61,7 +58,6 @@ const routes = [
         meta: { permission: 'edit_RegisRoom', requiresAuth: true },
         component: Room,
       },
-
       {
         path: '/ViewResident',
         name: 'จัดการผู้ใช้งาน',
@@ -83,118 +79,32 @@ const routes = [
     name: 'Login',
     component: () => import('../views/Login/Login.vue'),
   },
-]
-
-const permissionsMap = [
-  'view_users_dashboard', // Bit 1
-  'view_users_reques', // Bit 2
-  'view_users_Setting', // Bit 3
-  'view_admin_dashboard', // Bit 4
-  'view_RegisResident', // Bit 5
-  'add_RegisResident',
-  'edit_Resident',
-  'edit_RegisRoom',
-]
-
-const decodeJWTTH = (token) => {
-  const base64Url = token.split('.')[1]
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-  var payload = decodeURIComponent(
-    atob(base64)
-      .split('')
-      .map(function (c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      })
-      .join(''),
-  )
-  return JSON.parse(payload)
-}
-
-// const token = localStorage.getItem("token");
-
-// let permissionsToken = "";
-// let localUserID = "";
-// if (token) {
-//   const decodedPayload = decodeJWTTH(token);
-//   // console.log(decodedPayload);
-//   permissionsToken = decodedPayload.permissions;
-//   localUserID = decodedPayload.permissions
-//   localStorage.setItem("localUserid", JlocalUserID);
-//   // localStorage.setItem("localUserid", JSON.stringify(id));
-//   // console.log("permissions:", permissions);
-// } else {
-//   console.log("Token not found");
-// }
-
-
-  const token = localStorage.getItem('token')
-  let permissionsToken = ''
-  let localUserID = ''
-  if (token) {
-    const decodedPayload = decodeJWTTH(token)
-    // permissionsToken = decodedPayload.permissions
-    localUserID = decodedPayload.id
-    localStorage.setItem('localUserid', localUserID)
-    // console.log("permissions:", permissionsToken);
-    // console.log('localUserID:', localUserID)
-  } else {
-    console.log('Token not found')
-  }
-
-permissionsToken = '1111111111111111111111111111'
-// console.log(permissionsToken);
-
-let permissions = permissionsToken.split('').map((bit) => bit === '1')
-function hasPermission(permission) {
-  const index = permissionsMap.indexOf(permission)
-  if (index === -1) {
-    console.error('Permission not found:', permission)
-    return false
-  }
-  return permissions[index] === true
-}
-
-
-function clearToken() {
-  // localStorage.removeItem('permissions')
-  // sessionStorage.removeItem('permissions')
-  localStorage.removeItem('localUserid')
-  sessionStorage.removeItem('localUserid')
-  localStorage.removeItem('token')
-  sessionStorage.removeItem('token')
-}
-
-function isAuthenticated() {
-  return !!localStorage.getItem('token') || !!sessionStorage.getItem('token')
-}
+];
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior() {
-    return { top: 0 }
+    return { top: 0 };
   },
-  
-})
-
-
+});
 
 router.beforeEach((to, from, next) => {
   if (to.path === '/login') {
-    clearToken()
+    clearToken();
   }
 
   if (to.meta.requiresAuth && !isAuthenticated()) {
-    next('/login')
+    next('/login');
   } else if (to.meta.permission && isAuthenticated()) {
     if (hasPermission(to.meta.permission)) {
-      next()
+      next();
     } else {
-      next('/login')
+      next('/login');
     }
   } else {
-    next()
+    next();
   }
-})
+});
 
-export default router
+export default router;

@@ -170,16 +170,16 @@ const decodeJWTTH = (token) => {
 
 const token = localStorage.getItem("token");
 
-if (token) {
-  const decodedPayload = decodeJWTTH(token);
+// if (token) {
+//   const decodedPayload = decodeJWTTH(token);
   
-  // console.log(decodedPayload);
-  const permissions = decodedPayload.permissions;
+//   // console.log(decodedPayload);
+//   const permissions = decodedPayload.permissions;
 
-  // console.log("permissions:", permissions);
-} else {
-  console.log("Token not found");
-}
+//   // console.log("permissions:", permissions);
+// } else {
+//   console.log("Token not found");
+// }
 
 
 

@@ -56,11 +56,11 @@ export default [
   //   to: '#',
   //   icon: 'cil-people',
   // },
-
   {
     component: 'CNavTitle',
     name: 'จัดการห้องพักอาศัย',
   },
+
   {
     component: 'CNavItem',
     name: 'จัดการห้องพักอาศัย',
@@ -70,7 +70,7 @@ export default [
 
   {
     component: 'CNavTitle',
-    name: 'ตั้งค่า',
+    name: 'ตั้งค่าข้อมูลระบบ',
   },
   {
     component: 'CNavGroup',

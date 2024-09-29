@@ -18,7 +18,7 @@
     <CRow style="margin-bottom: 10px">
       <CCol :md="2">
         <CFormSelect v-model="selectedClass" aria-label="Filter by Class">
-          <option value="">ตำแหน่ง</option>
+          <option value="">ทั้งหมด</option>
           <option v-for="role in roles" :key="role.role_id" :value="role.role_Name">
             {{ role.role_Name }}
           </option>
