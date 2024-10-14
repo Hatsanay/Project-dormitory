@@ -246,6 +246,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import Datepicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { ref, computed, onMounted, watch } from "vue";
@@ -431,7 +432,7 @@ export default {
     const isPostInvalid = computed(() => {
       return validatedTooltip01.value && resPost.value.trim() === "";
     });
-    
+
     const resPostErrorMessage = computed(() => {
       if (resPost.value.trim() === "") {
         return "กรุณากรอกรหัสไปรษณีย์";
@@ -464,7 +465,6 @@ export default {
 
     const handleSubmit = async () => {
       try {
-       
         const response = await axios.post("/api/auth/registerUser", {
           userFname: resFname.value,
           userLname: resLname.value,
@@ -485,11 +485,20 @@ export default {
           userStatus_ID: "STA000003",
         });
 
-        
-        createToast("Success", response.data.message);
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
+        await Swal.fire({
+          icon: "success",
+          title: "บันทึกสำเร็จ",
+          text: "ผู้ใช้งานถูกบันทึกเรียบร้อยแล้ว!",
+          confirmButtonText: "ตกลง",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload();
+          }
+        });
+        // createToast("Success", response.data.message);
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 1500);
       } catch (error) {
         let errorMessage = "เกิดข้อผิดพลาดในการลงทะเบียนผู้ใช้";
 
@@ -497,8 +506,13 @@ export default {
           errorMessage = error.response.data.error;
         }
 
-        
-        createToast("Error", errorMessage);
+        await Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "เกิดข้อผิดพลาดในการลงทะเบียนผู้ใช้",
+          confirmButtonText: "ตกลง",
+        });
+        // createToast("Error", errorMessage);
         console.error("Error:", error);
       }
     };
@@ -526,7 +540,7 @@ export default {
         resPost.value = response.data.zip_code || "";
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการดึงรหัสไปรษณีย์:", error);
-        resPost.value = ""; 
+        resPost.value = "";
       }
     };
 
@@ -628,8 +642,6 @@ export default {
       fetchAmphures();
     });
 
-
-
     watch(resAmphures, () => {
       fetchTambons();
     });
@@ -639,7 +651,6 @@ export default {
         await fetchZipcode(resTambons.value);
       }
     });
-
 
     return {
       selectedDate,
