@@ -1,22 +1,25 @@
 const db = require("../config/db");
-const bcrypt = require("bcrypt");
 require("dotenv").config();
+const multer = require("multer");
+const path = require("path");
+
 
 const getUserByIdfromReq = async (req, res) => {
   try {
     const userId = req.query.id;
-
     if (!userId) {
       return res.status(400).json({ error: "โปรดระบุ id" });
     }
 
     const query = `
-         SELECT user_ID, user_Fname, user_Lname ,room.room_ID, CONCAT(user_Fname, ' ', user_Lname) AS fullname
-          FROM users
-          INNER JOIN room on users.user_ID = room.room_User_ID
-          WHERE users.user_ID = ?
-        `;
-
+      SELECT 
+        user_ID, user_Fname, user_Lname, renting.renting_ID, room.room_ID, room_Number, 
+        CONCAT(user_Fname, ' ', user_Lname) AS fullname
+      FROM users
+      INNER JOIN renting on renting.renting_user_ID = users.user_ID
+      INNER JOIN room on room.room_ID = renting.renting_room_ID
+      WHERE users.user_ID = ?
+    `;
     const [result] = await db.promise().query(query, [userId]);
 
     if (result.length === 0) {
@@ -30,4 +33,120 @@ const getUserByIdfromReq = async (req, res) => {
   }
 };
 
-module.exports = { getUserByIdfromReq };
+
+const getPetitiontype = async (req, res) => {
+  try {
+    const query = `
+      SELECT ID, Type, petitionType_stat_ID
+      FROM petitiontype
+      WHERE petitionType_stat_ID = 'STA000006'
+    `;
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('เกิดข้อผิดพลาด:', err);
+    res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดำเนินการ' });
+  }
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+// ตรวจสอบประเภทของไฟล์
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png" || file.mimetype === "image/gif") {
+    cb(null, true);
+  } else {
+    cb(new Error("ประเภทไฟล์ไม่รองรับ"), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+});
+
+const submitRepairRequest = async (req, res) => {
+  const { rentingID, reqPetitiontype, titleRepair, reqDetail } = req.body;
+  const files = req.files;
+
+
+  if (!titleRepair || !reqDetail) {
+    return res.status(400).json({ error: "หัวข้อและรายละเอียดการแจ้งซ่อมไม่สามารถเป็นค่าว่างได้" });
+  }
+
+  try {
+    const query = "SELECT mainr_ID FROM maintenancerequests ORDER BY mainr_ID DESC LIMIT 1";
+    const [result] = await db.promise().query(query);
+    let maxId;
+    if (result.length === 0) {
+      maxId = 0;
+    } else {
+      const lastMainrId = result[0].mainr_ID;
+      maxId = parseInt(lastMainrId.slice(-6)) || 0;
+    }
+    const num = maxId + 1;
+    const mainr_ID = "MNR" + String(num).padStart(6, "0");
+
+    const reqDate = new Date().toISOString();
+
+ 
+    const maintenanceQuery = `
+      INSERT INTO maintenancerequests 
+      (mainr_ID, mainr_ProblemTitle, mainr_ProblemDescription, mainr_Date, mainr_renting_ID, mainr_pattyp_ID, mainr_Stat_ID)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    await db.promise().query(maintenanceQuery, [
+      mainr_ID,
+      titleRepair,
+      reqDetail,
+      reqDate,
+      rentingID,
+      reqPetitiontype,
+      "STA000011"
+    ]);
+
+    if (files && files.length > 0) {
+      const imageQuery = `
+        INSERT INTO imagerequests (imges_ID, imges_Path, image_mainr_ID)
+        VALUES (?, ?, ?)
+      `;
+      const [imgesResult] = await db.promise().query("SELECT imges_ID FROM imagerequests ORDER BY imges_ID DESC LIMIT 1");
+      let imgMaxId = 0;
+
+      if (imgesResult.length > 0) {
+        const lastImageId = imgesResult[0].imges_ID;
+        imgMaxId = parseInt(lastImageId.slice(-6)) || 0;
+      }
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const imges_ID = "IMG" + String(imgMaxId + i + 1).padStart(6, "0"); // สร้าง ID ที่ไม่ซ้ำ
+        await db.promise().query(imageQuery, [
+          imges_ID,
+          file.filename,
+          mainr_ID,
+        ]);
+      }
+    }
+
+    res.status(201).json({ message: "บันทึกคำขอซ่อมบำรุงสำเร็จ" });
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการบันทึกคำขอซ่อมบำรุง:", error);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการบันทึกคำขอซ่อมบำรุง" });
+  }
+};
+
+module.exports = {
+  submitRepairRequest,
+  upload,
+  getUserByIdfromReq,
+  getPetitiontype
+};
