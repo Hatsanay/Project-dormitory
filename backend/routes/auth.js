@@ -3,7 +3,7 @@ const { login } = require('../controllers/authController');
 const { registerUser, getAutotid ,getRole ,getUser, getUserById, updateUser, updateUserStatus} = require('../controllers/regiterController');
 const { getProvince,getAmphures,getTambons,getZipcode } = require('../controllers/addressControler');
 const {getStatus,getStatusUserDelete} = require('../controllers/statusControler');
-const {getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload} = require('../controllers/reqController');
+const {getReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload} = require('../controllers/reqController');
 // getUserByIdfromReq
 // const { registerRoom } = require('../controllers/RoomController');
 const authenticateToken = require('../middleware/auth');
@@ -25,6 +25,7 @@ router.get('/getZipcode',authenticateToken, getZipcode);
 router.get('/getStatus',authenticateToken, getStatus);
 router.get('/getStatusUserDelete',authenticateToken, getStatusUserDelete);
 
+router.get('/getReqById',authenticateToken, getReqById);
 router.get('/getUserByIdfromReq',authenticateToken, getUserByIdfromReq);
 router.get('/getPetitiontype',authenticateToken, getPetitiontype);
 

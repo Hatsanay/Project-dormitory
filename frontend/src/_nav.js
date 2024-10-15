@@ -12,9 +12,15 @@ export default [
     component: 'CNavTitle',
     name: 'แจ้งซ่อม',
   },
+  // {
+  //   component: 'CNavItem',
+  //   name: 'แจ้งซ่อมบำรุงหอพัก',
+  //   to: '/UserAddReqView',
+  //   icon: 'cil-people',
+  // },
   {
     component: 'CNavItem',
-    name: 'แจ้งซ่อมบำรุงหอพัก',
+    name: 'รายการแจ้งซ่อมบำรุงหอพัก',
     to: '/UserReqView',
     icon: 'cil-people',
   },

@@ -68,7 +68,7 @@
                   </td>
                   <td>
                     <button
-                      class="btn btn-warning btn-sm fontwhite"
+                      class="btn btn-warning btn-sm "
                       @click="
                         $router.push({
                           path: '/EditResView',
@@ -196,6 +196,13 @@
     </CToaster>
   </div>
 </template>
+
+<style scoped>
+  .fontwhite{
+    color: white;
+  }
+</style>
+
 
 <script>
 import { ref, watch, onMounted, computed } from "vue";

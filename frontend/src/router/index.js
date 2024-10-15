@@ -5,6 +5,7 @@ import RegisResView from '../views/Admin/RegisResView.vue';
 import Room from '../views/Admin/Room.vue';
 import ViewResView from '../views/Admin/ViewResView.vue';
 import userDasboard from '../views/dashboard/Dashboard.vue';
+import AddReqView from '../views/user/UserAddReqView.vue';
 import ReqView from '../views/user/UserReqView.vue';
 
 import { clearToken, hasPermission, isAuthenticated } from './auth';
@@ -19,59 +20,72 @@ const routes = [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        id: '1',
         meta: { permission: 'view_users_dashboard', requiresAuth: true },
         component: userDasboard,
       },
       {
-        path: '/UserReqView',
-        name: 'แจ้งซ่อมบำรุง',
-        id: '2',
-        meta: { permission: 'view_users_reques', requiresAuth: true },
-        component: ReqView,
-      },
-      {
-        path: '/UserSetView',
-        name: 'ตั้งค่า',
-        id: '3',
-        meta: { permission: 'view_users_Setting', requiresAuth: true },
-        component: () => import('../views/user/UserSetView.vue'),
-      },
-      {
         path: '/adminDashboard',
         name: 'AdminDashboard',
-        id: '4',
         meta: { permission: 'view_admin_dashboard', requiresAuth: true },
         component: () => import('../views/Admin/Dashboard.vue'),
       },
-      {
-        path: '/RegisResident',
-        name: 'เพิ่มผู้ใช้งาน',
-        id: '5',
-        meta: { permission: 'add_RegisResident', requiresAuth: true },
-        component: RegisResView,
-      },
-      {
-        path: '/Room',
-        name: 'Room',
-        id: '6',
-        meta: { permission: 'edit_RegisRoom', requiresAuth: true },
-        component: Room,
-      },
+
+      ///แจ้งปัญหา///
+        {
+          path: '/UserReqView',
+          name: 'รายการแจ้งซ่อมบำรุงหอพัก',
+          meta: { permission: 'view_reques', requiresAuth: true },
+          component: ReqView,
+        },
+
+        {
+          path: '/UserAddReqView',
+          name: 'แจ้งซ่อมบำรุง',
+          meta: { permission: 'add_reques', requiresAuth: true },
+          component: AddReqView,
+        },
+      
+      
+      ///จัดการค่าคงที่ผู้ใช้งาน///
       {
         path: '/ViewResident',
         name: 'จัดการผู้ใช้งาน',
-        id: '7',
         meta: { permission: 'view_RegisResident', requiresAuth: true },
         component: ViewResView,
       },
       {
+        path: '/RegisResident',
+        name: 'เพิ่มผู้ใช้งาน',
+        meta: { permission: 'add_RegisResident', requiresAuth: true },
+        component: RegisResView,
+      },
+      {
         path: '/EditResView',
         name: 'แก้ไขข้อมูลผู้ใช้งาน',
-        id: '8',
         meta: { permission: 'edit_Resident', requiresAuth: true },
         component: EditResView,
       },
+
+
+      ///จัดการค่าคงที่ห้องพัก///
+      {
+        path: '/Room',
+        name: 'Room',
+        meta: { permission: 'edit_RegisRoom', requiresAuth: true },
+        component: Room,
+      },
+
+
+      ///ตั้งค่า///
+      {
+        path: '/UserSetView',
+        name: 'ตั้งค่า',
+        meta: { permission: 'view_users_Setting', requiresAuth: true },
+        component: () => import('../views/user/UserSetView.vue'),
+      },
+      
+
+
     ],
   },
   {

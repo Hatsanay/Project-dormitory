@@ -40,13 +40,19 @@ export const decodeJWTTH = (token) => {
   
   export const hasPermission = (permission) => {
     const permissionsMap = [
-      'view_users_dashboard', 
-      'view_users_reques', 
-      'view_users_Setting',
-      'view_admin_dashboard', 
+      'view_users_dashboard',
+      'view_admin_dashboard',
+
+      ///แจ้งปัญหา///
+      'add_reques',
+      'view_reques',
+      ///จัดการค่าคงที่ผู้ใช้งาน///
       'view_RegisResident', 
       'add_RegisResident',
       'edit_Resident',
+      ///ตั้งค่า///
+      'view_users_Setting',
+      ///จัดการค่าคงที่ห้องพัก///
       'edit_RegisRoom',
     ];
     

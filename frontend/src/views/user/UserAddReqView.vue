@@ -1,18 +1,19 @@
 <script setup>
-import ViewReqComponent from "../../components/ReqComponent/ViewReqComponent.vue";
+import ReqComponent from "../../components/ReqComponent/ReqComponent.vue";
 
 </script>
 
 <template>
   <div>
-    <ViewReqComponent></ViewReqComponent>
+    <ReqComponent></ReqComponent>
+
   </div>
 </template>
 
 <script>
 // console.log(token);
 export default {
-  name: "ReqView",
+  name: "AddReqView",
 };
 </script>
 

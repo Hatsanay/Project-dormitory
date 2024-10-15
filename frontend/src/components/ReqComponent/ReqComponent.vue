@@ -218,9 +218,11 @@ export default {
           confirmButtonText: "ตกลง",
         }).then((result) => {
           if (result.isConfirmed) {
-            window.location.reload();
+            //window.location.reload()
+            // this.$router.push("/UserReqView");
           }
         });
+
         rentingID.value = "";
         reqPetitiontype.value = "";
         titleRepair.value = "";
