@@ -2,11 +2,11 @@
   <div>
     <WidgetsStatsD class="mb-4" />
     <CRow>
-      <CCol :md="12">
-        <CCard class="mb-4">
-          <CCardHeader>แจ้งซ่อมบำรุง</CCardHeader>
-          <CCardBody>
-            <CForm class="row g-3" @submit.prevent="submitForm">
+      <CForm class="row g-3" @submit.prevent="submitForm">
+        <CCol :md="6">
+          <CCard class="mb-4">
+            <CCardHeader>ข้อมูลแจ้งซ่อมบำรุง</CCardHeader>
+            <CCardBody>
               <CCol md="12">
                 <CRow class="mb-3">
                   <div class="col-sm-10">
@@ -30,7 +30,7 @@
                 </CRow>
                 <CRow class="mb-3">
                   <CFormLabel for="roomNumber" class="col-sm-2 col-form-label"
-                    >หมายเลขห้อง</CFormLabel
+                    >ห้อง</CFormLabel
                   >
                   <div class="col-sm-10">
                     <CFormInput
@@ -82,6 +82,14 @@
                   required
                 />
               </CCol>
+            </CCardBody>
+          </CCard>
+
+        </CCol>
+        <CCol :md="6">
+          <CCard class="mb-4">
+            <CCardHeader>ข้อมูลรูปภาพ</CCardHeader>
+            <CCardBody>
               <CCol md="12">
                 <CFormLabel for="reqImg">กรุณาเลือกรูปภาพเบื้องต้น</CFormLabel>
                 <CFormInput
@@ -110,11 +118,15 @@
                   </div>
                 </div>
               </CCol>
-              <CButton type="submit" color="primary">บันทึก</CButton>
-            </CForm>
-          </CCardBody>
-        </CCard>
-      </CCol>
+            </CCardBody>
+          </CCard>
+        </CCol>
+        <div>
+        <CButton class="submitbutton" type="submit" color="primary">บันทึก</CButton>
+
+        </div>
+
+      </CForm>
     </CRow>
 
     <CToaster class="p-3" placement="top-end">
@@ -127,6 +139,23 @@
     </CToaster>
   </div>
 </template>
+
+<style scoped>
+.submitbutton{
+  width: 100%;
+}
+
+.row {
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+}
+
+.col {
+  padding: 0;
+}
+
+</style>
 
 <script>
 import Swal from "sweetalert2";
@@ -218,7 +247,7 @@ export default {
           confirmButtonText: "ตกลง",
         }).then((result) => {
           if (result.isConfirmed) {
-            //window.location.reload()
+            window.location.reload()
             // this.$router.push("/UserReqView");
           }
         });

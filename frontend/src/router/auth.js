@@ -43,13 +43,16 @@ export const decodeJWTTH = (token) => {
       'view_users_dashboard',
       'view_admin_dashboard',
 
-      ///แจ้งปัญหา///
+      ///ระบบแจ้งปัญหา///
       'add_reques',
       'view_reques',
+      ///ระบบจัดการการแจ้งปัญหา///
+      'view_manage_reques',
       ///จัดการค่าคงที่ผู้ใช้งาน///
       'view_RegisResident', 
       'add_RegisResident',
       'edit_Resident',
+      
       ///ตั้งค่า///
       'view_users_Setting',
       ///จัดการค่าคงที่ห้องพัก///

@@ -33,6 +33,7 @@
     "simplebar-vue": "^2.3.5",
     "sweetalert2": "^11.14.3",
     "vue": "^3.4.28",
+    "vue-easy-lightbox": "^1.19.0",
     "vue-good-table": "^2.21.11",
     "vue-router": "^4.3.3"
   },

@@ -1,3 +1,5 @@
+
+
 export default [
   {
     component: 'CNavItem',
@@ -8,60 +10,42 @@ export default [
       color: 'primary',
     },
   },
+  ///ระบบแจ้งปัญหา///
   {
     component: 'CNavTitle',
-    name: 'แจ้งซ่อม',
+    name: 'แจ้งซ่อมบำรุงห้องพัก',
   },
-  // {
-  //   component: 'CNavItem',
-  //   name: 'แจ้งซ่อมบำรุงหอพัก',
-  //   to: '/UserAddReqView',
-  //   icon: 'cil-people',
-  // },
   {
     component: 'CNavItem',
-    name: 'รายการแจ้งซ่อมบำรุงหอพัก',
+    name: 'ส่งคำร้องแจ้งซ่อม',
     to: '/UserReqView',
     icon: 'cil-people',
   },
+  ///ระบบจัดการการแจ้งปัญหา///
+  {
+    component: 'CNavTitle',
+    name: 'จัดการการแจ้งซ่อม',
+  },
+  {
+    component: 'CNavItem',
+    name: 'คำร้องขอแจ้งซ่อม',
+    to: '/StaffMgnReqView',
+    icon: 'cil-people',
+  },
 
+  ///จัดการค่าคงที่ผู้ใช้งาน///
   {
     component: 'CNavTitle',
     name: 'จัดการผู้ใช้งาน',
   },
   {
     component: 'CNavItem',
-    name: 'จัดการผู้ใช้งาน',
+    name: 'ผู้ใช้งาน',
     to: '/ViewResident',
     icon: 'cil-people',
   },
-  // {
-  //   component: 'CNavItem',
-  //   name: 'จัดการผู้ใช้งานในระบบ',
-  //   to: '/RegisResident',
-  //   icon: 'cil-people',
-  // },
 
-  // {
-  //   component: 'CNavItem',
-  //   name: 'จัดการนิติบุคคล',
-  //   to: '#',
-  //   icon: 'cil-people',
-  // },
-
-  // {
-  //   component: 'CNavItem',
-  //   name: 'จัดการเจ้าหน้าที่ซ่อมบำรุง',
-  //   to: '#',
-  //   icon: 'cil-people',
-  // },
-
-  // {
-  //   component: 'CNavItem',
-  //   name: 'จัดการผู้จัดการ',
-  //   to: '#',
-  //   icon: 'cil-people',
-  // },
+  ///จัดการค่าคงที่ห้องพัก///
   {
     component: 'CNavTitle',
     name: 'จัดการห้องพักอาศัย',
@@ -69,11 +53,13 @@ export default [
 
   {
     component: 'CNavItem',
-    name: 'จัดการห้องพักอาศัย',
+    name: 'ห้องพักอาศัย',
     to: '/Room',
     icon: 'cil-people',
   },
 
+
+  ///ตั้งค่า///
   {
     component: 'CNavTitle',
     name: 'ตั้งค่าข้อมูลระบบ',

@@ -112,7 +112,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// ตรวจสอบประเภทของไฟล์
+
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === "image/jpeg" || file.mimetype === "image/png" || file.mimetype === "image/gif") {
     cb(null, true);
@@ -197,10 +197,46 @@ const submitRepairRequest = async (req, res) => {
   }
 };
 
+
+const getImgById = async (req, res) => {
+  try {
+    const reqId = req.query.id;
+
+    if (!reqId) {
+      return res.status(400).json({ error: "โปรดระบุ id" });
+    }
+
+    const query = `
+    SELECT 
+      imges_ID,
+      imges_Path,
+      image_mainr_ID
+    FROM 
+      imagerequests
+    WHERE
+      image_mainr_ID = ?
+    `;
+
+    const [result] = await db.promise().query(query, [reqId]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลรูปภาพ" });
+    }
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
 module.exports = {
   getReqById,
   submitRepairRequest,
   upload,
   getUserByIdfromReq,
-  getPetitiontype
+  getPetitiontype,
+  getImgById
 };
+

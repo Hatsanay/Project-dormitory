@@ -1,12 +1,16 @@
 import DefaultLayout from '@/layouts/DefaultLayout';
 import { createRouter, createWebHashHistory } from 'vue-router';
-import EditResView from '../views/Admin/EditResView.vue';
-import RegisResView from '../views/Admin/RegisResView.vue';
-import Room from '../views/Admin/Room.vue';
-import ViewResView from '../views/Admin/ViewResView.vue';
 import userDasboard from '../views/dashboard/Dashboard.vue';
-import AddReqView from '../views/user/UserAddReqView.vue';
-import ReqView from '../views/user/UserReqView.vue';
+import AddReqView from '../views/Request/UserAddReqView.vue';
+import ReqView from '../views/Request/UserReqView.vue';
+import Room from '../views/staticRoom/Room.vue';
+import EditResView from '../views/staticUsers/EditResView.vue';
+import RegisResView from '../views/staticUsers/RegisResView.vue';
+import ViewResView from '../views/staticUsers/ViewResView.vue';
+
+import StaffMgnReqView from '../views/ManageRequets/StaffMgnReqView.vue';
+
+
 
 import { clearToken, hasPermission, isAuthenticated } from './auth';
 
@@ -30,10 +34,10 @@ const routes = [
         component: () => import('../views/Admin/Dashboard.vue'),
       },
 
-      ///แจ้งปัญหา///
+      ///ระบบแจ้งปัญหา///
         {
           path: '/UserReqView',
-          name: 'รายการแจ้งซ่อมบำรุงหอพัก',
+          name: 'ส่งคำร้องแจ้งซ่อม',
           meta: { permission: 'view_reques', requiresAuth: true },
           component: ReqView,
         },
@@ -45,6 +49,13 @@ const routes = [
           component: AddReqView,
         },
       
+      ///ระบบจัดการการแจ้งปัญหา///
+      {
+          path: '/StaffMgnReqView',
+          name: 'คำร้องขอแจ้งซ่อม', //เจ้าหน้าที่
+          meta: { permission: 'view_manage_reques', requiresAuth: true },
+          component: StaffMgnReqView,
+        },
       
       ///จัดการค่าคงที่ผู้ใช้งาน///
       {
@@ -81,7 +92,7 @@ const routes = [
         path: '/UserSetView',
         name: 'ตั้งค่า',
         meta: { permission: 'view_users_Setting', requiresAuth: true },
-        component: () => import('../views/user/UserSetView.vue'),
+        component: () => import('../views/staticSetting/UserSetView.vue'),
       },
       
 
