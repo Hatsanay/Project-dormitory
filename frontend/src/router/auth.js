@@ -48,6 +48,7 @@ export const decodeJWTTH = (token) => {
       'view_reques',
       ///ระบบจัดการการแจ้งปัญหา///
       'view_manage_reques',
+      'view_macmanage_reques',
       ///จัดการค่าคงที่ผู้ใช้งาน///
       'view_RegisResident', 
       'add_RegisResident',

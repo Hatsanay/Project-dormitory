@@ -8,6 +8,7 @@ import EditResView from '../views/staticUsers/EditResView.vue';
 import RegisResView from '../views/staticUsers/RegisResView.vue';
 import ViewResView from '../views/staticUsers/ViewResView.vue';
 
+import macMgnReqView from '../views/ManageRequets/macMgnReqView.vue';
 import StaffMgnReqView from '../views/ManageRequets/StaffMgnReqView.vue';
 
 
@@ -55,6 +56,12 @@ const routes = [
           name: 'คำร้องขอแจ้งซ่อม', //เจ้าหน้าที่
           meta: { permission: 'view_manage_reques', requiresAuth: true },
           component: StaffMgnReqView,
+        },
+        {
+          path: '/macMgnReqView',
+          name: 'รับคำร้องขอแจ้งซ่อม', //เจ้าหน้าที่ซ่อมบำรุง
+          meta: { permission: 'view_macmanage_reques', requiresAuth: true },
+          component: macMgnReqView,
         },
       
       ///จัดการค่าคงที่ผู้ใช้งาน///

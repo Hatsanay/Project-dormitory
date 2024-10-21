@@ -32,6 +32,12 @@ export default [
     to: '/StaffMgnReqView',
     icon: 'cil-people',
   },
+  {
+    component: 'CNavItem',
+    name: 'รับคำร้องขอแจ้งซ่อม',
+    to: '/macMgnReqView',
+    icon: 'cil-people',
+  },
 
   ///จัดการค่าคงที่ผู้ใช้งาน///
   {

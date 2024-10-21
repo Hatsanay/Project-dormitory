@@ -131,7 +131,7 @@
 
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
-        <CToastHeader closeButton>
+        <CToastHeader closeButton class="bg-primary text-white">
           <span class="me-auto fw-bold">{{ toast.title }}</span>
         </CToastHeader>
         <CToastBody>{{ toast.content }}</CToastBody>
