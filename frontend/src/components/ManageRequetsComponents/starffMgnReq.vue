@@ -13,6 +13,7 @@
     </CRow>
 
     <CRow>
+
       <CCol v-for="item in paginatedItems" :key="item.mainr_ID" md="12" class="mb-4">
         <CCard class="card-modern" @click="showModal(item)">
           <CCardHeader class="card-header-modern">
@@ -124,8 +125,8 @@
       </CModalBody>
 
       <CModalFooter>
-        <CButton color="secondary" @click="closeModelDetailRequest">Close</CButton>
-        <CButton class="frontwhite" color="danger" @click="sendtomac(selectedUser)">
+        <CButton color="secondary" @click="closeModelDetailRequest">ปิด</CButton>
+        <CButton class="frontwhite" color="danger" @click="denyClick(selectedUser)">
           ปฎิเสธ
         </CButton>
         <CButton color="primary" @click="sendtomac(selectedUser)">
@@ -149,6 +150,7 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import VueEasyLightbox from "vue-easy-lightbox";
+import Swal from "sweetalert2";
 
 export default {
   name: "starffMgnReq",
@@ -243,6 +245,81 @@ export default {
       }
     };
 
+    const denyClick = (selectedUser) => {
+      Swal.fire({
+        title: "คุณแน่ใจหรือไม่?",
+        text: "การปฎิเสธคำร้องนี้ไม่สามารถย้อนกลับได้!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ยืนยันการปฎิเสธ",
+        cancelButtonText: "ยกเลิก",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.put(`/api/auth/denyReq`, {
+              mainr_ID: selectedUser.mainr_ID,
+            });
+
+            Swal.fire({
+              title: "ปฎิเสธเรียบร้อย!",
+              text: "การแจ้งซ่อมของคุณถูกปฎิเสธแล้ว.",
+              icon: "success",
+            });
+
+            closeModelDetailRequest();
+            fetchRequests();
+          } catch (error) {
+            console.error("เกิดข้อผิดพลาดในการปฎิเสธแจ้งซ่อม:", error);
+            Swal.fire({
+              title: "เกิดข้อผิดพลาด!",
+              text: "ไม่สามารถปฎิเสธการแจ้งซ่อมได้.",
+              icon: "error",
+            });
+          }
+        }
+      });
+    };
+
+    const sendtomac = (selectedUser) => {
+      Swal.fire({
+        title: "คุณแน่ใจหรือไม่ที่จะส่งคำร้องให้ช่าง?",
+        text: "การส่งคำร้องนี้ไม่สามารถย้อนกลับได้!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ยืนยันส่งคำร้อง",
+        cancelButtonText: "ยกเลิก",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.put(`/api/auth/sendtomacReq`, {
+              mainr_ID: selectedUser.mainr_ID,
+            });
+
+            Swal.fire({
+              title: "ส่งคำร้องเรียบร้อย!",
+              text: "ส่งคำร้องให้ช่างแล้ว.",
+              icon: "success",
+            });
+
+            closeModelDetailRequest();
+            fetchRequests();
+          } catch (error) {
+            console.error("เกิดข้อผิดพลาดในการปฎิเสธแจ้งซ่อม:", error);
+            Swal.fire({
+              title: "เกิดข้อผิดพลาด!",
+              text: "ไม่สามารถปฎิเสธการแจ้งซ่อมได้.",
+              icon: "error",
+            });
+          }
+        }
+      });
+    };
+
+
     onMounted(() => {
       fetchRequests();
     });
@@ -265,6 +342,8 @@ export default {
       currentImageIndex,
       handlePreviousImage,
       handleNextImage,
+      denyClick,
+      sendtomac
     };
   },
 };

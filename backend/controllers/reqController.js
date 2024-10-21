@@ -31,6 +31,8 @@ const getReqById = async (req, res) => {
     WHERE
       users.user_ID = ?
       AND maintenancerequests.mainr_Stat_ID != "STA000017"
+    ORDER BY
+      maintenancerequests.mainr_ID ASC
     `;
 
     const [result] = await db.promise().query(query, [userId]);
@@ -155,7 +157,15 @@ const submitRepairRequest = async (req, res) => {
     const num = maxId + 1;
     const mainr_ID = "MNR" + String(num).padStart(6, "0");
 
-    const reqDate = new Date().toISOString();
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0"); // เพิ่ม 1 ให้กับเดือน เพราะ getMonth() ให้ค่าเริ่มจาก 0
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    const reqDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     const maintenanceQuery = `
       INSERT INTO maintenancerequests 
@@ -247,7 +257,7 @@ const cancelReq = async (req, res) => {
 
   try {
     if (!mainr_ID) {
-      return res.status(400).json({ error: 'โปรดระบุ mainr_ID' });
+      return res.status(400).json({ error: "โปรดระบุ mainr_ID" });
     }
 
     const updateQuery = `
@@ -264,7 +274,6 @@ const cancelReq = async (req, res) => {
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
 };
-
 
 module.exports = {
   getReqById,

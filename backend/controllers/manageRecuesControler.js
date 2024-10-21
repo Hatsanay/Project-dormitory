@@ -20,7 +20,9 @@ const getReq = async (req, res) => {
         INNER JOIN status on status.stat_ID = maintenancerequests.mainr_Stat_ID
         INNER JOIN room on room.room_ID = renting.renting_room_ID
     WHERE
-      maintenancerequests.mainr_Stat_ID != "STA000017"
+      maintenancerequests.mainr_Stat_ID = "STA000011"
+    ORDER BY
+      maintenancerequests.mainr_ID ASC
     `;
   
       const [result] = await db.promise().query(query);
@@ -46,7 +48,52 @@ const getReq = async (req, res) => {
     }
   };
 
+  const denyReq = async (req, res) => {
+    const { mainr_ID, mainrstatus_ID = "STA000018" } = req.body;
+  
+    try {
+      if (!mainr_ID) {
+        return res.status(400).json({ error: "โปรดระบุ mainr_ID" });
+      }
+  
+      const updateQuery = `
+        UPDATE maintenancerequests SET
+        mainr_Stat_ID = ?
+        WHERE mainr_ID = ?
+      `;
+  
+      await db.promise().query(updateQuery, [mainrstatus_ID, mainr_ID]);
+  
+      res.status(200).json({ message: "ยกเลิกการแจ้งซ่อมเรียบร้อยแล้ว" });
+    } catch (err) {
+      console.error("เกิดข้อผิดพลาด:", err);
+      res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+    }
+  };
+
+  const sendtomacReq = async (req, res) => {
+    const { mainr_ID, mainrstatus_ID = "STA000012" } = req.body;
+  
+    try {
+      if (!mainr_ID) {
+        return res.status(400).json({ error: "โปรดระบุ mainr_ID" });
+      }
+  
+      const updateQuery = `
+        UPDATE maintenancerequests SET
+        mainr_Stat_ID = ?
+        WHERE mainr_ID = ?
+      `;
+  
+      await db.promise().query(updateQuery, [mainrstatus_ID, mainr_ID]);
+  
+      res.status(200).json({ message: "ยกเลิกการแจ้งซ่อมเรียบร้อยแล้ว" });
+    } catch (err) {
+      console.error("เกิดข้อผิดพลาด:", err);
+      res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+    }
+  };
 
 module.exports = {
-    getReq,
+    getReq,denyReq,sendtomacReq
 };

@@ -135,7 +135,7 @@
       </CModalBody>
 
       <CModalFooter>
-        <CButton color="secondary" @click="closeModelDetailRequest">Close</CButton>
+        <CButton color="secondary" @click="closeModelDetailRequest">ปิด</CButton>
         <CButton
           class="cancelButton"
           color="danger"
