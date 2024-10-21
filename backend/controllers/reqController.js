@@ -38,13 +38,19 @@ const getReqById = async (req, res) => {
     if (result.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลการแจ้งซ่อม" });
     }
-    const formattedResult = result.map(item => ({
+    const formattedResult = result.map((item) => ({
       ...item,
-      mainr_Date: new Date(item.mainr_Date).toLocaleDateString('th-TH', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      })
+      mainr_Date:
+        new Date(item.mainr_Date).toLocaleDateString("th-TH", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }) +
+        " " +
+        new Date(item.mainr_Date).toLocaleTimeString("th-TH", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
     }));
 
     res.status(200).json(formattedResult);
@@ -53,9 +59,6 @@ const getReqById = async (req, res) => {
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
 };
-
-
-
 
 const getUserByIdfromReq = async (req, res) => {
   try {
@@ -86,7 +89,6 @@ const getUserByIdfromReq = async (req, res) => {
   }
 };
 
-
 const getPetitiontype = async (req, res) => {
   try {
     const query = `
@@ -97,24 +99,27 @@ const getPetitiontype = async (req, res) => {
     const [result] = await db.promise().query(query);
     res.status(200).json(result);
   } catch (err) {
-    console.error('เกิดข้อผิดพลาด:', err);
-    res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดำเนินการ' });
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
-}
+};
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
 
-
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png" || file.mimetype === "image/gif") {
+  if (
+    file.mimetype === "image/jpeg" ||
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/gif"
+  ) {
     cb(null, true);
   } else {
     cb(new Error("ประเภทไฟล์ไม่รองรับ"), false);
@@ -130,13 +135,15 @@ const submitRepairRequest = async (req, res) => {
   const { rentingID, reqPetitiontype, titleRepair, reqDetail } = req.body;
   const files = req.files;
 
-
   if (!titleRepair || !reqDetail) {
-    return res.status(400).json({ error: "หัวข้อและรายละเอียดการแจ้งซ่อมไม่สามารถเป็นค่าว่างได้" });
+    return res
+      .status(400)
+      .json({ error: "หัวข้อและรายละเอียดการแจ้งซ่อมไม่สามารถเป็นค่าว่างได้" });
   }
 
   try {
-    const query = "SELECT mainr_ID FROM maintenancerequests ORDER BY mainr_ID DESC LIMIT 1";
+    const query =
+      "SELECT mainr_ID FROM maintenancerequests ORDER BY mainr_ID DESC LIMIT 1";
     const [result] = await db.promise().query(query);
     let maxId;
     if (result.length === 0) {
@@ -150,28 +157,33 @@ const submitRepairRequest = async (req, res) => {
 
     const reqDate = new Date().toISOString();
 
- 
     const maintenanceQuery = `
       INSERT INTO maintenancerequests 
       (mainr_ID, mainr_ProblemTitle, mainr_ProblemDescription, mainr_Date, mainr_renting_ID, mainr_pattyp_ID, mainr_Stat_ID)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
-    await db.promise().query(maintenanceQuery, [
-      mainr_ID,
-      titleRepair,
-      reqDetail,
-      reqDate,
-      rentingID,
-      reqPetitiontype,
-      "STA000011"
-    ]);
+    await db
+      .promise()
+      .query(maintenanceQuery, [
+        mainr_ID,
+        titleRepair,
+        reqDetail,
+        reqDate,
+        rentingID,
+        reqPetitiontype,
+        "STA000011",
+      ]);
 
     if (files && files.length > 0) {
       const imageQuery = `
         INSERT INTO imagerequests (imges_ID, imges_Path, image_mainr_ID)
         VALUES (?, ?, ?)
       `;
-      const [imgesResult] = await db.promise().query("SELECT imges_ID FROM imagerequests ORDER BY imges_ID DESC LIMIT 1");
+      const [imgesResult] = await db
+        .promise()
+        .query(
+          "SELECT imges_ID FROM imagerequests ORDER BY imges_ID DESC LIMIT 1"
+        );
       let imgMaxId = 0;
 
       if (imgesResult.length > 0) {
@@ -182,11 +194,9 @@ const submitRepairRequest = async (req, res) => {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const imges_ID = "IMG" + String(imgMaxId + i + 1).padStart(6, "0"); // สร้าง ID ที่ไม่ซ้ำ
-        await db.promise().query(imageQuery, [
-          imges_ID,
-          file.filename,
-          mainr_ID,
-        ]);
+        await db
+          .promise()
+          .query(imageQuery, [imges_ID, file.filename, mainr_ID]);
       }
     }
 
@@ -196,7 +206,6 @@ const submitRepairRequest = async (req, res) => {
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการบันทึกคำขอซ่อมบำรุง" });
   }
 };
-
 
 const getImgById = async (req, res) => {
   try {
@@ -230,6 +239,32 @@ const getImgById = async (req, res) => {
   }
 };
 
+//////////////API//////////////
+//////////cancelReq///////////
+///////////////////////////////
+const cancelReq = async (req, res) => {
+  const { mainr_ID, mainrstatus_ID = "STA000017" } = req.body;
+
+  try {
+    if (!mainr_ID) {
+      return res.status(400).json({ error: 'โปรดระบุ mainr_ID' });
+    }
+
+    const updateQuery = `
+      UPDATE maintenancerequests SET
+      mainr_Stat_ID = ?
+      WHERE mainr_ID = ?
+    `;
+
+    await db.promise().query(updateQuery, [mainrstatus_ID, mainr_ID]);
+
+    res.status(200).json({ message: "ยกเลิกการแจ้งซ่อมเรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
 
 module.exports = {
   getReqById,
@@ -237,6 +272,6 @@ module.exports = {
   upload,
   getUserByIdfromReq,
   getPetitiontype,
-  getImgById
+  getImgById,
+  cancelReq,
 };
-

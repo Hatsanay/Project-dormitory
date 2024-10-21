@@ -87,25 +87,47 @@
       @close="closeModelDetailRequest"
       aria-labelledby="VerticallyCenteredExample"
       size="xl"
+      backdrop="static"
     >
       <CModalHeader>
-        <CModalTitle id="ModelDetailRequest">รายละเอียดการแจ้งซ่อม: {{ selectedUser.mainr_ID }}</CModalTitle>
+        <CModalTitle id="ModelDetailRequest">
+          รายละเอียดการแจ้งซ่อม ID: {{ selectedUser.mainr_ID }}
+          <span>วันที่: {{ selectedUser.mainr_Date }}</span>
+        </CModalTitle>
       </CModalHeader>
-      <CModalBody>
-        <p><strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}</p>
-        <p><strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}</p>
-        <p><strong>ประเภท:</strong> {{ selectedUser.Type }}</p>
-        <p><strong>สถานะ:</strong> {{ selectedUser.status }}</p>
+      <CModalBody style="max-height: 400px; overflow-y: auto">
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>ผู้แจ้ง:</strong> {{ selectedUser.fullname }}
+        </p>
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>ห้อง:</strong> {{ selectedUser.roomNumber }}
+        </p>
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}
+        </p>
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}
+        </p>
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>ประเภท:</strong> {{ selectedUser.Type }}
+        </p>
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>สถานะ:</strong> {{ selectedUser.status }}
+        </p>
 
         <div v-if="imageUrls.length > 0" class="mt-3">
-          <!-- <p><strong>รูปภาพ:</strong></p> -->
-          <div style="display: flex; flex-wrap: wrap; gap: 10px">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center">
             <img
               v-for="(url, index) in imageUrls"
               :key="index"
               :src="getImageUrl(url)"
               alt="รูปภาพแจ้งซ่อม"
-              style="max-width: 200px; max-height: 200px; object-fit: cover; cursor: pointer;"
+              style="
+                max-width: 500px;
+                max-height: 500px;
+                object-fit: cover;
+                cursor: pointer;
+              "
               @click="openImageModal(index)"
             />
           </div>
@@ -114,7 +136,11 @@
 
       <CModalFooter>
         <CButton color="secondary" @click="closeModelDetailRequest">Close</CButton>
-        <CButton class="cancelButton" color="danger" @click.stop="cancel(selectedUser)">
+        <CButton
+          class="cancelButton"
+          color="danger"
+          @click.stop="cancelClick(selectedUser)"
+        >
           ยกเลิกแจ้งซ่อม
         </CButton>
       </CModalFooter>
@@ -122,7 +148,7 @@
 
     <vue-easy-lightbox
       :visible="visibleImageModal"
-      :imgs="imageUrls.map(url => getImageUrl(url))"
+      :imgs="imageUrls.map((url) => getImageUrl(url))"
       :index="currentImageIndex"
       @hide="closeImageModalOnly"
       @prev="handlePreviousImage"
@@ -135,19 +161,20 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import VueEasyLightbox from "vue-easy-lightbox";
+import Swal from "sweetalert2";
 
 export default {
   name: "ViewReqComponent",
   components: {
-    VueEasyLightbox, 
+    VueEasyLightbox,
   },
   setup() {
     const searchQuery = ref("");
     const items = ref([]);
     const rowsPerPage = ref(3);
     const currentPage = ref(1);
-    const visibleModelDetailRequest = ref(false); 
-    const visibleImageModal = ref(false); 
+    const visibleModelDetailRequest = ref(false);
+    const visibleImageModal = ref(false);
     const selectedUser = ref({});
     const imageUrls = ref([]);
     const currentImageIndex = ref(0);
@@ -215,7 +242,7 @@ export default {
     };
 
     const closeImageModalOnly = () => {
-      visibleImageModal.value = false; 
+      visibleImageModal.value = false;
     };
 
     const handlePreviousImage = () => {
@@ -228,6 +255,43 @@ export default {
       if (currentImageIndex.value < imageUrls.value.length - 1) {
         currentImageIndex.value += 1;
       }
+    };
+
+    const cancelClick = (selectedUser) => {
+      Swal.fire({
+        title: "คุณแน่ใจหรือไม่?",
+        text: "การยกเลิกนี้ไม่สามารถย้อนกลับได้!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ยืนยันการยกเลิก",
+        cancelButtonText: "ยกเลิก",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.put(`/api/auth/cancelReq`, {
+              mainr_ID: selectedUser.mainr_ID,
+            });
+
+            Swal.fire({
+              title: "ยกเลิกเรียบร้อย!",
+              text: "การแจ้งซ่อมของคุณถูกยกเลิกแล้ว.",
+              icon: "success",
+            });
+
+            closeModelDetailRequest();
+            fetchRequests();
+          } catch (error) {
+            console.error("เกิดข้อผิดพลาดในการยกเลิกแจ้งซ่อม:", error);
+            Swal.fire({
+              title: "เกิดข้อผิดพลาด!",
+              text: "ไม่สามารถยกเลิกการแจ้งซ่อมได้.",
+              icon: "error",
+            });
+          }
+        }
+      });
     };
 
     onMounted(() => {
@@ -252,6 +316,7 @@ export default {
       currentImageIndex,
       handlePreviousImage,
       handleNextImage,
+      cancelClick,
     };
   },
 };

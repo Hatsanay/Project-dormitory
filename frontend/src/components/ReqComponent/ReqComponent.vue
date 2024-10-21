@@ -243,7 +243,7 @@ export default {
         await Swal.fire({
           icon: "success",
           title: "บันทึกสำเร็จ",
-          text: "คำขอซ่อมบำรุงของคุณถูกบันทึกเรียบร้อยแล้ว!",
+          text: "ส่งคำขอเรียบร้อยแล้ว!",
           confirmButtonText: "ตกลง",
         }).then((result) => {
           if (result.isConfirmed) {
@@ -252,6 +252,19 @@ export default {
           }
         });
 
+        // await Swal.fire({
+        //   position: "top-end",
+        //   icon: "success",
+        //   title: "บันทึกสำเร็จ",
+        //   showConfirmButton: false,
+        //   timer: 1500,
+        // }).then((result) => {
+        //   if (result.isConfirmed) {
+        //     window.location.reload();
+        //     // this.$router.push("/UserReqView");
+        //   }
+        // });
+
         rentingID.value = "";
         reqPetitiontype.value = "";
         titleRepair.value = "";
@@ -259,12 +272,19 @@ export default {
         selectedFiles.value = [];
         imagePreviews.value = [];
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล:", error);
+        // console.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล:", error);
+        // await Swal.fire({
+        //   icon: "error",
+        //   title: "เกิดข้อผิดพลาด",
+        //   text: "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองอีกครั้ง!",
+        //   confirmButtonText: "ตกลง",
+        // });
         await Swal.fire({
+          position: "top-end",
           icon: "error",
           title: "เกิดข้อผิดพลาด",
-          text: "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองอีกครั้ง!",
-          confirmButtonText: "ตกลง",
+          showConfirmButton: false,
+          timer: 1500,
         });
       }
     };

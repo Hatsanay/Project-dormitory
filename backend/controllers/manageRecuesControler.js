@@ -33,6 +33,9 @@ const getReq = async (req, res) => {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric'
+        }) + ' ' + new Date(item.mainr_Date).toLocaleTimeString('th-TH', {
+          hour: '2-digit',
+          minute: '2-digit'
         })
       }));
   

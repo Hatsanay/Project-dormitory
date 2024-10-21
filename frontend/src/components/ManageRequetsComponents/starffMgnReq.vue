@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Search bar -->
     <CRow style="margin-bottom: 10px">
       <CCol :md="9"></CCol>
       <CCol :md="3" style="margin-bottom: 10px">
@@ -13,14 +12,13 @@
       </CCol>
     </CRow>
 
-    <!-- Request cards -->
     <CRow>
       <CCol v-for="item in paginatedItems" :key="item.mainr_ID" md="12" class="mb-4">
-        <CCard class="card-custom" @click="openModal(item)">
-          <CCardHeader>
+        <CCard class="card-modern" @click="showModal(item)">
+          <CCardHeader class="card-header-modern">
             <div class="d-flex justify-content-between align-items-center">
-              <h5 class="m-0">ผู้แจ้ง: {{ item.fullname }}</h5>
-              <span class="date">{{ item.mainr_Date }}</span>
+              <h5 class="m-0 card-title-modern">ผู้แจ้ง: {{ item.fullname }}</h5>
+              <span class="date-modern">{{ item.mainr_Date }}</span>
             </div>
           </CCardHeader>
           <CCardBody>
@@ -28,31 +26,20 @@
               <p><strong>รหัส:</strong> {{ item.mainr_ID }}</p>
               <p><strong>ห้อง:</strong> {{ item.roomNumber }}</p>
               <p><strong>หัวข้อ:</strong> {{ item.mainr_ProblemTitle }}</p>
-              <p><strong>รายละเอียด:</strong> {{ item.mainr_ProblemDescription }}</p>
               <p><strong>ประเภท:</strong> {{ item.Type }}</p>
             </div>
             <div class="d-flex justify-content-between align-items-center">
               <p></p>
-              <p class="status mb-0"><strong>สถานะ:</strong> {{ item.status }}</p>
-            </div>
-            <div>
-              <!-- <CButton class="sendTomac" color="warning" @click="sendtomac(item)">
-                ส่งคำร้องให้ช่างตรวจสอบ
-              </CButton> -->
+              <p class="status-modern mb-0"><strong>สถานะ:</strong> {{ item.status }}</p>
             </div>
           </CCardBody>
         </CCard>
       </CCol>
     </CRow>
 
-    <!-- Pagination controls -->
-    <div class="card-footer">
+    <div class="card-footer-modern">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <CButton
-          class="btn btn-secondary"
-          :disabled="currentPage === 1"
-          @click="currentPage--"
-        >
+        <CButton class="btn-modern" :disabled="currentPage === 1" @click="currentPage--">
           Previous
         </CButton>
 
@@ -61,7 +48,7 @@
         </div>
 
         <CButton
-          class="btn btn-secondary"
+          class="btn-modern"
           :disabled="currentPage === totalPages"
           @click="currentPage++"
         >
@@ -71,7 +58,7 @@
 
       <div class="d-flex align-items-center">
         <span>Show</span>
-        <select v-model="rowsPerPage" class="form-select mx-2" style="width: auto">
+        <select v-model="rowsPerPage" class="form-select-modern mx-2" style="width: auto">
           <option :value="3">3</option>
           <option :value="5">5</option>
           <option :value="10">10</option>
@@ -83,38 +70,61 @@
       </div>
     </div>
 
-    <!-- Modal for request details -->
     <CModal
       alignment="center"
-      :visible="visibleModal"
-      @close="closeModal"
-      size="lg"
+      :visible="visibleModelDetailRequest"
+      @close="closeModelDetailRequest"
+      aria-labelledby="VerticallyCenteredExample"
+      size="xl"
+      backdrop="static"
     >
       <CModalHeader>
-        <CModalTitle>รายละเอียดคำร้อง: {{ selectedUser.mainr_ID }}</CModalTitle>
+        <CModalTitle id="ModelDetailRequest">
+          รายละเอียดการแจ้งซ่อม ID: {{ selectedUser.mainr_ID }}
+          <span>วันที่: {{ selectedUser.mainr_Date }}</span>
+        </CModalTitle>
       </CModalHeader>
-      <CModalBody>
-        <p><strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}</p>
-        <p><strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}</p>
-        <p><strong>ประเภท:</strong> {{ selectedUser.Type }}</p>
-        <p><strong>สถานะ:</strong> {{ selectedUser.status }}</p>
+      <CModalBody style="max-height: 400px; overflow-y: auto">
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>ผู้แจ้ง:</strong> {{ selectedUser.fullname }}
+        </p>
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>ห้อง:</strong> {{ selectedUser.roomNumber }}
+        </p>
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}
+        </p>
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}
+        </p>
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>ประเภท:</strong> {{ selectedUser.Type }}
+        </p>
+        <p style="word-wrap: break-word; white-space: pre-wrap">
+          <strong>สถานะ:</strong> {{ selectedUser.status }}
+        </p>
 
-        <!-- Display images if available -->
         <div v-if="imageUrls.length > 0" class="mt-3">
-          <p><strong>รูปภาพ:</strong></p>
-          <div style="display: flex; flex-wrap: wrap; gap: 10px">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center">
             <img
               v-for="(url, index) in imageUrls"
               :key="index"
               :src="getImageUrl(url)"
               alt="รูปภาพแจ้งซ่อม"
-              style="max-width: 200px; max-height: 200px; object-fit: cover"
+              style="
+                max-width: 500px;
+                max-height: 500px;
+                object-fit: cover;
+                cursor: pointer;
+              "
+              @click="openImageModal(index)"
             />
           </div>
         </div>
       </CModalBody>
+
       <CModalFooter>
-        <CButton color="secondary" @click="closeModal">Close</CButton>
+        <CButton color="secondary" @click="closeModelDetailRequest">Close</CButton>
         <CButton class="frontwhite" color="danger" @click="sendtomac(selectedUser)">
           ปฎิเสธ
         </CButton>
@@ -123,25 +133,39 @@
         </CButton>
       </CModalFooter>
     </CModal>
+
+    <vue-easy-lightbox
+      :visible="visibleImageModal"
+      :imgs="imageUrls.map((url) => getImageUrl(url))"
+      :index="currentImageIndex"
+      @hide="closeImageModalOnly"
+      @prev="handlePreviousImage"
+      @next="handleNextImage"
+    />
   </div>
 </template>
 
 <script>
 import { ref, onMounted, computed } from "vue";
 import axios from "axios";
+import VueEasyLightbox from "vue-easy-lightbox";
 
 export default {
   name: "starffMgnReq",
+  components: {
+    VueEasyLightbox,
+  },
   setup() {
-    const searchQuery = ref(""); // Stores the search query
-    const items = ref([]); // Stores the full list of items
-    const rowsPerPage = ref(3); // Number of items per page
-    const currentPage = ref(1); // Current page number
-    const selectedUser = ref({}); // Stores the selected user details
-    const imageUrls = ref([]); // Stores the images for selected user
-    const visibleModal = ref(false); // Controls modal visibility
+    const searchQuery = ref("");
+    const items = ref([]);
+    const rowsPerPage = ref(3);
+    const currentPage = ref(1);
+    const visibleModelDetailRequest = ref(false);
+    const visibleImageModal = ref(false);
+    const selectedUser = ref({});
+    const imageUrls = ref([]);
+    const currentImageIndex = ref(0);
 
-    // Fetch the list of requests (items) from the API
     const fetchRequests = async () => {
       const userId = localStorage.getItem("userID");
       try {
@@ -152,7 +176,26 @@ export default {
       }
     };
 
-    // Fetch the images for the selected request
+    const filteredItems = computed(() => {
+      return items.value.filter((item) => {
+        return Object.keys(item).some((key) => {
+          return String(item[key])
+            .toLowerCase()
+            .includes(searchQuery.value.toLowerCase());
+        });
+      });
+    });
+
+    const totalPages = computed(() => {
+      return Math.ceil(filteredItems.value.length / rowsPerPage.value);
+    });
+
+    const paginatedItems = computed(() => {
+      const start = (currentPage.value - 1) * rowsPerPage.value;
+      const end = start + rowsPerPage.value;
+      return filteredItems.value.slice(start, end);
+    });
+
     const fetchImages = async (mainr_ID) => {
       try {
         const response = await axios.get(`/api/auth/getImgById?id=${mainr_ID}`);
@@ -163,66 +206,65 @@ export default {
       }
     };
 
-    // Open the modal and load the images
-    const openModal = (item) => {
-      selectedUser.value = item;
-      fetchImages(item.mainr_ID);
-      visibleModal.value = true;
-    };
-
-    // Close the modal
-    const closeModal = () => {
-      visibleModal.value = false;
-      selectedUser.value = {};
-      imageUrls.value = [];
-    };
-
-    // Filtered items based on the search query
-    const filteredItems = computed(() => {
-      return items.value.filter((item) => {
-        return (
-          item.fullname.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-          item.mainr_ProblemTitle
-            .toLowerCase()
-            .includes(searchQuery.value.toLowerCase())
-        );
-      });
-    });
-
-    // Paginated items after filtering based on search query
-    const paginatedItems = computed(() => {
-      const start = (currentPage.value - 1) * rowsPerPage.value;
-      const end = start + rowsPerPage.value;
-      return filteredItems.value.slice(start, end); // Apply pagination after filtering
-    });
-
-    // Total number of pages after filtering
-    const totalPages = computed(() => {
-      return Math.ceil(filteredItems.value.length / rowsPerPage.value);
-    });
-
-    // URL for image paths
     const getImageUrl = (path) => {
       return `http://localhost:3030/uploads/${path}`;
     };
 
-    // On component mount, fetch the requests
+    const showModal = (item) => {
+      selectedUser.value = item;
+      fetchImages(item.mainr_ID);
+      visibleModelDetailRequest.value = true;
+    };
+
+    const openImageModal = (index) => {
+      currentImageIndex.value = index;
+      visibleImageModal.value = true;
+    };
+
+    const closeImageModalOnly = () => {
+      visibleImageModal.value = false;
+    };
+
+    const closeModelDetailRequest = () => {
+      visibleModelDetailRequest.value = false;
+      selectedUser.value = {};
+      imageUrls.value = [];
+    };
+
+    const handlePreviousImage = () => {
+      if (currentImageIndex.value > 0) {
+        currentImageIndex.value -= 1;
+      }
+    };
+
+    const handleNextImage = () => {
+      if (currentImageIndex.value < imageUrls.value.length - 1) {
+        currentImageIndex.value += 1;
+      }
+    };
+
     onMounted(() => {
       fetchRequests();
     });
 
     return {
       searchQuery,
-      currentPage,
-      rowsPerPage,
       paginatedItems,
       totalPages,
+      rowsPerPage,
+      currentPage,
+      visibleModelDetailRequest,
+      closeModelDetailRequest,
+      showModal,
       selectedUser,
       imageUrls,
-      openModal,
-      closeModal,
       getImageUrl,
-      visibleModal,
+      openImageModal,
+      closeImageModalOnly,
+      visibleImageModal,
+      currentImageIndex,
+      handlePreviousImage,
+      handleNextImage,
     };
   },
 };
@@ -233,22 +275,17 @@ export default {
   margin: 0;
 }
 
-.frontwhite{
-  color: white;
 
-}
 .date {
   font-weight: bold;
   color: white;
 }
 
-.sendTomac {
-  width: 100%;
+.cancelButton {
+  color: white;
 }
-
-.viewDetail {
-  margin-bottom: 10px;
-  width: 100%;
+.frontwhite {
+  color: white;
 }
 
 .status {
@@ -258,14 +295,69 @@ export default {
   margin-top: 10px;
 }
 
-.card-custom {
+.card-modern {
   border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
 }
 
-.card-custom:hover {
+.card-modern:hover {
   transform: translateY(-5px);
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header-modern {
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 10px;
+}
+
+.card-title-modern {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.date-modern {
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
+.status-modern {
+  font-size: 16px;
+  color: #ff9800;
+  text-align: right;
+}
+
+.cancelButton-modern {
+  width: 100%;
+  color: white;
+  background-color: #f44336;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.card-footer-modern {
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-modern {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-modern:hover {
+  background-color: #5a6268;
+}
+
+.form-select-modern {
+  border-radius: 5px;
+  padding: 5px;
+  border: 1px solid #ced4da;
 }
 </style>
