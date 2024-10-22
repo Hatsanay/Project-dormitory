@@ -1,91 +1,209 @@
 <template>
   <div>
-    <CRow style="margin-bottom: 10px">
-      <CCol :md="7"></CCol>
-      <CCol :md="3" style="margin-bottom: 10px">
-        <CInputGroup>
-          <CFormInput placeholder="ค้นหา..." v-model="searchQuery" />
-          <CInputGroupText>
-            <CIcon name="cil-magnifying-glass" />
-          </CInputGroupText>
-        </CInputGroup>
-      </CCol>
-      <CCol :md="2">
-        <CButton
-          color="primary"
-          class="w-100 modern-button"
-          block
-          style="margin-bottom: 10px"
-          @click="$router.push('/UserAddReqView')"
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          :class="{ active: activeTab === '1' }"
+          @click.prevent="switchTab('1')"
+          href="#"
         >
           แจ้งซ่อมบำรุง
-        </CButton>
-      </CCol>
-    </CRow>
-
-    <CRow>
-      <CCol v-for="item in paginatedItems" :key="item.mainr_ID" md="12" class="mb-4">
-        <CCard class="card-modern" @click="showModal(item)">
-          <CCardHeader class="card-header-modern">
-            <div class="d-flex justify-content-between align-items-center">
-              <h5 class="m-0 card-title-modern">ผู้แจ้ง: {{ item.fullname }}</h5>
-              <span class="date-modern">{{ item.mainr_Date }}</span>
-            </div>
-          </CCardHeader>
-          <CCardBody>
-            <div class="d-flex flex-column">
-              <p><strong>รหัส:</strong> {{ item.mainr_ID }}</p>
-              <p><strong>ห้อง:</strong> {{ item.roomNumber }}</p>
-              <p><strong>หัวข้อ:</strong> {{ item.mainr_ProblemTitle }}</p>
-              <p><strong>ประเภท:</strong> {{ item.Type }}</p>
-            </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <p></p>
-              <p class="status-modern mb-0"><strong>สถานะ:</strong> {{ item.status }}</p>
-            </div>
-          </CCardBody>
-        </CCard>
-      </CCol>
-    </CRow>
-
-    <div class="card-footer-modern">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <CButton class="btn-modern" :disabled="currentPage === 1" @click="currentPage--">
-          Previous
-        </CButton>
-
-        <div>
-          <span>Showing page {{ currentPage }} of {{ totalPages }}</span>
-        </div>
-
-        <CButton
-          class="btn-modern"
-          :disabled="currentPage === totalPages"
-          @click="currentPage++"
+        </a>
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          :class="{ active: activeTab === '2' }"
+          @click.prevent="switchTab('2')"
+          href="#"
         >
-          Next
-        </CButton>
+          ประวัติการแจ้งซ่อม
+        </a>
+      </li>
+    </ul>
+
+    <div class="tab-content mt-3">
+      <div v-if="activeTab === '1'" class="tab-pane active">
+        <CRow style="margin-bottom: 10px">
+          <CCol :md="7"></CCol>
+          <CCol :md="3" style="margin-bottom: 10px">
+            <CInputGroup>
+              <CFormInput placeholder="ค้นหา..." v-model="searchQuery" />
+              <CInputGroupText>
+                <CIcon name="cil-magnifying-glass" />
+              </CInputGroupText>
+            </CInputGroup>
+          </CCol>
+          <CCol :md="2">
+            <CButton
+              color="primary"
+              class="w-100 modern-button"
+              block
+              style="margin-bottom: 10px"
+              @click="$router.push('/UserAddReqView')"
+            >
+              แจ้งซ่อมบำรุง
+            </CButton>
+          </CCol>
+        </CRow>
+
+        <CRow>
+          <CCol v-for="item in paginatedItems" :key="item.mainr_ID" md="12" class="mb-4">
+            <CCard class="card-modern" @click="showModal(item)">
+              <CCardHeader class="card-header-modern">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="m-0 card-title-modern">ผู้แจ้ง: {{ item.fullname }}</h5>
+                  <span class="date-modern">{{ item.mainr_Date }}</span>
+                </div>
+              </CCardHeader>
+              <CCardBody>
+                <div class="d-flex flex-column">
+                  <p><strong>รหัส:</strong> {{ item.mainr_ID }}</p>
+                  <p><strong>ห้อง:</strong> {{ item.roomNumber }}</p>
+                  <p><strong>หัวข้อ:</strong> {{ item.mainr_ProblemTitle }}</p>
+                  <p><strong>ประเภท:</strong> {{ item.Type }}</p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <p></p>
+                  <p class="status-modern mb-0">
+                    <strong>สถานะ:</strong> {{ item.status }}
+                  </p>
+                </div>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+
+        <div class="card-footer-modern">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <CButton
+              class="btn-modern"
+              :disabled="currentPage === 1"
+              @click="currentPage--"
+            >
+              Previous
+            </CButton>
+
+            <div>
+              <span>Showing page {{ currentPage }} of {{ totalPages }}</span>
+            </div>
+
+            <CButton
+              class="btn-modern"
+              :disabled="currentPage === totalPages"
+              @click="currentPage++"
+            >
+              Next
+            </CButton>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <span>Show</span>
+            <select
+              v-model="rowsPerPage"
+              class="form-select-modern mx-2"
+              style="width: auto"
+            >
+              <option :value="3">3</option>
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+              <option :value="100">100</option>
+            </select>
+            <span>entries</span>
+          </div>
+        </div>
       </div>
 
-      <div class="d-flex align-items-center">
-        <span>Show</span>
-        <select v-model="rowsPerPage" class="form-select-modern mx-2" style="width: auto">
-          <option :value="3">3</option>
-          <option :value="5">5</option>
-          <option :value="10">10</option>
-          <option :value="20">20</option>
-          <option :value="50">50</option>
-          <option :value="100">100</option>
-        </select>
-        <span>entries</span>
+      <div v-if="activeTab === '2'" class="tab-pane active">
+        <CRow style="margin-bottom: 10px">
+          <CCol :md="9"></CCol>
+          <CCol :md="3" style="margin-bottom: 10px">
+            <CInputGroup>
+              <CFormInput placeholder="ค้นหา..." v-model="searchQuery" />
+              <CInputGroupText>
+                <CIcon name="cil-magnifying-glass" />
+              </CInputGroupText>
+            </CInputGroup>
+          </CCol>
+        </CRow>
+
+        <CRow>
+          <CCol v-for="item in paginatedItems" :key="item.mainr_ID" md="12" class="mb-4">
+            <CCard class="card-modern" @click="showModalhistory(item)">
+              <CCardHeader class="card-header-modern-history">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="m-0 card-title-modern">ผู้แจ้ง: {{ item.fullname }}</h5>
+                  <span class="date-modern">{{ item.mainr_Date }}</span>
+                </div>
+              </CCardHeader>
+              <CCardBody>
+                <div class="d-flex flex-column">
+                  <p><strong>รหัส:</strong> {{ item.mainr_ID }}</p>
+                  <p><strong>ห้อง:</strong> {{ item.roomNumber }}</p>
+                  <p><strong>หัวข้อ:</strong> {{ item.mainr_ProblemTitle }}</p>
+                  <p><strong>ประเภท:</strong> {{ item.Type }}</p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <p></p>
+                  <p class="status-modern mb-0">
+                    <strong>สถานะ:</strong> {{ item.status }}
+                  </p>
+                </div>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+        <div class="card-footer-modern">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <CButton
+              class="btn-modern"
+              :disabled="currentPage === 1"
+              @click="currentPage--"
+            >
+              Previous
+            </CButton>
+
+            <div>
+              <span>Showing page {{ currentPage }} of {{ totalPages }}</span>
+            </div>
+
+            <CButton
+              class="btn-modern"
+              :disabled="currentPage === totalPages"
+              @click="currentPage++"
+            >
+              Next
+            </CButton>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <span>Show</span>
+            <select
+              v-model="rowsPerPage"
+              class="form-select-modern mx-2"
+              style="width: auto"
+            >
+              <option :value="3">3</option>
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+              <option :value="100">100</option>
+            </select>
+            <span>entries</span>
+          </div>
+        </div>
       </div>
+      
     </div>
 
     <CModal
       alignment="center"
       :visible="visibleModelDetailRequest"
       @close="closeModelDetailRequest"
-      aria-labelledby="VerticallyCenteredExample"
       size="xl"
       backdrop="static"
     >
@@ -96,24 +214,12 @@
         </CModalTitle>
       </CModalHeader>
       <CModalBody style="max-height: 400px; overflow-y: auto">
-        <p style="word-wrap: break-word; white-space: pre-wrap">
-          <strong>ผู้แจ้ง:</strong> {{ selectedUser.fullname }}
-        </p>
-        <p style="word-wrap: break-word; white-space: pre-wrap">
-          <strong>ห้อง:</strong> {{ selectedUser.roomNumber }}
-        </p>
-        <p style="word-wrap: break-word; white-space: pre-wrap">
-          <strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}
-        </p>
-        <p style="word-wrap: break-word; white-space: pre-wrap">
-          <strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}
-        </p>
-        <p style="word-wrap: break-word; white-space: pre-wrap">
-          <strong>ประเภท:</strong> {{ selectedUser.Type }}
-        </p>
-        <p style="word-wrap: break-word; white-space: pre-wrap">
-          <strong>สถานะ:</strong> {{ selectedUser.status }}
-        </p>
+        <p><strong>ผู้แจ้ง:</strong> {{ selectedUser.fullname }}</p>
+        <p><strong>ห้อง:</strong> {{ selectedUser.roomNumber }}</p>
+        <p><strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}</p>
+        <p><strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}</p>
+        <p><strong>ประเภท:</strong> {{ selectedUser.Type }}</p>
+        <p><strong>สถานะ:</strong> {{ selectedUser.status }}</p>
 
         <div v-if="imageUrls.length > 0" class="mt-3">
           <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center">
@@ -133,7 +239,6 @@
           </div>
         </div>
       </CModalBody>
-
       <CModalFooter>
         <CButton color="secondary" @click="closeModelDetailRequest">ปิด</CButton>
         <CButton
@@ -143,6 +248,50 @@
         >
           ยกเลิกแจ้งซ่อม
         </CButton>
+      </CModalFooter>
+    </CModal>
+
+    <CModal
+      alignment="center"
+      :visible="visibleModelHistoryRequest"
+      @close="closeModelHistoryRequest"
+      size="xl"
+      backdrop="static"
+    >
+      <CModalHeader>
+        <CModalTitle id="ModelHistoryRequest">
+          รายละเอียดการแจ้งซ่อม ID: {{ selectedUser.mainr_ID }}
+          <span>วันที่: {{ selectedUser.mainr_Date }}</span>
+        </CModalTitle>
+      </CModalHeader>
+      <CModalBody style="max-height: 400px; overflow-y: auto">
+        <p><strong>ผู้แจ้ง:</strong> {{ selectedUser.fullname }}</p>
+        <p><strong>ห้อง:</strong> {{ selectedUser.roomNumber }}</p>
+        <p><strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}</p>
+        <p><strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}</p>
+        <p><strong>ประเภท:</strong> {{ selectedUser.Type }}</p>
+        <p><strong>สถานะ:</strong> {{ selectedUser.status }}</p>
+
+        <div v-if="imageUrls.length > 0" class="mt-3">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center">
+            <img
+              v-for="(url, index) in imageUrls"
+              :key="index"
+              :src="getImageUrl(url)"
+              alt="รูปภาพแจ้งซ่อม"
+              style="
+                max-width: 500px;
+                max-height: 500px;
+                object-fit: cover;
+                cursor: pointer;
+              "
+              @click="openImageModal(index)"
+            />
+          </div>
+        </div>
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeModelHistoryRequest">ปิด</CButton>
       </CModalFooter>
     </CModal>
 
@@ -169,24 +318,44 @@ export default {
     VueEasyLightbox,
   },
   setup() {
+    const activeTab = ref("1");
     const searchQuery = ref("");
     const items = ref([]);
     const rowsPerPage = ref(3);
     const currentPage = ref(1);
     const visibleModelDetailRequest = ref(false);
+    const visibleModelHistoryRequest = ref(false);
     const visibleImageModal = ref(false);
     const selectedUser = ref({});
     const imageUrls = ref([]);
     const currentImageIndex = ref(0);
 
-    // ฟังก์ชันดึงข้อมูลการแจ้งซ่อม
     const fetchRequests = async () => {
       const userId = localStorage.getItem("userID");
       try {
         const response = await axios.get(`/api/auth/getReqById?id=${userId}`);
         items.value = response.data;
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลการแจ้งซ่อม:", error);
+        console.error("Error fetching requests:", error);
+      }
+    };
+
+    const fetchHistoryRequests = async () => {
+      const userId = localStorage.getItem("userID");
+      try {
+        const response = await axios.get(`/api/auth/getHisReqById?id=${userId}`);
+        items.value = response.data;
+      } catch (error) {
+        console.error("Error fetching history requests:", error);
+      }
+    };
+
+    const switchTab = (tab) => {
+      activeTab.value = tab;
+      if (tab === "2") {
+        fetchHistoryRequests();
+      } else {
+        fetchRequests();
       }
     };
 
@@ -216,8 +385,20 @@ export default {
       visibleModelDetailRequest.value = true;
     };
 
+    const showModalhistory = (item) => {
+      selectedUser.value = item;
+      fetchImages(item.mainr_ID);
+      visibleModelHistoryRequest.value = true;
+    };
+
     const closeModelDetailRequest = () => {
       visibleModelDetailRequest.value = false;
+      selectedUser.value = {};
+      imageUrls.value = [];
+    };
+
+    const closeModelHistoryRequest = () => {
+      visibleModelHistoryRequest.value = false;
       selectedUser.value = {};
       imageUrls.value = [];
     };
@@ -227,7 +408,7 @@ export default {
         const response = await axios.get(`/api/auth/getImgById?id=${mainr_ID}`);
         imageUrls.value = response.data.map((img) => img.imges_Path);
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงรูปภาพ:", error);
+        console.error("Error fetching images:", error);
         imageUrls.value = [];
       }
     };
@@ -283,7 +464,7 @@ export default {
             closeModelDetailRequest();
             fetchRequests();
           } catch (error) {
-            console.error("เกิดข้อผิดพลาดในการยกเลิกแจ้งซ่อม:", error);
+            console.error("Error canceling request:", error);
             Swal.fire({
               title: "เกิดข้อผิดพลาด!",
               text: "ไม่สามารถยกเลิกการแจ้งซ่อมได้.",
@@ -299,14 +480,18 @@ export default {
     });
 
     return {
+      activeTab,
       searchQuery,
       paginatedItems,
       totalPages,
       rowsPerPage,
       currentPage,
       visibleModelDetailRequest,
+      visibleModelHistoryRequest,
       closeModelDetailRequest,
+      closeModelHistoryRequest,
       showModal,
+      showModalhistory,
       selectedUser,
       imageUrls,
       getImageUrl,
@@ -317,6 +502,7 @@ export default {
       handlePreviousImage,
       handleNextImage,
       cancelClick,
+      switchTab,
     };
   },
 };
@@ -356,6 +542,15 @@ export default {
 
 .card-header-modern {
   color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 10px;
+}
+.card-header-modern-history {
+  color: white;
+  background-color: #6c757d;
+  /* background-color: #212631; */
+
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   padding: 10px;

@@ -3,8 +3,8 @@ const { login } = require('../controllers/authController');
 const { registerUser, getAutotid ,getRole ,getUser, getUserById, updateUser, updateUserStatus} = require('../controllers/regiterController');
 const { getProvince,getAmphures,getTambons,getZipcode } = require('../controllers/addressControler');
 const {getStatus,getStatusUserDelete} = require('../controllers/statusControler');
-const {getReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq} = require('../controllers/reqController');
-const {getReq,denyReq,sendtomacReq,getMacReq} = require('../controllers/manageRequetsControler');
+const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq} = require('../controllers/reqController');
+const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq} = require('../controllers/manageRequetsControler');
 // getUserByIdfromReq
 // const { registerRoom } = require('../controllers/RoomController');
 const authenticateToken = require('../middleware/auth');
@@ -14,6 +14,8 @@ router.post('/login', login);
 router.post('/registerUser', authenticateToken, registerUser);
 
 router.post('/submitRepairRequest', authenticateToken, upload.array('images'), submitRepairRequest);
+
+router.post('/sendAssessProblemReq', authenticateToken, sendAssessProblemReq);
 
 router.get('/getAutotid',authenticateToken, getAutotid);
 router.get('/getRole',authenticateToken, getRole);
@@ -27,6 +29,7 @@ router.get('/getStatus',authenticateToken, getStatus);
 router.get('/getStatusUserDelete',authenticateToken, getStatusUserDelete);
 
 router.get('/getReqById',authenticateToken, getReqById);
+router.get('/getHisReqById',authenticateToken, getHisReqById);
 router.get('/getUserByIdfromReq',authenticateToken, getUserByIdfromReq);
 router.get('/getPetitiontype',authenticateToken, getPetitiontype);
 router.get('/getImgById',authenticateToken, getImgById);

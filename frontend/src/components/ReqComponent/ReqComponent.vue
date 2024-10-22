@@ -283,6 +283,7 @@ export default {
           position: "top-end",
           icon: "error",
           title: "เกิดข้อผิดพลาด",
+          text: "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองอีกครั้ง!",
           showConfirmButton: false,
           timer: 1500,
         });
