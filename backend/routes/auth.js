@@ -4,7 +4,7 @@ const { registerUser, getAutotid ,getRole ,getUser, getUserById, updateUser, upd
 const { getProvince,getAmphures,getTambons,getZipcode } = require('../controllers/addressControler');
 const {getStatus,getStatusUserDelete} = require('../controllers/statusControler');
 const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq} = require('../controllers/reqController');
-const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq} = require('../controllers/manageRequetsControler');
+const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById} = require('../controllers/manageRequetsControler');
 // getUserByIdfromReq
 // const { registerRoom } = require('../controllers/RoomController');
 const authenticateToken = require('../middleware/auth');
@@ -36,6 +36,7 @@ router.get('/getImgById',authenticateToken, getImgById);
 
 router.get('/getReq',authenticateToken, getReq);
 router.get('/getMacReq',authenticateToken, getMacReq);
+router.get('/getMacReqById',authenticateToken, getMacReqById);
 
 
 

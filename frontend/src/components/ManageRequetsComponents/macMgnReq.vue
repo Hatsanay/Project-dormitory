@@ -5,7 +5,7 @@
         <a
           class="nav-link"
           :class="{ active: activeTab === '1' }"
-          @click.prevent="activeTab = '1'"
+          @click.prevent="setActiveTab('1')"
           href="#"
         >
           รับเรื่องแจ้งซ่อมบำรุง
@@ -15,7 +15,7 @@
         <a
           class="nav-link"
           :class="{ active: activeTab === '2' }"
-          @click.prevent="activeTab = '2'"
+          @click.prevent="setActiveTab('2')"
           href="#"
         >
           เบิกวัสดุอุปกรณ์
@@ -26,11 +26,12 @@
     <div class="tab-content mt-3">
       <!-- Tab 1 -->
       <div v-if="activeTab === '1'" class="tab-pane active">
+        <!-- Content for Tab 1 (Receive Maintenance Requests) -->
         <CRow style="margin-bottom: 10px">
           <CCol :md="9"></CCol>
           <CCol :md="3" style="margin-bottom: 10px">
             <CInputGroup>
-              <CFormInput placeholder="ค้นหา..." v-model="searchQuery" />
+              <CFormInput placeholder="ค้นหา..." v-model="searchQueryTab1" />
               <CInputGroupText>
                 <CIcon name="cil-magnifying-glass" />
               </CInputGroupText>
@@ -39,8 +40,13 @@
         </CRow>
 
         <CRow>
-          <CCol v-for="item in paginatedItems" :key="item.mainr_ID" md="12" class="mb-4">
-            <CCard class="card-modern" @click="showModal(item)">
+          <CCol
+            v-for="item in paginatedItemsTab1"
+            :key="item.mainr_ID"
+            md="12"
+            class="mb-4"
+          >
+            <CCard class="card-modern" @click="showModalTab1(item)">
               <CCardHeader class="card-header-modern">
                 <div class="d-flex justify-content-between align-items-center">
                   <h5 class="m-0 card-title-modern">ผู้แจ้ง: {{ item.fullname }}</h5>
@@ -69,20 +75,20 @@
           <div class="d-flex justify-content-between align-items-center mb-3">
             <CButton
               class="btn-modern"
-              :disabled="currentPage === 1"
-              @click="currentPage--"
+              :disabled="currentPageTab1 === 1"
+              @click="currentPageTab1--"
             >
               Previous
             </CButton>
 
             <div>
-              <span>Showing page {{ currentPage }} of {{ totalPages }}</span>
+              <span>Showing page {{ currentPageTab1 }} of {{ totalPagesTab1 }}</span>
             </div>
 
             <CButton
               class="btn-modern"
-              :disabled="currentPage === totalPages"
-              @click="currentPage++"
+              :disabled="currentPageTab1 === totalPagesTab1"
+              @click="currentPageTab1++"
             >
               Next
             </CButton>
@@ -91,7 +97,7 @@
           <div class="d-flex align-items-center">
             <span>Show</span>
             <select
-              v-model="rowsPerPage"
+              v-model="rowsPerPageTab1"
               class="form-select-modern mx-2"
               style="width: auto"
             >
@@ -109,27 +115,27 @@
         <!-- Modal for Tab 1 -->
         <CModal
           alignment="center"
-          :visible="visibleModelDetailRequest"
-          @close="closeModelDetailRequest"
+          :visible="visibleModelDetailRequestTab1"
+          @close="closeModelDetailRequestTab1"
           aria-labelledby="VerticallyCenteredExample"
           size="xl"
           backdrop="static"
         >
           <CModalHeader>
             <CModalTitle id="ModelDetailRequest">
-              รายละเอียดการแจ้งซ่อม ID: {{ selectedUser.mainr_ID }}
-              <span>วันที่: {{ selectedUser.mainr_Date }}</span>
+              รายละเอียดการแจ้งซ่อม ID: {{ selectedUserTab1.mainr_ID }}
+              <span>วันที่: {{ selectedUserTab1.mainr_Date }}</span>
             </CModalTitle>
           </CModalHeader>
           <CModalBody style="max-height: 400px; overflow-y: auto">
-            <p><strong>ผู้แจ้ง:</strong> {{ selectedUser.fullname }}</p>
-            <p><strong>ห้อง:</strong> {{ selectedUser.roomNumber }}</p>
-            <p><strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}</p>
+            <p><strong>ผู้แจ้ง:</strong> {{ selectedUserTab1.fullname }}</p>
+            <p><strong>ห้อง:</strong> {{ selectedUserTab1.roomNumber }}</p>
+            <p><strong>หัวข้อ:</strong> {{ selectedUserTab1.mainr_ProblemTitle }}</p>
             <p>
-              <strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}
+              <strong>รายละเอียด:</strong> {{ selectedUserTab1.mainr_ProblemDescription }}
             </p>
-            <p><strong>ประเภท:</strong> {{ selectedUser.Type }}</p>
-            <p><strong>สถานะ:</strong> {{ selectedUser.status }}</p>
+            <p><strong>ประเภท:</strong> {{ selectedUserTab1.Type }}</p>
+            <p><strong>สถานะ:</strong> {{ selectedUserTab1.status }}</p>
 
             <div v-if="imageUrls.length > 0" class="mt-3">
               <div
@@ -153,9 +159,8 @@
           </CModalBody>
 
           <CModalFooter>
-            <CButton color="secondary" @click="closeModelDetailRequest">ปิด</CButton>
-
-            <CButton color="primary" @click="assessProblemReq(selectedUser)">
+            <CButton color="secondary" @click="closeModelDetailRequestTab1">ปิด</CButton>
+            <CButton color="primary" @click="assessProblemReqTab1(selectedUserTab1)">
               รับเรื่องการแจ้งซ่อม
             </CButton>
           </CModalFooter>
@@ -173,10 +178,210 @@
       </div>
 
       <!-- Tab 2 -->
-      <div v-if="activeTab === '2'" class="tab-pane">
-        <!-- ยังไม่ใส่ข้อมูลใน Tab 2 -->
-        <h5 class="text-center">ประวัติการเบิก (ยังไม่มีข้อมูล)</h5>
+      <div v-if="activeTab === '2'" class="tab-pane active">
+        <!-- Content for Tab 2 (Withdraw Material Requests) -->
+        <CRow style="margin-bottom: 10px">
+          <CCol :md="9"></CCol>
+          <CCol :md="3" style="margin-bottom: 10px">
+            <CInputGroup>
+              <CFormInput placeholder="ค้นหา..." v-model="searchQueryTab2" />
+              <CInputGroupText>
+                <CIcon name="cil-magnifying-glass" />
+              </CInputGroupText>
+            </CInputGroup>
+          </CCol>
+        </CRow>
+
+        <CRow>
+          <CCol
+            v-for="item in paginatedWithdrawItems"
+            :key="item.mainr_ID"
+            md="12"
+            class="mb-4"
+          >
+            <CCard class="card-modern" @click="showModalTab2(item)">
+              <CCardHeader class="card-header-modern">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="m-0 card-title-modern">ผู้เบิก: {{ item.fullname }}</h5>
+                  <span class="date-modern">{{ item.mainr_Date }}</span>
+                </div>
+              </CCardHeader>
+              <CCardBody>
+                <div class="d-flex flex-column">
+                  <p><strong>รหัส:</strong> {{ item.mainr_ID }}</p>
+                  <p><strong>ห้อง:</strong> {{ item.roomNumber }}</p>
+                  <p><strong>หัวข้อ:</strong> {{ item.mainr_ProblemTitle }}</p>
+                  <p><strong>ประเภท:</strong> {{ item.Type }}</p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <p></p>
+                  <p class="status-modern mb-0">
+                    <strong>สถานะ:</strong> {{ item.status }}
+                  </p>
+                </div>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+
+        <div class="card-footer-modern">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <CButton
+              class="btn-modern"
+              :disabled="currentPageWithdraw === 1"
+              @click="currentPageWithdraw--"
+            >
+              Previous
+            </CButton>
+
+            <div>
+              <span
+                >Showing page {{ currentPageWithdraw }} of {{ totalWithdrawPages }}</span
+              >
+            </div>
+
+            <CButton
+              class="btn-modern"
+              :disabled="currentPageWithdraw === totalWithdrawPages"
+              @click="currentPageWithdraw++"
+            >
+              Next
+            </CButton>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <span>Show</span>
+            <select
+              v-model="rowsPerPageWithdraw"
+              class="form-select-modern mx-2"
+              style="width: auto"
+            >
+              <option :value="3">3</option>
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+              <option :value="100">100</option>
+            </select>
+            <span>entries</span>
+          </div>
+        </div>
       </div>
+
+      <!-- Modal for Tab 2 -->
+      <CModal
+        alignment="center"
+        :visible="visibleModelDetailRequestTab2"
+        @close="closeModelDetailRequestTab2"
+        aria-labelledby="VerticallyCenteredExample"
+        size="xl"
+        backdrop="static"
+        fullscreen
+      >
+        <CModalHeader>
+          <CModalTitle id="ModelDetailRequest">
+            รายละเอียดการแจ้งซ่อม ID: {{ selectedUserTab2.mainr_ID }}
+            <span>วันที่: {{ selectedUserTab2.mainr_Date }}</span>
+          </CModalTitle>
+        </CModalHeader>
+        <CModalBody style="display: flex; flex-direction: column; height: 100%">
+          <CRow style="flex-grow: 1">
+            <CCol :md="7" style="display: flex; flex-direction: column; height: 100%">
+              <CCard style="flex-grow: 1">
+                <CCardHeader>
+                  <h7>รายละเอียด</h7>
+                </CCardHeader>
+                <CModalBody style="flex-grow: 1; overflow-y: auto">
+                  <p><strong>ผู้แจ้ง:</strong> {{ selectedUserTab2.fullname }}</p>
+                  <p><strong>ห้อง:</strong> {{ selectedUserTab2.roomNumber }}</p>
+                  <p>
+                    <strong>หัวข้อ:</strong> {{ selectedUserTab2.mainr_ProblemTitle }}
+                  </p>
+                  <p>
+                    <strong>รายละเอียด:</strong>
+                    {{ selectedUserTab2.mainr_ProblemDescription }}
+                  </p>
+                  <p><strong>ประเภท:</strong> {{ selectedUserTab2.Type }}</p>
+                  <p><strong>สถานะ:</strong> {{ selectedUserTab2.status }}</p>
+
+                  <div v-if="imageUrls.length > 0" class="mt-3">
+                    <div
+                      style="
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 10px;
+                        justify-content: center;
+                      "
+                    >
+                      <img
+                        v-for="(url, index) in imageUrls"
+                        :key="index"
+                        :src="getImageUrl(url)"
+                        alt="รูปภาพแจ้งซ่อม"
+                        style="
+                          max-width: 500px;
+                          max-height: 500px;
+                          object-fit: cover;
+                          cursor: pointer;
+                        "
+                        @click="openImageModal(index)"
+                      />
+                    </div>
+                  </div>
+                </CModalBody>
+              </CCard>
+            </CCol>
+
+            <!-- การ์ดขวา -->
+            <CCol :md="5" style="display: flex; flex-direction: column; height: 100%">
+              <CCard style="flex-grow: 1">
+                <CCardHeader>
+                  <h7>ข้อมูลการรับเรื่อง</h7>
+                </CCardHeader>
+                <CModalBody style="flex-grow: 1">
+                  <CRow>
+                    <label for="" class="form-label">ประเมิณงานซ่อมเบื้องต้น</label>
+                    <div class="form-floating">
+                      <textarea
+                        class="form-control"
+                        placeholder="Leave a comment here"
+                        id="floatingTextarea2"
+                        style="height: 100px"
+                      ></textarea>
+                      <label for="floatingTextarea2">กรอกประเมิณงานซ่อมเบื้องต้น</label>
+                    </div>
+                  </CRow>
+                  <CRow>
+                    <CRow>
+                      <CCol :md="10">
+                        <label for="" class="form-label">เบิกวัสดุ</label>
+                      </CCol>
+                      <CCol :md="2">
+                        <CButton color="primary" @click="showStockModal()">
+                          เพิ่ม
+                        </CButton>
+                      </CCol>
+                    </CRow>
+                    <CRow>
+                      <CCol :md="9">
+                        <label for="" class="form-label">เบิกวัสดุ</label>
+                      </CCol>
+                    </CRow>
+                  </CRow>
+                </CModalBody>
+              </CCard>
+            </CCol>
+          </CRow>
+        </CModalBody>
+
+        <CModalFooter>
+          <CButton color="secondary" @click="closeModelDetailRequestTab2">ปิด</CButton>
+
+          <CButton color="primary" @click="assessProblemReqTab2(selectedUserTab2)">
+            รับเรื่องการแจ้งซ่อม
+          </CButton>
+        </CModalFooter>
+      </CModal>
     </div>
   </div>
 </template>
@@ -194,44 +399,96 @@ export default {
   },
   setup() {
     const activeTab = ref("1");
-    const searchQuery = ref("");
-    const items = ref([]);
-    const rowsPerPage = ref(3);
-    const currentPage = ref(1);
-    const visibleModelDetailRequest = ref(false);
+    const searchQueryTab1 = ref("");
+    const searchQueryTab2 = ref("");
+    const itemsTab1 = ref([]);
+    const withdrawItems = ref([]);
+    const rowsPerPageTab1 = ref(3);
+    const rowsPerPageWithdraw = ref(3);
+    const currentPageTab1 = ref(1);
+    const currentPageWithdraw = ref(1);
+    const visibleModelDetailRequestTab1 = ref(false);
+    const visibleModelDetailRequestTab2 = ref(false);
     const visibleImageModal = ref(false);
-    const selectedUser = ref({});
+    const selectedUserTab1 = ref({});
+    const selectedUserTab2 = ref({});
     const imageUrls = ref([]);
     const currentImageIndex = ref(0);
 
-    const fetchRequests = async () => {
+    // Fetch requests for Tab 1
+    const fetchRequestsTab1 = async () => {
       try {
         const response = await axios.get(`/api/auth/getMacReq`);
-        items.value = response.data;
+        itemsTab1.value = response.data;
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูลการแจ้งซ่อม:", error);
       }
     };
 
-    const filteredItems = computed(() => {
-      return items.value.filter((item) => {
-        return Object.keys(item).some((key) => {
-          return String(item[key])
-            .toLowerCase()
-            .includes(searchQuery.value.toLowerCase());
-        });
-      });
+    // Fetch withdraw requests for Tab 2
+    const fetchWithdrawRequestsTab2 = async () => {
+      try {
+        const userId = localStorage.getItem("userID");
+        const response = await axios.get(`/api/auth/getMacReqById?id=${userId}`);
+        withdrawItems.value = response.data;
+      } catch (error) {
+        console.error("Error fetching withdraw requests:", error);
+      }
+    };
+
+    const setActiveTab = (tab) => {
+      activeTab.value = tab;
+      if (tab === "2") {
+        fetchWithdrawRequestsTab2();
+      }
+    };
+
+    // Pagination for Tab 1
+    const paginatedItemsTab1 = computed(() => {
+      const start = (currentPageTab1.value - 1) * rowsPerPageTab1.value;
+      const end = start + rowsPerPageTab1.value;
+      return itemsTab1.value.slice(start, end);
     });
 
-    const totalPages = computed(() => {
-      return Math.ceil(filteredItems.value.length / rowsPerPage.value);
+    const totalPagesTab1 = computed(() => {
+      return Math.ceil(itemsTab1.value.length / rowsPerPageTab1.value);
     });
 
-    const paginatedItems = computed(() => {
-      const start = (currentPage.value - 1) * rowsPerPage.value;
-      const end = start + rowsPerPage.value;
-      return filteredItems.value.slice(start, end);
+    // Pagination for Tab 2
+    const paginatedWithdrawItems = computed(() => {
+      const start = (currentPageWithdraw.value - 1) * rowsPerPageWithdraw.value;
+      const end = start + rowsPerPageWithdraw.value;
+      return withdrawItems.value.slice(start, end);
     });
+
+    const totalWithdrawPages = computed(() => {
+      return Math.ceil(withdrawItems.value.length / rowsPerPageWithdraw.value);
+    });
+
+    // Show modal for Tab 1
+    const showModalTab1 = (item) => {
+      selectedUserTab1.value = item;
+      fetchImages(item.mainr_ID);
+      visibleModelDetailRequestTab1.value = true;
+    };
+
+    // Show modal for Tab 2
+    const showModalTab2 = (item) => {
+      selectedUserTab2.value = item;
+      fetchImages(item.mainr_ID);
+      visibleModelDetailRequestTab2.value = true;
+    };
+
+    const closeModelDetailRequestTab1 = () => {
+      visibleModelDetailRequestTab1.value = false;
+      selectedUserTab1.value = {};
+      imageUrls.value = [];
+    };
+
+    const closeModelDetailRequestTab2 = () => {
+      visibleModelDetailRequestTab2.value = false;
+      selectedUserTab2.value = {};
+    };
 
     const fetchImages = async (mainr_ID) => {
       try {
@@ -247,12 +504,6 @@ export default {
       return `http://localhost:3030/uploads/${path}`;
     };
 
-    const showModal = (item) => {
-      selectedUser.value = item;
-      fetchImages(item.mainr_ID);
-      visibleModelDetailRequest.value = true;
-    };
-
     const openImageModal = (index) => {
       currentImageIndex.value = index;
       visibleImageModal.value = true;
@@ -260,12 +511,6 @@ export default {
 
     const closeImageModalOnly = () => {
       visibleImageModal.value = false;
-    };
-
-    const closeModelDetailRequest = () => {
-      visibleModelDetailRequest.value = false;
-      selectedUser.value = {};
-      imageUrls.value = [];
     };
 
     const handlePreviousImage = () => {
@@ -280,7 +525,7 @@ export default {
       }
     };
 
-    const assessProblemReq = async (selectedUser) => {
+    const assessProblemReqTab1 = async (selectedUser) => {
       const { value: text } = await Swal.fire({
         input: "textarea",
         inputLabel: "ประเมิณปัญหาเบื้องต้น",
@@ -319,8 +564,8 @@ export default {
                 window.location.reload();
               });
 
-              closeModelDetailRequest();
-              fetchRequests();
+              closeModelDetailRequestTab1();
+              fetchRequestsTab1();
             } catch (error) {
               console.error("เกิดข้อผิดพลาดในการส่งการประเมิณปัญหา:", error);
               Swal.fire({
@@ -340,21 +585,34 @@ export default {
       }
     };
 
+    const assessProblemReqTab2 = async (selectedUser) => {
+      // Implement logic for Tab 2 problem assessment
+    };
+
     onMounted(() => {
-      fetchRequests();
+      fetchRequestsTab1(); // Fetch the maintenance requests for Tab 1 when mounted
     });
 
     return {
       activeTab,
-      searchQuery,
-      paginatedItems,
-      totalPages,
-      rowsPerPage,
-      currentPage,
-      visibleModelDetailRequest,
-      closeModelDetailRequest,
-      showModal,
-      selectedUser,
+      searchQueryTab1,
+      searchQueryTab2,
+      paginatedItemsTab1,
+      paginatedWithdrawItems,
+      totalPagesTab1,
+      totalWithdrawPages,
+      rowsPerPageTab1,
+      rowsPerPageWithdraw,
+      currentPageTab1,
+      currentPageWithdraw,
+      visibleModelDetailRequestTab1,
+      visibleModelDetailRequestTab2,
+      closeModelDetailRequestTab1,
+      closeModelDetailRequestTab2,
+      showModalTab1,
+      showModalTab2,
+      selectedUserTab1,
+      selectedUserTab2,
       imageUrls,
       getImageUrl,
       openImageModal,
@@ -363,12 +621,13 @@ export default {
       currentImageIndex,
       handlePreviousImage,
       handleNextImage,
-      assessProblemReq,
+      assessProblemReqTab1,
+      assessProblemReqTab2,
+      setActiveTab,
     };
   },
 };
 </script>
-
 <style scoped>
 .card-body p {
   margin: 0;
