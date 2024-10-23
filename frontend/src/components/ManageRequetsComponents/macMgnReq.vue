@@ -26,7 +26,6 @@
     <div class="tab-content mt-3">
       <!-- Tab 1 -->
       <div v-if="activeTab === '1'" class="tab-pane active">
-        <!-- Content for Tab 1 (Receive Maintenance Requests) -->
         <CRow style="margin-bottom: 10px">
           <CCol :md="9"></CCol>
           <CCol :md="3" style="margin-bottom: 10px">
@@ -112,7 +111,6 @@
           </div>
         </div>
 
-        <!-- Modal for Tab 1 -->
         <CModal
           alignment="center"
           :visible="visibleModelDetailRequestTab1"
@@ -166,7 +164,6 @@
           </CModalFooter>
         </CModal>
 
-        <!-- Image Lightbox -->
         <vue-easy-lightbox
           :visible="visibleImageModal"
           :imgs="imageUrls.map((url) => getImageUrl(url))"
@@ -179,7 +176,6 @@
 
       <!-- Tab 2 -->
       <div v-if="activeTab === '2'" class="tab-pane active">
-        <!-- Content for Tab 2 (Withdraw Material Requests) -->
         <CRow style="margin-bottom: 10px">
           <CCol :md="9"></CCol>
           <CCol :md="3" style="margin-bottom: 10px">
@@ -266,122 +262,174 @@
             <span>entries</span>
           </div>
         </div>
-      </div>
 
-      <!-- Modal for Tab 2 -->
-      <CModal
-        alignment="center"
-        :visible="visibleModelDetailRequestTab2"
-        @close="closeModelDetailRequestTab2"
-        aria-labelledby="VerticallyCenteredExample"
-        size="xl"
-        backdrop="static"
-        fullscreen
-      >
-        <CModalHeader>
-          <CModalTitle id="ModelDetailRequest">
-            รายละเอียดการแจ้งซ่อม ID: {{ selectedUserTab2.mainr_ID }}
-            <span>วันที่: {{ selectedUserTab2.mainr_Date }}</span>
-          </CModalTitle>
-        </CModalHeader>
-        <CModalBody style="display: flex; flex-direction: column; height: 100%">
-          <CRow style="flex-grow: 1">
-            <CCol :md="7" style="display: flex; flex-direction: column; height: 100%">
-              <CCard style="flex-grow: 1">
-                <CCardHeader>
-                  <h7>รายละเอียด</h7>
-                </CCardHeader>
-                <CModalBody style="flex-grow: 1; overflow-y: auto">
-                  <p><strong>ผู้แจ้ง:</strong> {{ selectedUserTab2.fullname }}</p>
-                  <p><strong>ห้อง:</strong> {{ selectedUserTab2.roomNumber }}</p>
-                  <p>
-                    <strong>หัวข้อ:</strong> {{ selectedUserTab2.mainr_ProblemTitle }}
-                  </p>
-                  <p>
-                    <strong>รายละเอียด:</strong>
-                    {{ selectedUserTab2.mainr_ProblemDescription }}
-                  </p>
-                  <p><strong>ประเภท:</strong> {{ selectedUserTab2.Type }}</p>
-                  <p><strong>สถานะ:</strong> {{ selectedUserTab2.status }}</p>
+        <CModal
+          alignment="center"
+          :visible="visibleModelDetailRequestTab2"
+          @close="closeModelDetailRequestTab2"
+          aria-labelledby="VerticallyCenteredExample"
+          size="xl"
+          backdrop="static"
+          fullscreen
+        >
+          <CModalHeader>
+            <CModalTitle id="ModelDetailRequest">
+              รายละเอียดการแจ้งซ่อม ID: {{ selectedUserTab2.mainr_ID }}
+              <span>วันที่: {{ selectedUserTab2.mainr_Date }}</span>
+            </CModalTitle>
+          </CModalHeader>
+          <CModalBody style="display: flex; flex-direction: column; height: 100%">
+            <CRow style="flex-grow: 1">
+              <CCol :md="7" style="flex-grow: 1; max-height: 800px; overflow-y: auto">
+                <CCard style="flex-grow: 1">
+                  <CCardHeader>
+                    <h7>รายละเอียด</h7>
+                  </CCardHeader>
+                  <CModalBody style="flex-grow: 1; overflow-y: auto">
+                    <p><strong>ผู้แจ้ง:</strong> {{ selectedUserTab2.fullname }}</p>
+                    <p><strong>ห้อง:</strong> {{ selectedUserTab2.roomNumber }}</p>
+                    <p>
+                      <strong>หัวข้อ:</strong> {{ selectedUserTab2.mainr_ProblemTitle }}
+                    </p>
+                    <p>
+                      <strong>รายละเอียด:</strong>
+                      {{ selectedUserTab2.mainr_ProblemDescription }}
+                    </p>
+                    <p><strong>ประเภท:</strong> {{ selectedUserTab2.Type }}</p>
+                    <p><strong>สถานะ:</strong> {{ selectedUserTab2.status }}</p>
 
-                  <div v-if="imageUrls.length > 0" class="mt-3">
-                    <div
-                      style="
-                        display: flex;
-                        flex-wrap: wrap;
-                        gap: 10px;
-                        justify-content: center;
-                      "
-                    >
-                      <img
-                        v-for="(url, index) in imageUrls"
-                        :key="index"
-                        :src="getImageUrl(url)"
-                        alt="รูปภาพแจ้งซ่อม"
+                    <div v-if="imageUrls.length > 0" class="mt-3">
+                      <div
                         style="
-                          max-width: 500px;
-                          max-height: 500px;
-                          object-fit: cover;
-                          cursor: pointer;
+                          display: flex;
+                          flex-wrap: wrap;
+                          gap: 10px;
+                          justify-content: center;
                         "
-                        @click="openImageModal(index)"
-                      />
+                      >
+                        <img
+                          v-for="(url, index) in imageUrls"
+                          :key="index"
+                          :src="getImageUrl(url)"
+                          alt="รูปภาพแจ้งซ่อม"
+                          style="
+                            max-width: 500px;
+                            max-height: 500px;
+                            object-fit: cover;
+                            cursor: pointer;
+                          "
+                          @click="openImageModal(index)"
+                        />
+                      </div>
                     </div>
-                  </div>
-                </CModalBody>
-              </CCard>
-            </CCol>
+                  </CModalBody>
+                </CCard>
+              </CCol>
 
-            <!-- การ์ดขวา -->
-            <CCol :md="5" style="display: flex; flex-direction: column; height: 100%">
-              <CCard style="flex-grow: 1">
-                <CCardHeader>
-                  <h7>ข้อมูลการรับเรื่อง</h7>
-                </CCardHeader>
-                <CModalBody style="flex-grow: 1">
-                  <CRow>
-                    <label for="" class="form-label">ประเมิณงานซ่อมเบื้องต้น</label>
-                    <div class="form-floating">
-                      <textarea
-                        class="form-control"
-                        placeholder="Leave a comment here"
-                        id="floatingTextarea2"
-                        style="height: 100px"
-                      ></textarea>
-                      <label for="floatingTextarea2">กรอกประเมิณงานซ่อมเบื้องต้น</label>
-                    </div>
-                  </CRow>
-                  <CRow>
+              <!-- การ์ดขวา -->
+              <CCol :md="5" style="display: flex; flex-direction: column; height: 100%">
+                <CCard style="flex-grow: 1">
+                  <CCardHeader>
+                    <h7>การประเมินงานซ่อมเบื้องต้น</h7>
+                  </CCardHeader>
+                  <CModalBody style="flex-grow: 1; overflow-y: auto">
                     <CRow>
+                      <label for="" class="form-label">ประเมินงานซ่อมเบื้องต้น</label>
+                      <div class="form-floating">
+                        <textarea
+                          class="form-control"
+                          placeholder="กรอกประเมินงานซ่อมเบื้องต้น"
+                          style="height: 100px"
+                          disabled
+                        ></textarea>
+                      </div>
+                    </CRow>
+
+                    <CRow class="mt-3">
                       <CCol :md="10">
-                        <label for="" class="form-label">เบิกวัสดุ</label>
+                        <label for="" class="form-label">วัสดุ</label>
                       </CCol>
                       <CCol :md="2">
-                        <CButton color="primary" @click="showStockModal()">
-                          เพิ่ม
-                        </CButton>
+                        <CButton color="primary" @click="addMaterialRow">เพิ่ม</CButton>
                       </CCol>
                     </CRow>
+
                     <CRow>
-                      <CCol :md="9">
-                        <label for="" class="form-label">เบิกวัสดุ</label>
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>รหัส</th>
+                            <th>ชื่อ</th>
+                            <th>ยี่ห้อ</th>
+                            <th>จำนวน</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(material, index) in materials" :key="index">
+                            <td>{{ material.code }}</td>
+                            <td>{{ material.name }}</td>
+                            <td>{{ material.brand }}</td>
+                            <td>{{ material.quantity }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </CRow>
+
+                    <CRow class="mt-3">
+                      <CCol :md="10">
+                        <label for="" class="form-label"
+                          >ยืม–คืนเครื่องมือและอุปกรณ์</label
+                        >
+                      </CCol>
+                      <CCol :md="2">
+                        <CButton color="primary" @click="addToolRow">เพิ่ม</CButton>
                       </CCol>
                     </CRow>
-                  </CRow>
-                </CModalBody>
-              </CCard>
-            </CCol>
-          </CRow>
-        </CModalBody>
 
-        <CModalFooter>
-          <CButton color="secondary" @click="closeModelDetailRequestTab2">ปิด</CButton>
+                    <CRow>
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>รหัส</th>
+                            <th>ชื่อ</th>
+                            <th>จำนวน</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(tool, index) in tools" :key="index">
+                            <td>{{ tool.code }}</td>
+                            <td>{{ tool.name }}</td>
+                            <td>{{ tool.quantity }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </CRow>
+                  </CModalBody>
 
-          <CButton color="primary" @click="assessProblemReqTab2(selectedUserTab2)">
-            รับเรื่องการแจ้งซ่อม
-          </CButton>
-        </CModalFooter>
-      </CModal>
+                 
+                </CCard>
+              </CCol>
+            </CRow>
+          </CModalBody>
+
+          <CModalFooter>
+            <CButton color="secondary" @click="closeModelDetailRequestTab2">ปิด</CButton>
+
+            <CButton color="primary" @click="assessProblemReqTab2(selectedUserTab2)">
+              รับเรื่องการแจ้งซ่อม
+            </CButton>
+          </CModalFooter>
+        </CModal>
+      </div>
+
+      <vue-easy-lightbox
+        :visible="visibleImageModal"
+        :imgs="imageUrls.map((url) => getImageUrl(url))"
+        :index="currentImageIndex"
+        @hide="closeImageModalOnly"
+        @prev="handlePreviousImage"
+        @next="handleNextImage"
+      />
     </div>
   </div>
 </template>
@@ -415,7 +463,6 @@ export default {
     const imageUrls = ref([]);
     const currentImageIndex = ref(0);
 
-    // Fetch requests for Tab 1
     const fetchRequestsTab1 = async () => {
       try {
         const response = await axios.get(`/api/auth/getMacReq`);
@@ -425,7 +472,6 @@ export default {
       }
     };
 
-    // Fetch withdraw requests for Tab 2
     const fetchWithdrawRequestsTab2 = async () => {
       try {
         const userId = localStorage.getItem("userID");
@@ -443,7 +489,6 @@ export default {
       }
     };
 
-    // Pagination for Tab 1
     const paginatedItemsTab1 = computed(() => {
       const start = (currentPageTab1.value - 1) * rowsPerPageTab1.value;
       const end = start + rowsPerPageTab1.value;
@@ -454,7 +499,6 @@ export default {
       return Math.ceil(itemsTab1.value.length / rowsPerPageTab1.value);
     });
 
-    // Pagination for Tab 2
     const paginatedWithdrawItems = computed(() => {
       const start = (currentPageWithdraw.value - 1) * rowsPerPageWithdraw.value;
       const end = start + rowsPerPageWithdraw.value;
@@ -465,14 +509,12 @@ export default {
       return Math.ceil(withdrawItems.value.length / rowsPerPageWithdraw.value);
     });
 
-    // Show modal for Tab 1
     const showModalTab1 = (item) => {
       selectedUserTab1.value = item;
       fetchImages(item.mainr_ID);
       visibleModelDetailRequestTab1.value = true;
     };
 
-    // Show modal for Tab 2
     const showModalTab2 = (item) => {
       selectedUserTab2.value = item;
       fetchImages(item.mainr_ID);
@@ -488,6 +530,7 @@ export default {
     const closeModelDetailRequestTab2 = () => {
       visibleModelDetailRequestTab2.value = false;
       selectedUserTab2.value = {};
+      imageUrls.value = [];
     };
 
     const fetchImages = async (mainr_ID) => {
@@ -585,12 +628,10 @@ export default {
       }
     };
 
-    const assessProblemReqTab2 = async (selectedUser) => {
-      // Implement logic for Tab 2 problem assessment
-    };
+    const assessProblemReqTab2 = async (selectedUser) => {};
 
     onMounted(() => {
-      fetchRequestsTab1(); // Fetch the maintenance requests for Tab 1 when mounted
+      fetchRequestsTab1();
     });
 
     return {
@@ -628,6 +669,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .card-body p {
   margin: 0;
