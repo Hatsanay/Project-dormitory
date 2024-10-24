@@ -17,16 +17,16 @@
         <CCard class="card-modern" @click="showModal(item)">
           <CCardHeader class="card-header-modern">
             <div class="d-flex justify-content-between align-items-center">
-              <h5 class="m-0 card-title-modern">ผู้แจ้ง: {{ item.fullname }}</h5>
+              <h5 class="m-0 card-title-modern"><i class="fa-solid fa-circle-user"></i> ผู้แจ้ง:  {{ item.fullname }}</h5>
               <span class="date-modern">{{ item.mainr_Date }}</span>
             </div>
           </CCardHeader>
           <CCardBody>
             <div class="d-flex flex-column">
-              <p><strong>รหัส:</strong> {{ item.mainr_ID }}</p>
-              <p><strong>ห้อง:</strong> {{ item.roomNumber }}</p>
-              <p><strong>หัวข้อ:</strong> {{ item.mainr_ProblemTitle }}</p>
-              <p><strong>ประเภท:</strong> {{ item.Type }}</p>
+              <p><strong><i class="fa-regular fa-id-card"></i> รหัส: </strong> {{ item.mainr_ID }}</p>
+              <p><strong><i class="fa-solid fa-igloo"></i> ห้อง:</strong> {{ item.roomNumber }}</p>
+              <p><strong><i class="fa-regular fa-newspaper"></i> หัวเรื่อง:</strong> {{ item.mainr_ProblemTitle }}</p>
+              <p><strong><i class="fa-solid fa-screwdriver-wrench"></i> ประเภท:</strong> {{ item.Type }}</p>
             </div>
             <div class="d-flex justify-content-between align-items-center">
               <p></p>
@@ -80,19 +80,20 @@
     >
       <CModalHeader>
         <CModalTitle id="ModelDetailRequest">
+          <i class="fa-solid fa-screwdriver-wrench"></i>
           รายละเอียดการแจ้งซ่อม ID: {{ selectedUser.mainr_ID }}
           <span>วันที่: {{ selectedUser.mainr_Date }}</span>
         </CModalTitle>
       </CModalHeader>
       <CModalBody style="max-height: 400px; overflow-y: auto">
         <p style="word-wrap: break-word; white-space: pre-wrap">
-          <strong>ผู้แจ้ง:</strong> {{ selectedUser.fullname }}
+          <strong>ผู้แจ้ง: </strong> {{ selectedUser.fullname }}
         </p>
         <p style="word-wrap: break-word; white-space: pre-wrap">
           <strong>ห้อง:</strong> {{ selectedUser.roomNumber }}
         </p>
         <p style="word-wrap: break-word; white-space: pre-wrap">
-          <strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}
+          <strong>หัวเรื่อง:</strong> {{ selectedUser.mainr_ProblemTitle }}
         </p>
         <p style="word-wrap: break-word; white-space: pre-wrap">
           <strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}
@@ -126,9 +127,11 @@
       <CModalFooter>
         <CButton color="secondary" @click="closeModelDetailRequest">ปิด</CButton>
         <CButton class="frontwhite" color="danger" @click="denyClick(selectedUser)">
+          <i class="fa-solid fa-ban"></i>
           ปฎิเสธ
         </CButton>
         <CButton color="primary" @click="sendtomac(selectedUser)">
+          <i class="fa-solid fa-paper-plane"></i>
           ส่งคำร้องให้ช่างตรวจสอบ
         </CButton>
       </CModalFooter>

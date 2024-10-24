@@ -49,11 +49,12 @@ export const decodeJWTTH = (token) => {
       ///ระบบจัดการการแจ้งปัญหา///
       'view_manage_reques',
       'view_macmanage_reques',
+      ///ระบบจัดการการเบิกวัสดุ///
+      'view_WithdrawReq',
       ///จัดการค่าคงที่ผู้ใช้งาน///
       'view_RegisResident', 
       'add_RegisResident',
       'edit_Resident',
-      
       ///ตั้งค่า///
       'view_users_Setting',
       ///จัดการค่าคงที่ห้องพัก///

@@ -8,7 +8,8 @@
           @click.prevent="switchTab('1')"
           href="#"
         >
-          แจ้งซ่อมบำรุง
+        <i class="fa-solid fa-hammer"></i>
+           แจ้งซ่อมบำรุง
         </a>
       </li>
       <li class="nav-item">
@@ -18,6 +19,7 @@
           @click.prevent="switchTab('2')"
           href="#"
         >
+        <i class="fa-solid fa-clock-rotate-left"></i>
           ประวัติการแจ้งซ่อม
         </a>
       </li>
@@ -43,7 +45,8 @@
               style="margin-bottom: 10px"
               @click="$router.push('/UserAddReqView')"
             >
-              แจ้งซ่อมบำรุง
+            <i class="fa-solid fa-plus"></i>
+               แจ้งซ่อมบำรุง
             </CButton>
           </CCol>
         </CRow>
@@ -53,16 +56,16 @@
             <CCard class="card-modern" @click="showModal(item)">
               <CCardHeader class="card-header-modern">
                 <div class="d-flex justify-content-between align-items-center">
-                  <h5 class="m-0 card-title-modern">ผู้แจ้ง: {{ item.fullname }}</h5>
+                  <h5 class="m-0 card-title-modern"><i class="fa-solid fa-circle-user"></i> ผู้แจ้ง:  {{ item.fullname }}</h5>
                   <span class="date-modern">{{ item.mainr_Date }}</span>
                 </div>
               </CCardHeader>
               <CCardBody>
                 <div class="d-flex flex-column">
-                  <p><strong>รหัส:</strong> {{ item.mainr_ID }}</p>
-                  <p><strong>ห้อง:</strong> {{ item.roomNumber }}</p>
-                  <p><strong>หัวข้อ:</strong> {{ item.mainr_ProblemTitle }}</p>
-                  <p><strong>ประเภท:</strong> {{ item.Type }}</p>
+                  <p><strong><i class="fa-regular fa-id-card"></i> รหัส: </strong> {{ item.mainr_ID }}</p>
+                  <p><strong><i class="fa-solid fa-igloo"></i> <i class="fa-solid fa-igloo"></i> ห้อง:</strong> {{ item.roomNumber }}</p>
+                  <p><strong><i class="fa-regular fa-newspaper"></i> หัวเรื่อง:</strong> {{ item.mainr_ProblemTitle }}</p>
+                  <p><strong><i class="fa-solid fa-screwdriver-wrench"></i> ประเภท:</strong> {{ item.Type }}</p>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
                   <p></p>
@@ -135,16 +138,16 @@
             <CCard class="card-modern" @click="showModalhistory(item)">
               <CCardHeader class="card-header-modern-history">
                 <div class="d-flex justify-content-between align-items-center">
-                  <h5 class="m-0 card-title-modern">ผู้แจ้ง: {{ item.fullname }}</h5>
+                  <h5 class="m-0 card-title-modern"><i class="fa-solid fa-circle-user"></i> ผู้แจ้ง:  {{ item.fullname }}</h5>
                   <span class="date-modern">{{ item.mainr_Date }}</span>
                 </div>
               </CCardHeader>
               <CCardBody>
                 <div class="d-flex flex-column">
-                  <p><strong>รหัส:</strong> {{ item.mainr_ID }}</p>
-                  <p><strong>ห้อง:</strong> {{ item.roomNumber }}</p>
-                  <p><strong>หัวข้อ:</strong> {{ item.mainr_ProblemTitle }}</p>
-                  <p><strong>ประเภท:</strong> {{ item.Type }}</p>
+                  <p><strong><i class="fa-regular fa-id-card"></i> รหัส: </strong> {{ item.mainr_ID }}</p>
+                  <p><strong><i class="fa-solid fa-igloo"></i> ห้อง:</strong> {{ item.roomNumber }}</p>
+                  <p><strong><i class="fa-regular fa-newspaper"></i> หัวเรื่อง:</strong> {{ item.mainr_ProblemTitle }}</p>
+                  <p><strong><i class="fa-solid fa-screwdriver-wrench"></i> ประเภท:</strong> {{ item.Type }}</p>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
                   <p></p>
@@ -209,14 +212,15 @@
     >
       <CModalHeader>
         <CModalTitle id="ModelDetailRequest">
+          <i class="fa-solid fa-screwdriver-wrench"></i>
           รายละเอียดการแจ้งซ่อม ID: {{ selectedUser.mainr_ID }}
           <span>วันที่: {{ selectedUser.mainr_Date }}</span>
         </CModalTitle>
       </CModalHeader>
       <CModalBody style="max-height: 400px; overflow-y: auto">
-        <p><strong>ผู้แจ้ง:</strong> {{ selectedUser.fullname }}</p>
+        <p><strong>ผู้แจ้ง: </strong> {{ selectedUser.fullname }}</p>
         <p><strong>ห้อง:</strong> {{ selectedUser.roomNumber }}</p>
-        <p><strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}</p>
+        <p><strong>หัวเรื่อง:</strong> {{ selectedUser.mainr_ProblemTitle }}</p>
         <p><strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}</p>
         <p><strong>ประเภท:</strong> {{ selectedUser.Type }}</p>
         <p><strong>สถานะ:</strong> {{ selectedUser.status }}</p>
@@ -246,6 +250,7 @@
           color="danger"
           @click.stop="cancelClick(selectedUser)"
         >
+        <i class="fa-regular fa-circle-xmark"></i>
           ยกเลิกแจ้งซ่อม
         </CButton>
       </CModalFooter>
@@ -260,14 +265,15 @@
     >
       <CModalHeader>
         <CModalTitle id="ModelHistoryRequest">
+          <i class="fa-solid fa-screwdriver-wrench"></i>
           รายละเอียดการแจ้งซ่อม ID: {{ selectedUser.mainr_ID }}
           <span>วันที่: {{ selectedUser.mainr_Date }}</span>
         </CModalTitle>
       </CModalHeader>
       <CModalBody style="max-height: 400px; overflow-y: auto">
-        <p><strong>ผู้แจ้ง:</strong> {{ selectedUser.fullname }}</p>
+        <p><strong>ผู้แจ้ง: </strong> {{ selectedUser.fullname }}</p>
         <p><strong>ห้อง:</strong> {{ selectedUser.roomNumber }}</p>
-        <p><strong>หัวข้อ:</strong> {{ selectedUser.mainr_ProblemTitle }}</p>
+        <p><strong>หัวเรื่อง:</strong> {{ selectedUser.mainr_ProblemTitle }}</p>
         <p><strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}</p>
         <p><strong>ประเภท:</strong> {{ selectedUser.Type }}</p>
         <p><strong>สถานะ:</strong> {{ selectedUser.status }}</p>

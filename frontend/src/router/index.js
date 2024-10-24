@@ -10,6 +10,8 @@ import ViewResView from '../views/staticUsers/ViewResView.vue';
 
 import macMgnReqView from '../views/ManageRequets/macMgnReqView.vue';
 import StaffMgnReqView from '../views/ManageRequets/StaffMgnReqView.vue';
+import starffWithdrawReqView from '../views/ManageRequets/starffWithdrawReqView.vue';
+
 
 
 
@@ -62,6 +64,14 @@ const routes = [
           name: 'รับคำร้องขอแจ้งซ่อม', //เจ้าหน้าที่ซ่อมบำรุง
           meta: { permission: 'view_macmanage_reques', requiresAuth: true },
           component: macMgnReqView,
+        },
+
+        ///ระบบจัดการการเบิกวัสดุ///
+        {
+          path: '/starffWithdrawReqView',
+          name: 'เบิกวัสดุ', //เจ้าหน้าที่
+          meta: { permission: 'view_WithdrawReq', requiresAuth: true },
+          component: starffWithdrawReqView,
         },
       
       ///จัดการค่าคงที่ผู้ใช้งาน///

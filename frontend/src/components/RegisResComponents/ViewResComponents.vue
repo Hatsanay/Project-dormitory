@@ -10,7 +10,8 @@
           style="margin-bottom: 10px"
           @click="$router.push('/RegisResident')"
         >
-          New
+        <i class="fa-solid fa-user-plus"></i>
+           New
         </CButton>
       </CCol>
     </CRow>
@@ -38,7 +39,7 @@
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
-          <div class="card-header">ตารางผู้ใช้งาน</div>
+          <div class="card-header"><i class="fa-solid fa-table"></i> ตารางผู้ใช้งาน</div>
           <div class="card-body table-responsive p-0">
             <table class="table">
               <thead>
@@ -63,7 +64,7 @@
                       class="btn btn-info btn-sm fontwhite"
                       @click="showModal(item)"
                     >
-                      แสดง
+                    <i class="fa-solid fa-eye"></i> รายละเอียด
                     </button>
                   </td>
                   <td>
@@ -76,7 +77,7 @@
                         })
                       "
                     >
-                      แก้ไข
+                    <i class="fa-solid fa-user-pen"></i> แก้ไข
                     </button>
                   </td>
                   <td>
@@ -84,7 +85,7 @@
                       class="btn btn-danger btn-sm fontwhite"
                       @click="showModalDelete(item)"
                     >
-                      ลบ
+                    <i class="fa-solid fa-trash"></i>  ลบ
                     </button>
                   </td>
                 </tr>
@@ -158,7 +159,7 @@
         <modelViewRegisComponents :selectedUser="selectedUser" />
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="closeModal">Close</CButton>
+        <CButton color="secondary" @click="closeModal">ปิด</CButton>
       </CModalFooter>
     </CModal>
 
@@ -170,7 +171,7 @@
       size="lg"
     >
       <CModalHeader>
-        <CModalTitle id="VerticallyCenteredExample">ข้อมูลผู้ใช้</CModalTitle>
+        <CModalTitle id="VerticallyCenteredExample">เลือกสถา่นะเพื่อยกเลิก</CModalTitle>
       </CModalHeader>
       <CModalBody>
         <!-- <modelViewRegisComponents :selectedUser="selectedUser" /> -->
@@ -182,7 +183,7 @@
         />
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="closeDeleteModal">Close</CButton>
+        <CButton color="secondary" @click="closeDeleteModal">ปิด</CButton>
       </CModalFooter>
     </CModal>
 

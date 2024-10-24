@@ -9,7 +9,7 @@
           href="#"
         >
           <i class="fa-solid fa-screwdriver-wrench"></i>
-          รับเรื่องแจ้งซ่อมบำรุง
+          รับเรื่องแจ้งเบิกวัสดุอุปกรณ์
         </a>
       </li>
       <li class="nav-item">
@@ -20,7 +20,7 @@
           href="#"
         >
           <i class="fa-solid fa-cart-plus"></i>
-          แจ้งเบิกวัสดุอุปกรณ์
+          เบิกวัสดุอุปกรณ์
         </a>
       </li>
     </ul>
@@ -611,7 +611,7 @@ import VueEasyLightbox from "vue-easy-lightbox";
 import Swal from "sweetalert2";
 
 export default {
-  name: "macMgnReq",
+  name: "starffWithdrawReq",
   components: {
     VueEasyLightbox,
   },
@@ -1022,8 +1022,8 @@ export default {
             title: "บันทึกสำเร็จ",
             text: "การแจ้งเบิกวัสดุของคุณถูกบันทึกแล้ว",
           }).then(() => {
-                window.location.reload();
-              });
+            window.location.reload();
+          });
 
           // ล้างรายการวัสดุที่เลือกหลังบันทึกสำเร็จ
           selectedStockItems.value = [];

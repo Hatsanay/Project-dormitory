@@ -32,6 +32,7 @@ const getReqById = async (req, res) => {
       users.user_ID = ?
       AND maintenancerequests.mainr_Stat_ID != "STA000017"
       AND maintenancerequests.mainr_Stat_ID != "STA000016"
+      AND maintenancerequests.mainr_Stat_ID != "STA000018"
     ORDER BY
       maintenancerequests.mainr_ID ASC
     `;

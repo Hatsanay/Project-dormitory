@@ -29,6 +29,7 @@
     "@vuepic/vue-datepicker": "^9.0.2",
     "axios": "^1.7.4",
     "chart.js": "^4.4.3",
+    "font-awesome": "^4.7.0",
     "pinia": "^2.1.7",
     "simplebar-vue": "^2.3.5",
     "sweetalert2": "^11.14.3",

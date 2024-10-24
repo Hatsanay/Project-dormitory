@@ -19,7 +19,7 @@ export default [
     component: 'CNavItem',
     name: 'ส่งคำร้องแจ้งซ่อม',
     to: '/UserReqView',
-    icon: 'cil-people',
+    icon: 'cilSend',
   },
   ///ระบบจัดการการแจ้งปัญหา///
   {
@@ -30,14 +30,28 @@ export default [
     component: 'CNavItem',
     name: 'คำร้องขอแจ้งซ่อม',
     to: '/StaffMgnReqView',
-    icon: 'cil-people',
+    icon: 'cilEnvelopeOpen',
   },
   {
     component: 'CNavItem',
     name: 'รับคำร้องขอแจ้งซ่อม',
     to: '/macMgnReqView',
-    icon: 'cil-people',
+    icon: 'cilDescription',
   },
+
+  ///ระบบจัดการการเบิกวัสดุ///
+  {
+    component: 'CNavTitle',
+    name: 'จัดการการเบิกวัสดุ',
+  },
+  {
+    component: 'CNavItem',
+    name: 'เบิกวัสดุ',
+    to: '/starffWithdrawReqView',
+    icon: 'cilBasket',
+  },
+
+  
 
   ///จัดการค่าคงที่ผู้ใช้งาน///
   {
@@ -61,7 +75,7 @@ export default [
     component: 'CNavItem',
     name: 'ห้องพักอาศัย',
     to: '/Room',
-    icon: 'cil-people',
+    icon: 'cilRoom',
   },
 
 
@@ -74,7 +88,7 @@ export default [
     component: 'CNavGroup',
     name: 'ตั้งค่า',
     to: '#',
-    icon: 'cil-notes',
+    icon: 'cilSettings',
     items: [
       {
         component: 'CNavItem',
@@ -87,7 +101,7 @@ export default [
     component: 'CNavItem',
     name: 'LOGOUT',
     to: '/login',
-    icon: 'cil-notes',
+    icon: 'cilAccountLogout',
   },
    
 ]

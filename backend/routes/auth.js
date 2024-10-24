@@ -4,7 +4,8 @@ const { registerUser, getAutotid ,getRole ,getUser, getUserById, updateUser, upd
 const { getProvince,getAmphures,getTambons,getZipcode } = require('../controllers/addressControler');
 const {getStatus,getStatusUserDelete} = require('../controllers/statusControler');
 const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq} = require('../controllers/reqController');
-const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById,getStock} = require('../controllers/manageRequetsControler');
+const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById,getStock,submitRequisition} = require('../controllers/manageRequetsControler');
+const {getWithdrawReqlist,getWithdrawReq} = require('../controllers/WithdrawControler');
 // getUserByIdfromReq
 // const { registerRoom } = require('../controllers/RoomController');
 const authenticateToken = require('../middleware/auth');
@@ -16,6 +17,7 @@ router.post('/registerUser', authenticateToken, registerUser);
 router.post('/submitRepairRequest', authenticateToken, upload.array('images'), submitRepairRequest);
 
 router.post('/sendAssessProblemReq', authenticateToken, sendAssessProblemReq);
+router.post('/submitRequisition', authenticateToken, submitRequisition);
 
 router.get('/getAutotid',authenticateToken, getAutotid);
 router.get('/getRole',authenticateToken, getRole);
@@ -38,6 +40,10 @@ router.get('/getReq',authenticateToken, getReq);
 router.get('/getMacReq',authenticateToken, getMacReq);
 router.get('/getMacReqById',authenticateToken, getMacReqById);
 router.get('/getStock',authenticateToken, getStock);
+
+router.get('/getWithdrawReq',authenticateToken, getWithdrawReq);
+router.get('/getWithdrawReqlist',authenticateToken, getWithdrawReqlist);
+
 
 
 

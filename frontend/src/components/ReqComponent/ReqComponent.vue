@@ -5,7 +5,7 @@
       <CForm class="row g-3" @submit.prevent="submitForm">
         <CCol :md="6">
           <CCard class="mb-4">
-            <CCardHeader>ข้อมูลแจ้งซ่อมบำรุง</CCardHeader>
+            <CCardHeader> <i class="fa-solid fa-screwdriver-wrench"></i> ข้อมูลแจ้งซ่อมบำรุง</CCardHeader>
             <CCardBody>
               <CCol md="12">
                 <CRow class="mb-3">
@@ -69,7 +69,7 @@
                 </CFormSelect>
               </CCol>
               <CCol md="12">
-                <CFormLabel for="titleRepair">หัวข้อ</CFormLabel>
+                <CFormLabel for="titleRepair">หัวเรื่อง</CFormLabel>
                 <CFormInput v-model="titleRepair" type="text" id="titleRepair" required />
               </CCol>
               <CCol md="12">
@@ -88,7 +88,7 @@
         </CCol>
         <CCol :md="6">
           <CCard class="mb-4">
-            <CCardHeader>ข้อมูลรูปภาพ</CCardHeader>
+            <CCardHeader><i class="fa-regular fa-image"></i> ข้อมูลรูปภาพ</CCardHeader>
             <CCardBody>
               <CCol md="12">
                 <CFormLabel for="reqImg">กรุณาเลือกรูปภาพเบื้องต้น</CFormLabel>
@@ -122,7 +122,7 @@
           </CCard>
         </CCol>
         <div>
-        <CButton class="submitbutton" type="submit" color="primary">บันทึก</CButton>
+        <CButton class="submitbutton" type="submit" color="primary"><i class="fa-solid fa-floppy-disk"></i> บันทึก</CButton>
 
         </div>
 

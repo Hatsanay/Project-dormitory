@@ -210,24 +210,17 @@ const getMacReqById = async (req, res) => {
   }
 };
 
-
 const sendAssessProblemReq = async (req, res) => {
-  const {
-    mainr_ID,
-    assessProblemText,
-    userID
-  } = req.body;
+  const { mainr_ID, assessProblemText, userID } = req.body;
   try {
     const insertQuery = `
             INSERT INTO assessproblem
             (asp_mainr_ID, asp_detail, asp_user_id)
             VALUES (?, ?, ?)
         `;
-    await db.promise().query(insertQuery, [
-      mainr_ID,
-      assessProblemText,
-      userID,
-    ]);
+    await db
+      .promise()
+      .query(insertQuery, [mainr_ID, assessProblemText, userID]);
 
     res.status(201).json({ message: "ส่งประเมิณปัญหาเรียบร้อยแล้ว!" });
   } catch (err) {
@@ -252,11 +245,11 @@ const getStock = async (req, res) => {
     `;
 
     const [result] = await db.promise().query(query);
-    
+
     if (result.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลสต็อก" });
     }
-    
+
     res.status(200).json(result);
   } catch (err) {
     console.error("เกิดข้อผิดพลาด:", err);
@@ -264,6 +257,93 @@ const getStock = async (req, res) => {
   }
 };
 
+const submitRequisition = async (req, res) => {
+  const { requisition_mainr_ID, requisition_user_ID, stockItems } = req.body;
+
+  if (
+    !requisition_mainr_ID ||
+    !requisition_user_ID ||
+    !stockItems ||
+    stockItems.length === 0
+  ) {
+    return res
+      .status(400)
+      .json({ error: "ข้อมูลไม่ครบ กรุณาตรวจสอบข้อมูลที่ส่งมาด้วย" });
+  }
+
+  try {
+    // ดึงค่า requisition_ID ล่าสุด
+    const query =
+      "SELECT requisition_ID FROM requisition ORDER BY requisition_ID DESC LIMIT 1";
+    const [result] = await db.promise().query(query);
+    let maxId;
+    if (result.length === 0) {
+      maxId = 0;
+    } else {
+      const lastRequisitionId = result[0].requisition_ID;
+      maxId = parseInt(lastRequisitionId.slice(-6)) || 0;
+    }
+    const num = maxId + 1;
+    const requisition_ID = "REQ" + String(num).padStart(6, "0");
+
+    // เก็บวันที่ปัจจุบัน
+    const now = new Date();
+    const reqDate = now.toISOString().slice(0, 19).replace("T", " ");
+
+    // บันทึกข้อมูลในตาราง requisition
+    const insertRequisitionQuery = `
+      INSERT INTO requisition (requisition_ID, requisition_Date, requisition_mainr_ID, requisition_user_ID, requisition_stat_ID)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    await db.promise().query(insertRequisitionQuery, [
+      requisition_ID,
+      reqDate,
+      requisition_mainr_ID,
+      requisition_user_ID,
+      "STA000020", // สถานะเริ่มต้น "ยังไม่เบิก"
+    ]);
+
+    // บันทึกข้อมูลในตาราง reqlist (รายละเอียดการเบิก)
+    const insertReqlistQuery = `
+      INSERT INTO requisition_list (reqlist_order, reqlist_stock_ID, reqlist_requisition_ID, quantity , reqlist_stat_ID)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    for (let i = 0; i < stockItems.length; i++) {
+      const { stockID, quantity, quantity_orders } = stockItems[i];
+      const reqlist_order = i + 1; // ลำดับรายการ
+
+      // ตรวจสอบว่ามีรายการสั่งเพิ่มหรือไม่
+      let statID;
+      if (quantity_orders && quantity_orders > 0) {
+        statID = "STA000022"; // ถ้ามี quantity_orders มากกว่า 0 เปลี่ยนเป็น "รอสั่งซื้อ"
+      } else {
+        statID = "STA000019"; // ถ้าไม่มีสั่งเพิ่มให้สถานะเป็น "รอเบิก"
+      }
+
+      await db.promise().query(insertReqlistQuery, [
+        reqlist_order,
+        stockID,
+        requisition_ID,
+        quantity,
+        statID, // สถานะที่กำหนดตามเงื่อนไข
+      ]);
+
+      const updateQuery = `
+      UPDATE maintenancerequests SET
+      mainr_Stat_ID = ?
+      WHERE mainr_ID = ?
+    `;
+
+      await db.promise().query(updateQuery, [ "STA000023", requisition_mainr_ID]);
+    }
+
+    res.status(201).json({ message: "บันทึกข้อมูลการเบิกวัสดุสำเร็จ" });
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล:", error);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการบันทึกข้อมูล" });
+  }
+};
 
 module.exports = {
   getReq,
@@ -273,4 +353,5 @@ module.exports = {
   sendAssessProblemReq,
   getMacReqById,
   getStock,
+  submitRequisition,
 };
