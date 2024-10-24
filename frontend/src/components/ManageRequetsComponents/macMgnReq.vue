@@ -18,7 +18,7 @@
           @click.prevent="setActiveTab('2')"
           href="#"
         >
-          เบิกวัสดุอุปกรณ์
+          แจ้งเบิกวัสดุอุปกรณ์
         </a>
       </li>
     </ul>
@@ -198,7 +198,7 @@
             <CCard class="card-modern" @click="showModalTab2(item)">
               <CCardHeader class="card-header-modern">
                 <div class="d-flex justify-content-between align-items-center">
-                  <h5 class="m-0 card-title-modern">ผู้เบิก: {{ item.fullname }}</h5>
+                  <h5 class="m-0 card-title-modern">ผู้แจ้ง: {{ item.fullname }}</h5>
                   <span class="date-modern">{{ item.mainr_Date }}</span>
                 </div>
               </CCardHeader>
@@ -340,6 +340,7 @@
                           class="form-control"
                           placeholder="กรอกประเมินงานซ่อมเบื้องต้น"
                           style="height: 100px"
+                          v-model="selectedUserTab2.detail"
                           disabled
                         ></textarea>
                       </div>
@@ -350,7 +351,9 @@
                         <label for="" class="form-label">วัสดุ</label>
                       </CCol>
                       <CCol :md="2">
-                        <CButton color="primary" @click="addMaterialRow">เพิ่ม</CButton>
+                        <CButton color="primary" @click="showModelStockWithdraw()"
+                          >เพิ่ม</CButton
+                        >
                       </CCol>
                     </CRow>
 
@@ -374,39 +377,7 @@
                         </tbody>
                       </table>
                     </CRow>
-
-                    <CRow class="mt-3">
-                      <CCol :md="10">
-                        <label for="" class="form-label"
-                          >ยืม–คืนเครื่องมือและอุปกรณ์</label
-                        >
-                      </CCol>
-                      <CCol :md="2">
-                        <CButton color="primary" @click="addToolRow">เพิ่ม</CButton>
-                      </CCol>
-                    </CRow>
-
-                    <CRow>
-                      <table class="table table-bordered">
-                        <thead>
-                          <tr>
-                            <th>รหัส</th>
-                            <th>ชื่อ</th>
-                            <th>จำนวน</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="(tool, index) in tools" :key="index">
-                            <td>{{ tool.code }}</td>
-                            <td>{{ tool.name }}</td>
-                            <td>{{ tool.quantity }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </CRow>
                   </CModalBody>
-
-                 
                 </CCard>
               </CCol>
             </CRow>
@@ -431,6 +402,115 @@
         @next="handleNextImage"
       />
     </div>
+
+    <CModal
+      alignment="center"
+      :visible="visibleModelStockWithdraw"
+      @close="closeModelStockWithdraw"
+      aria-labelledby="VerticallyCenteredExample"
+      size="xl"
+      backdrop="static"
+    >
+      <CModalHeader>
+        <CModalTitle id="ModelStockWithdraw">เพิ่มวัสดุ</CModalTitle>
+      </CModalHeader>
+
+      <CModalBody style="max-height: 400px; overflow-y: auto">
+        <CInputGroup style="margin-bottom: 10px">
+          <CFormInput placeholder="ค้นหาวัสดุ..." v-model="searchQueryStock" />
+          <CInputGroupText>
+            <CIcon name="cil-magnifying-glass" />
+          </CInputGroupText>
+        </CInputGroup>
+
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>รหัสสต็อก</th>
+              <th>ชื่อวัสดุ</th>
+              <th>จำนวนคงเหลือ</th>
+              <th>หน่วย</th>
+              <th>ประเภทวัสดุ</th>
+              <th>เลือก</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(stock, index) in paginatedStockItems" :key="index">
+              <td>{{ stock.stockid }}</td>
+              <td>{{ stock.stockname }}</td>
+              <td>{{ stock.stockquantity }}</td>
+              <td>{{ stock.unitname }}</td>
+              <td>{{ stock.typestockname }}</td>
+              <td>
+                <CButton color="primary" @click="addSelectedStock(stock)">เลือก</CButton>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <CButton
+            :disabled="currentPageStock === 1"
+            @click="currentPageStock--"
+            class="btn btn-secondary"
+          >
+            Previous
+          </CButton>
+
+          <span>Showing page {{ currentPageStock }} of {{ totalPagesStock }}</span>
+
+          <CButton
+            :disabled="currentPageStock === totalPagesStock"
+            @click="currentPageStock++"
+            class="btn btn-secondary"
+          >
+            Next
+          </CButton>
+        </div>
+
+        <div class="d-flex align-items-center mt-3">
+          <span>Show</span>
+          <select
+            v-model="rowsPerPageStock"
+            class="form-select-modern mx-2"
+            style="width: auto"
+          >
+            <option :value="3">3</option>
+            <option :value="5">5</option>
+            <option :value="10">10</option>
+            <option :value="20">20</option>
+            <option :value="50">50</option>
+            <option :value="100">100</option>
+          </select>
+          <span>entries</span>
+        </div>
+
+        <CRow>
+          <h5>รายการวัสดุที่เลือก</h5>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>รหัส</th>
+                <th>ชื่อวัสดุ</th>
+                <th>จำนวนคงเหลือ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in selectedStockItems" :key="index">
+                <td>{{ item.stockid }}</td>
+                <td>{{ item.stockname }}</td>
+                <td>{{ item.stockquantity }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </CRow>
+      </CModalBody>
+
+      <CModalFooter>
+        <CButton color="primary" @click="submitStockSelection">เพิ่ม</CButton>
+        <CButton color="secondary" @click="closeModelStockWithdraw">ปิด</CButton>
+      </CModalFooter>
+    </CModal>
   </div>
 </template>
 
@@ -449,19 +529,73 @@ export default {
     const activeTab = ref("1");
     const searchQueryTab1 = ref("");
     const searchQueryTab2 = ref("");
+    const searchQueryStock = ref(""); // เพิ่มฟิลด์นี้สำหรับการค้นหาสต็อก
     const itemsTab1 = ref([]);
     const withdrawItems = ref([]);
+    const stockItems = ref([]); // เก็บข้อมูลสต็อก
+    const selectedStockItems = ref([]); // เก็บวัสดุที่เลือก
     const rowsPerPageTab1 = ref(3);
     const rowsPerPageWithdraw = ref(3);
+    const rowsPerPageStock = ref(5); // ตั้งค่าจำนวนรายการต่อหน้าในสต็อก
     const currentPageTab1 = ref(1);
     const currentPageWithdraw = ref(1);
+    const currentPageStock = ref(1); // หน้าในตารางสต็อก
     const visibleModelDetailRequestTab1 = ref(false);
     const visibleModelDetailRequestTab2 = ref(false);
+    const visibleModelStockWithdraw = ref(false); // Modal สต็อก
     const visibleImageModal = ref(false);
     const selectedUserTab1 = ref({});
     const selectedUserTab2 = ref({});
     const imageUrls = ref([]);
     const currentImageIndex = ref(0);
+
+    const filteredItemsTab1 = computed(() => {
+      return itemsTab1.value.filter((item) => {
+        return (
+          item.mainr_ID.toLowerCase().includes(searchQueryTab1.value.toLowerCase()) ||
+          item.fullname.toLowerCase().includes(searchQueryTab1.value.toLowerCase()) ||
+          item.roomNumber?.toLowerCase().includes(searchQueryTab1.value.toLowerCase()) ||
+          item.mainr_ProblemTitle
+            ?.toLowerCase()
+            .includes(searchQueryTab1.value.toLowerCase())
+        );
+      });
+    });
+
+    const filteredWithdrawItems = computed(() => {
+      return withdrawItems.value.filter((item) => {
+        return (
+          item.mainr_ID.toLowerCase().includes(searchQueryTab2.value.toLowerCase()) ||
+          item.fullname.toLowerCase().includes(searchQueryTab2.value.toLowerCase()) ||
+          item.roomNumber?.toLowerCase().includes(searchQueryTab2.value.toLowerCase()) ||
+          item.mainr_ProblemTitle
+            ?.toLowerCase()
+            .includes(searchQueryTab2.value.toLowerCase())
+        );
+      });
+    });
+
+    const filteredStockItems = computed(() => {
+      return stockItems.value.filter((stock) => {
+        return (
+          stock.stockname.toLowerCase().includes(searchQueryStock.value.toLowerCase()) ||
+          stock.stockid?.toLowerCase().includes(searchQueryStock.value.toLowerCase()) ||
+          stock.typestockname
+            ?.toLowerCase()
+            .includes(searchQueryStock.value.toLowerCase())
+        );
+      });
+    });
+
+    const paginatedStockItems = computed(() => {
+      const start = (currentPageStock.value - 1) * rowsPerPageStock.value;
+      const end = start + rowsPerPageStock.value;
+      return filteredStockItems.value.slice(start, end);
+    });
+
+    const totalPagesStock = computed(() => {
+      return Math.ceil(filteredStockItems.value.length / rowsPerPageStock.value);
+    });
 
     const fetchRequestsTab1 = async () => {
       try {
@@ -482,6 +616,16 @@ export default {
       }
     };
 
+    const fetchStockData = async () => {
+      try {
+        const response = await axios.get(`/api/auth/getStock`);
+        stockItems.value = response.data; // Save the stock data
+        console.log("Fetched stock data:", stockItems.value); // Log the data to check
+      } catch (error) {
+        console.error("Error fetching stock data:", error);
+      }
+    };
+
     const setActiveTab = (tab) => {
       activeTab.value = tab;
       if (tab === "2") {
@@ -492,21 +636,21 @@ export default {
     const paginatedItemsTab1 = computed(() => {
       const start = (currentPageTab1.value - 1) * rowsPerPageTab1.value;
       const end = start + rowsPerPageTab1.value;
-      return itemsTab1.value.slice(start, end);
+      return filteredItemsTab1.value.slice(start, end);
     });
 
     const totalPagesTab1 = computed(() => {
-      return Math.ceil(itemsTab1.value.length / rowsPerPageTab1.value);
+      return Math.ceil(filteredItemsTab1.value.length / rowsPerPageTab1.value);
     });
 
     const paginatedWithdrawItems = computed(() => {
       const start = (currentPageWithdraw.value - 1) * rowsPerPageWithdraw.value;
       const end = start + rowsPerPageWithdraw.value;
-      return withdrawItems.value.slice(start, end);
+      return filteredWithdrawItems.value.slice(start, end);
     });
 
     const totalWithdrawPages = computed(() => {
-      return Math.ceil(withdrawItems.value.length / rowsPerPageWithdraw.value);
+      return Math.ceil(filteredWithdrawItems.value.length / rowsPerPageWithdraw.value);
     });
 
     const showModalTab1 = (item) => {
@@ -521,6 +665,11 @@ export default {
       visibleModelDetailRequestTab2.value = true;
     };
 
+    const showModelStockWithdraw = () => {
+      fetchStockData(); // ดึงข้อมูลสต็อก
+      visibleModelStockWithdraw.value = true;
+    };
+
     const closeModelDetailRequestTab1 = () => {
       visibleModelDetailRequestTab1.value = false;
       selectedUserTab1.value = {};
@@ -531,6 +680,10 @@ export default {
       visibleModelDetailRequestTab2.value = false;
       selectedUserTab2.value = {};
       imageUrls.value = [];
+    };
+
+    const closeModelStockWithdraw = () => {
+      visibleModelStockWithdraw.value = false;
     };
 
     const fetchImages = async (mainr_ID) => {
@@ -566,6 +719,15 @@ export default {
       if (currentImageIndex.value < imageUrls.value.length - 1) {
         currentImageIndex.value += 1;
       }
+    };
+
+    const addSelectedStock = (stock) => {
+      selectedStockItems.value.push(stock);
+    };
+
+    const submitStockSelection = () => {
+      console.log("วัสดุที่เลือก:", selectedStockItems.value);
+      closeModelStockWithdraw();
     };
 
     const assessProblemReqTab1 = async (selectedUser) => {
@@ -638,22 +800,32 @@ export default {
       activeTab,
       searchQueryTab1,
       searchQueryTab2,
+      searchQueryStock, // เพิ่มฟิลด์นี้สำหรับการค้นหาสต็อก
       paginatedItemsTab1,
       paginatedWithdrawItems,
       totalPagesTab1,
       totalWithdrawPages,
       rowsPerPageTab1,
       rowsPerPageWithdraw,
+      rowsPerPageStock, // จำนวนต่อหน้าของสต็อก
       currentPageTab1,
       currentPageWithdraw,
+      currentPageStock, // หน้าในตารางสต็อก
       visibleModelDetailRequestTab1,
       visibleModelDetailRequestTab2,
+      visibleModelStockWithdraw,
       closeModelDetailRequestTab1,
       closeModelDetailRequestTab2,
+      closeModelStockWithdraw,
       showModalTab1,
       showModalTab2,
+      showModelStockWithdraw,
       selectedUserTab1,
       selectedUserTab2,
+      stockItems, // ข้อมูลสต็อก
+      selectedStockItems, // วัสดุที่เลือก
+      paginatedStockItems, // สต็อกที่แบ่งหน้า
+      totalPagesStock, // จำนวนหน้าของสต็อก
       imageUrls,
       getImageUrl,
       openImageModal,
@@ -662,6 +834,8 @@ export default {
       currentImageIndex,
       handlePreviousImage,
       handleNextImage,
+      addSelectedStock,
+      submitStockSelection,
       assessProblemReqTab1,
       assessProblemReqTab2,
       setActiveTab,

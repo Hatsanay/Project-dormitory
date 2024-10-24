@@ -13,7 +13,6 @@
     </CRow>
 
     <CRow>
-
       <CCol v-for="item in paginatedItems" :key="item.mainr_ID" md="12" class="mb-4">
         <CCard class="card-modern" @click="showModal(item)">
           <CCardHeader class="card-header-modern">
@@ -266,6 +265,8 @@ export default {
               title: "ปฎิเสธเรียบร้อย!",
               text: "การแจ้งซ่อมของคุณถูกปฎิเสธแล้ว.",
               icon: "success",
+            }).then(() => {
+              window.location.reload();
             });
 
             closeModelDetailRequest();
@@ -303,6 +304,8 @@ export default {
               title: "ส่งคำร้องเรียบร้อย!",
               text: "ส่งคำร้องให้ช่างแล้ว.",
               icon: "success",
+            }).then(() => {
+              window.location.reload();
             });
 
             closeModelDetailRequest();
@@ -318,7 +321,6 @@ export default {
         }
       });
     };
-
 
     onMounted(() => {
       fetchRequests();
@@ -343,7 +345,7 @@ export default {
       handlePreviousImage,
       handleNextImage,
       denyClick,
-      sendtomac
+      sendtomac,
     };
   },
 };
@@ -353,7 +355,6 @@ export default {
 .card-body p {
   margin: 0;
 }
-
 
 .date {
   font-weight: bold;

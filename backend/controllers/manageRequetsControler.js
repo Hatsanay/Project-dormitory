@@ -236,6 +236,34 @@ const sendAssessProblemReq = async (req, res) => {
   }
 };
 
+const getStock = async (req, res) => {
+  try {
+    const query = `
+      SELECT 
+        stock.ID AS stockid,
+        stock.name AS stockname,
+        stock.quantity AS stockquantity,
+        unit.name AS unitname,
+        type_stock.name AS typestockname
+      FROM 
+        stock
+      INNER JOIN unit on unit.ID = stock.stock_unit_ID
+      INNER JOIN type_stock on type_stock.ID = stock.stock_type_stock_ID
+    `;
+
+    const [result] = await db.promise().query(query);
+    
+    if (result.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลสต็อก" });
+    }
+    
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
 
 module.exports = {
   getReq,
@@ -244,4 +272,5 @@ module.exports = {
   getMacReq,
   sendAssessProblemReq,
   getMacReqById,
+  getStock,
 };

@@ -30,7 +30,7 @@ const login = async (req, res) => {
     const token = jwt.sign(
       { id: user.user_ID, username: user.user_Name,permissions: user.permission_name, },
       process.env.JWT_SECRET,
-      { expiresIn: "15m", algorithm: "HS256" }
+      { expiresIn: "12h", algorithm: "HS256" }
     );
 
     ///////////Respons/////////////
