@@ -27,6 +27,9 @@ import ViewTypeStockView from '../views/staticTypeStock/ViewTypeStockView.vue';
 import RegisTypeStock from '../views/staticTypeStock/RegisTypeStock.vue';
 
 import ViewTypeStatusView from '../views/staticTypeStatus/ViewTypeStatusView.vue';
+import RegisTypeStatus from '../views/staticTypeStatus/RegisTypeStatus.vue';
+
+import ViewStatusView from '../views/staticStatus/ViewStatusView.vue';
 
 import { clearToken, hasPermission, isAuthenticated } from './auth';
 
@@ -185,8 +188,19 @@ const routes = [
         meta: { permission: 'View_TypeStatus', requiresAuth: true },
         component: ViewTypeStatusView,
       },
+      {
+        path: '/RegisTypeStatus',
+        name: 'เพิ่มข้อมูลประเภทสถานะ',
+        meta: { permission: 'add_TypeStatus', requiresAuth: true },
+        component: RegisTypeStatus,
+      },
 
-
+      {
+        path: '/ViewStatusView',
+        name: 'จัดการข้อมูลประเภทสถานะ',
+        meta: { permission: 'View_Status', requiresAuth: true },
+        component: ViewStatusView,
+      },
       ///ตั้งค่า///
       {
         path: '/UserSetView',

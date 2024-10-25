@@ -84,8 +84,8 @@ export default {
 
     const handleSubmit = async () => {
       try {
-        const response = await axios.post("/api/auth//registerStatusType", {
-          name: typestatusname.value,
+        const response = await axios.post("/api/auth/registerStatusType", {
+          stat_Name: typestatusname.value,
         });
 
         createToast("Success", response.data.message);

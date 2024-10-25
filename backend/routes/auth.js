@@ -2,7 +2,7 @@ const express = require('express');
 const { login } = require('../controllers/authController');
 const { registerUser, getAutotid ,getRole ,getUser, getUserById, updateUser, updateUserStatus} = require('../controllers/regiterController');
 const { getProvince,getAmphures,getTambons,getZipcode } = require('../controllers/addressControler');
-const {getStatus,getStatusUserDelete,registerStatus} = require('../controllers/statusControler');
+const {getStatus,getStatusUserDelete,registerStatus,getStatusForView,getStatusByID,getAutotidSta} = require('../controllers/statusControler');
 const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq} = require('../controllers/reqController');
 const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById,getStock,submitRequisition} = require('../controllers/manageRequetsControler');
 const {getWithdrawReqlist,getWithdrawReq,putReqWithdraw,getWithdraw,putAcceptWithdraw,cancelWithdraw} = require('../controllers/WithdrawControler');
@@ -38,7 +38,7 @@ router.get('/getUnit',authenticateToken, getUnit);
 router.get('/getUnitByName',authenticateToken, getUnitByName);
 
 router.get('/getAutotidStock',authenticateToken, getAutotidStock);
-router.get('/getStock',authenticateToken, getStockforstock);
+router.get('/getStockforstock',authenticateToken, getStockforstock);
 router.get('/getStockByName',authenticateToken, getStockByID);
 
 router.get('/getAutotidTypeStock',authenticateToken, getAutotidTypeStock);
@@ -48,8 +48,11 @@ router.get('/getTypeStockByName',authenticateToken, getTypeStockByName);
 router.get('/getAutotidStatusType',authenticateToken, getAutotidStatusType);
 router.get('/getStatusType',authenticateToken, getStatusType);
 router.get('/getStatusTypeByName',authenticateToken, getStatusTypeByName);
-
-
+/////////////////////////////////////////////////////////////////////////////
+router.get('/getStatusForView',authenticateToken, getStatusForView);
+router.get('/getStatusByID',authenticateToken, getStatusByID);
+router.get('/getAutotidSta',authenticateToken, getAutotidSta);
+//////////////////////////////////////////////////////////////////////////////
 router.post('/submitRepairRequest', authenticateToken, upload.array('images'), submitRepairRequest);
 
 router.post('/sendAssessProblemReq', authenticateToken, sendAssessProblemReq);

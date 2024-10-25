@@ -8,7 +8,7 @@
           class="w-100"
           block
           style="margin-bottom: 10px"
-          @click="$router.push('/RegisTypeStatus')"
+          @click="$router.push('/')"
         >
           New
         </CButton>
@@ -16,7 +16,14 @@
     </CRow>
 
     <CRow style="margin-bottom: 10px">
-      <CCol :md="2"></CCol>
+      <CCol :md="2">
+        <CFormSelect v-model="selectedType" aria-label="Filter by Type" @change="filterItems">
+          <option value="">ประเภท</option>
+          <option v-for="type in types" :key="type.ID" :value="type.name">
+            {{ type.name }}
+          </option>
+        </CFormSelect>
+      </CCol>
       <CCol :md="7"></CCol>
       <CCol :md="3">
         <CInputGroup>
@@ -31,7 +38,7 @@
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
-          <div class="card-header">ตารางประเภทสถานะ</div>
+          <div class="card-header">ตารางสถานะ</div>
           <div class="card-body table-responsive p-0">
             <table class="table">
               <thead>
@@ -46,9 +53,10 @@
                   <td colspan="8" class="text-center">ไม่มีข้อมูลที่ตรงกับการค้นหา</td>
                 </tr>
                 <tr v-for="item in paginatedItems" :key="item.ID">
-                  <td>{{ item.statTyp_ID }}</td>
+                  <td>{{ item.stat_ID }}</td>
                   <td>{{ item.Name }}</td>
-                  <td>{{ item.stat_Name }}</td>
+                  <td>{{ item.sta_name }}</td>
+                  <td>{{ item.stat }}</td>
                   <td>
                     <button
                       class="btn btn-warning btn-sm fontwhite"
@@ -101,6 +109,7 @@
           </div>
         </div>
       </div>
+      <div class="col-md-6"></div>
     </div>
 
     <CToaster class="p-3" placement="top-end">
@@ -117,44 +126,43 @@
 <script>
 import { ref, watch, onMounted, computed } from "vue";
 import axios from "axios";
-import RegisTypeStatusComponent from "./RegisTypeStatusComponent.vue";
 
 export default {
-  name: "ViewTypeStatusComponents",
-  components: {
-    RegisTypeStatusComponent,
-    },
+  name: "ViewStatusComponents",
   setup() {
     const columns = ref([
-      { key: "ID", label: "รหัสประเภทสถานะ" },
-      { key: "name", label: "ชื่อประเภท" },
-      { key: "stat_Name", label: "สถานะ" },
+      { key: "ID", label: "รหัสสถานะ" },
+      { key: "name", label: "ชื่อสถานะ" },
+      { key: "sta_name", label: "ประเภท" },
+      { key: "stat", label: "สถานะ" },
     ]);
-    
-    const statusTypes = ref([]); // Store the status types
-    const filteredItems = ref([]); // Filtered items for display
-    const searchQuery = ref(""); // Search query for filtering
-    const rowsPerPage = ref(10); // Number of rows to display per page
-    const currentPage = ref(1); // Current page in pagination
-    const toasts = ref([]); // Toast messages
+
+    const status = ref([]);
+    const searchQuery = ref("");
+    const selectedType = ref("");
+    const filteredItems = ref([]);
+    const rowsPerPage = ref(10);
+    const currentPage = ref(1);
+    const toasts = ref([]);
+    const types = ref([]);
 
     const totalPages = computed(() => {
       return Math.ceil(filteredItems.value.length / rowsPerPage.value);
     });
 
-    const fetchStatusTypes = async () => {
+    const fetchStatus = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getStatusType", {
+        const response = await axios.get("/api/auth/getStatusForView", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        statusTypes.value = response.data;
-        filterItems(); // Filter items after data is fetched
+        status.value = response.data; // Ensure this matches the structure of response
+        filterItems(); // Filter after fetching data
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลประเภทสถานะ:", error);
-        showToast("Error fetching status types", "error");
+        console.error("Error fetching status data:", error);
+        showToast("Error fetching status data", "error");
       }
     };
 
@@ -165,23 +173,25 @@ export default {
       });
     };
 
-    // Filter items based on search query
     const filterItems = () => {
-      filteredItems.value = statusTypes.value
+      filteredItems.value = status.value
         .filter((item) => {
-          const matchesSearch =
-            item.ID?.toString().includes(searchQuery.value) ||
-            item.name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-            item.stat_Name?.toLowerCase().includes(searchQuery.value.toLowerCase());
+          const matchesType = selectedType.value ? item.sta_name === selectedType.value : true;
 
-          return matchesSearch;
+          const matchesSearch =
+            item.stat_ID?.toString().includes(searchQuery.value) ||
+            item.Name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            item.sta_name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            item.stat?.toLowerCase().includes(searchQuery.value.toLowerCase());
+
+          return matchesType && matchesSearch;
         })
         .sort((a, b) => a.ID - b.ID); // Sort numerically by ID
     };
 
     const setPage = (page) => {
       currentPage.value = page;
-      filterItems(); // Refetch filtered items for pagination
+      filterItems();
     };
 
     const paginatedItems = computed(() => {
@@ -191,14 +201,16 @@ export default {
     });
 
     onMounted(() => {
-      fetchStatusTypes(); // Fetch status types on component mount
+      fetchStatus();
     });
 
-    watch(searchQuery, filterItems); // Watch searchQuery and filter on change
+    watch([searchQuery, selectedType], filterItems);
 
     return {
       columns,
+      status,
       searchQuery,
+      selectedType,
       filteredItems,
       paginatedItems,
       rowsPerPage,
@@ -207,6 +219,7 @@ export default {
       setPage,
       showToast,
       toasts,
+      types,
     };
   },
 };

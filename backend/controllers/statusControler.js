@@ -26,7 +26,7 @@ const registerStatus = async (req, res) => {
     if (statusChecked) {
       return res.status(400).json({ error: "มีชื่อสถานะนี้อยู่แล้ว" });
     }
-    stat_stat_ID = "STT000006";
+    stat_stat_ID = "STA000006";
     ///////บันทึกลงฐานข้อมูล//////////
     const insertQuery = `
       INSERT INTO status
@@ -55,7 +55,7 @@ async function checkStatus(stat_Name) {
   }
 };
 
-const getAutotid = async (req, res) => {
+const getAutotidSta = async (req, res) => {
   try {
     const query = "SELECT stat_ID FROM status ORDER BY stat_ID DESC LIMIT 1";
     const [result] = await db.promise().query(query);
@@ -75,10 +75,10 @@ const getAutotid = async (req, res) => {
   }
 };
 
-const getStatusByName = async (req, res) => {
+const getStatusByID = async (req, res) => {
   try {
-    const statusName = req.query.name;
-    if (!statusName) {
+    const statusID = req.query.ID;
+    if (!statusID) {
       return res.status(400).json({ error: "โปรดระบุชื่อสถานะ" });
     }
     const query = `
@@ -90,11 +90,33 @@ const getStatusByName = async (req, res) => {
 	  status
     WHERE name = ?
     `;
-    const [result] = await db.promise().query(query, [statusName]);
+    const [result] = await db.promise().query(query, [statusID]);
     if (result.length === 0) {
-      return res.status(404).json({ error: "ไม่พบข้อมูลหน่วย" });
+      return res.status(404).json({ error: "ไม่พบข้อมูลสถานะ" });
     }
     res.status(200).json(result[0]);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
+const getStatusForView = async (req, res) => {
+  try {
+    const query = `
+    SELECT 
+      status.stat_ID,
+      status.stat_Name AS Name,
+      statustype.stat_Name AS sta_name,
+      Sta.stat_Name AS stat
+    FROM  
+      status
+    INNER JOIN statustype on statustype.statTyp_ID = status.stat_StatTypID
+    INNER JOIN status Sta on Sta.stat_ID = status.stat_stat_ID
+    `;
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
   } catch (err) {
     console.error("เกิดข้อผิดพลาด:", err);
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
@@ -125,4 +147,4 @@ const getStatusUserDelete = async (req, res) => {
   };
   
 
-module.exports = {registerStatus,getStatus,getStatusUserDelete};
+module.exports = {registerStatus,getStatus,getStatusUserDelete,getStatusForView,getStatusByID,getAutotidSta};

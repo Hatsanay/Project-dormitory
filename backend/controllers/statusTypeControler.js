@@ -32,7 +32,7 @@ const registerStatusType = async (req, res) => {
     const insertQuery = `
       INSERT INTO statustype
       (statTyp_ID, stat_Name,statTyp_stat_ID)
-      VALUES (?, ?,?)
+      VALUES (?, ?, ?)
     `;
     await db.promise().query(insertQuery, [newStatusTypeID, stat_Name,statTyp_stat_ID 
     ]);
@@ -62,13 +62,13 @@ async function checkStatusType(stat_Name) {
 ///////////////////////////////
 const getAutotidStatusType = async (req, res) => {
   try {
-    const query = "SELECT statTyp_ID FROM statustype ORDER BY ID DESC LIMIT 1";
+    const query = "SELECT statTyp_ID FROM statustype ORDER BY statTyp_ID DESC LIMIT 1";
     const [result] = await db.promise().query(query);
     let maxId;
     if (result.length === 0) {
       maxId = 0;
     } else {
-      const lastStatusTypeId = result[0].ID;
+      const lastStatusTypeId = result[0].statTyp_ID;
       maxId = parseInt(lastStatusTypeId.slice(-6)) || 0;
     }
     const statusTypeID = "STT" + String(maxId + 1).padStart(6, "0");
@@ -87,7 +87,7 @@ const getStatusType = async (req, res) => {
     const query = `
     SELECT 
       statTyp_ID, 
-      statustype.stat_Name ,
+      statustype.stat_Name AS Name,
       status.stat_Name
     FROM 
       statustype
@@ -113,7 +113,7 @@ const getStatusTypeByName = async (req, res) => {
     const query = `
       SELECT 
         statTyp_ID, 
-        statustype.stat_Name ,
+        statustype.stat_Name AS Name,
         statTyp_stat_ID
       FROM 
         statustype 

@@ -164,7 +164,7 @@ export default {
       }
     };
 
-    const fetchStockTypes = async () => {
+    const fetchStatusTypes = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get("/api/auth/getTypeStock", {
@@ -179,7 +179,7 @@ export default {
     onMounted(() => {
       fetchAutoID();
       fetchUnits();
-      fetchStockTypes();
+      fetchStatusTypes();
     });
 
     return {

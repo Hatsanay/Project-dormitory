@@ -62,18 +62,29 @@ export const decodeJWTTH = (token) => {
       'add_RegisRoom',
       'Edit_Room',
       
-      'View_Unit',
-      'add_Unit',
-      
-      'View_TypeStock',
-      'add_TypeStock',
-            
       'View_Stock',
       'add_Stock',
+      'edit_Stock',
+
+      'View_TypeStock',
+      'add_TypeStock',
+      'edit_TypeStock',
+            
+      'View_Status',
+      'add_Status',
+      'edit_Status',
 
       'View_TypeStatus',
+      'add_TypeStatus',
+      'edit_TypeStatus',
+
+      'View_Unit',
+      'add_Unit',
+      'edit_Unit',
+      
+      
       ///ตั้งค่า///
-      'view_users_Setting',
+
 
         ];
     

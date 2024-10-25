@@ -102,7 +102,7 @@ export default [
       {
         component: 'CNavItem',
         name: 'จัดการข้อมูลสถานะ',
-        to: '/',
+        to: '/ViewStatusView',
       },
       {
         component: 'CNavItem',
