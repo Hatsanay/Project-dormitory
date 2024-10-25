@@ -63,7 +63,7 @@
               <CCardBody>
                 <div class="d-flex flex-column">
                   <p><strong><i class="fa-regular fa-id-card"></i> รหัส: </strong> {{ item.mainr_ID }}</p>
-                  <p><strong><i class="fa-solid fa-igloo"></i> <i class="fa-solid fa-igloo"></i> ห้อง:</strong> {{ item.roomNumber }}</p>
+                  <p><strong><i class="fa-solid fa-igloo"></i> ห้อง:</strong> {{ item.roomNumber }}</p>
                   <p><strong><i class="fa-regular fa-newspaper"></i> หัวเรื่อง:</strong> {{ item.mainr_ProblemTitle }}</p>
                   <p><strong><i class="fa-solid fa-screwdriver-wrench"></i> ประเภท:</strong> {{ item.Type }}</p>
                 </div>

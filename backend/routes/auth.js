@@ -5,7 +5,7 @@ const { getProvince,getAmphures,getTambons,getZipcode } = require('../controller
 const {getStatus,getStatusUserDelete} = require('../controllers/statusControler');
 const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq} = require('../controllers/reqController');
 const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById,getStock,submitRequisition} = require('../controllers/manageRequetsControler');
-const {getWithdrawReqlist,getWithdrawReq} = require('../controllers/WithdrawControler');
+const {getWithdrawReqlist,getWithdrawReq,putReqWithdraw} = require('../controllers/WithdrawControler');
 // getUserByIdfromReq
 // const { registerRoom } = require('../controllers/RoomController');
 const authenticateToken = require('../middleware/auth');
@@ -54,6 +54,8 @@ router.put('/cancelReq',authenticateToken, cancelReq);
 
 router.put('/denyReq',authenticateToken, denyReq);
 router.put('/sendtomacReq',authenticateToken, sendtomacReq);
+
+router.put('/putReqWithdraw',authenticateToken, putReqWithdraw);
 
 
 
