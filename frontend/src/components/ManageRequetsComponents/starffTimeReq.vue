@@ -43,6 +43,7 @@ import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import axios from "axios";
 
 export default {
   name: "starffTimeReq",
@@ -52,23 +53,41 @@ export default {
   setup() {
     const activeTab = ref("1");
 
-    // Example events (you can fetch these from your backend)
-    const events = ref([
-      {
-        title: "งานซ่อม",
-        start: "2024-10-25T10:00:00",
-        end: "2024-10-25T12:00:00",
-        description: "ซ่อมแอร์",
-      },
-      {
-        title: "ตรวจสอบระบบ",
-        start: "2024-10-26T14:00:00",
-        end: "2024-10-26T16:00:00",
-        description: "ตรวจสอบสายไฟ",
-      },
-    ]);
+    const events = ref([]);
 
-    // FullCalendar options
+    const fetchRepairSchedule = async () => {
+      try {
+        const permissions = localStorage.getItem("permissions");
+        console.log(permissions);
+        const response = await axios.get("/api/auth/getreqtime");
+        console.log("API Response:", response.data); // ตรวจสอบข้อมูลจาก API
+
+        events.value = response.data.map((item) => {
+          // แปลงวันที่จาก พ.ศ. เป็น ค.ศ. และจัดรูปแบบวันที่เป็น YYYY-MM-DD
+          const [day, month, year] = item.Date.split("/");
+          const convertedYear = parseInt(year, 10) - 543; // แปลง พ.ศ. เป็น ค.ศ.
+
+          const formattedDate = `${convertedYear}-${month.padStart(
+            2,
+            "0"
+          )}-${day.padStart(2, "0")}`;
+          const formattedTime = `${formattedDate}T${item.Time}`; // รวมวันที่และเวลา
+
+          console.log(`Formatted Date: ${formattedDate}, Time: ${item.Time}`); // ตรวจสอบรูปแบบวันที่และเวลา
+
+          return {
+            title: `${item.Time} - ${item.sdr_mainr_ID}`,
+            start: formattedTime,
+            description: `รายละเอียดงานซ่อม ${item.sdr_mainr_ID}`,
+          };
+        });
+
+        console.log("Events:", events.value); // ตรวจสอบว่าข้อมูล events ถูกสร้างอย่างถูกต้อง
+      } catch (error) {
+        console.error("Error fetching repair schedule:", error);
+      }
+    };
+
     const calendarOptions = ref({
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: "dayGridMonth",
@@ -80,6 +99,11 @@ export default {
       editable: true,
       selectable: true,
       selectMirror: true,
+      eventContent: function (arg) {
+        return {
+          html: `<span>${arg.event.title}</span>`, // Customize how events are displayed
+        };
+      },
       dateClick(info) {
         alert("วันที่คุณเลือกคือ: " + info.dateStr);
       },
@@ -90,7 +114,7 @@ export default {
     };
 
     onMounted(() => {
-      // Do something on mount if needed
+      fetchRepairSchedule();
     });
 
     return {
@@ -103,4 +127,15 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Customize event appearance */
+.fc-event-time {
+  display: none;
+}
+
+.fc-event-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: blue;
+}
+</style>

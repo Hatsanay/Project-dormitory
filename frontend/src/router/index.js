@@ -28,14 +28,8 @@ const routes = [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        meta: { permission: 'view_users_dashboard', requiresAuth: true },
+        meta: { permission: 'viewdashboard', requiresAuth: true },
         component: userDasboard,
-      },
-      {
-        path: '/adminDashboard',
-        name: 'AdminDashboard',
-        meta: { permission: 'view_admin_dashboard', requiresAuth: true },
-        component: () => import('../views/Admin/Dashboard.vue'),
       },
 
       ///ระบบแจ้งปัญหา///

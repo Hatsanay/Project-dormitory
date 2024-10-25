@@ -40,30 +40,30 @@ export const decodeJWTTH = (token) => {
   
   export const hasPermission = (permission) => {
     const permissionsMap = [
-      'view_users_dashboard',
-      'view_admin_dashboard',
-
+      'logout',                   //0
+      'viewdashboard',            //1
       ///ระบบแจ้งปัญหา///
-      'add_reques',
-      'view_reques',
+      'view_reques',              //2
+      'add_reques',               //3
       ///ระบบจัดการการแจ้งปัญหา///
-      'view_manage_reques',
-      'view_macmanage_reques',
+      'view_manage_reques',       //4
+      'view_macmanage_reques',    //5
       ///ระบบจัดการการเบิกวัสดุ///
-      'view_WithdrawReq',
+      'view_WithdrawReq',         //6
       ///ระบบนัดเวลาเข้าซ่อม///
-      'view_TimeReq',
+      'view_TimeReq',             //7
       ///จัดการค่าคงที่ผู้ใช้งาน///
-      'view_RegisResident', 
-      'add_RegisResident',
-      'edit_Resident',
+      'view_RegisResident',       //8
+      'add_RegisResident',        //9
+      'edit_Resident',            //10
       ///ตั้งค่า///
-      'view_users_Setting',
+      'view_users_Setting',       //11
       ///จัดการค่าคงที่ห้องพัก///
-      'edit_RegisRoom',
+      'edit_RegisRoom',           //12
     ];
     
     const permissionsToken = getPermissions();
+    localStorage.setItem("permissions", permissionsToken);
     const UserID = getUserID();
     localStorage.setItem("userID", UserID);
     let lUserId = localStorage.getItem('userID');

@@ -6,6 +6,7 @@ const {getStatus,getStatusUserDelete} = require('../controllers/statusControler'
 const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq} = require('../controllers/reqController');
 const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById,getStock,submitRequisition} = require('../controllers/manageRequetsControler');
 const {getWithdrawReqlist,getWithdrawReq,putReqWithdraw,getWithdraw,putAcceptWithdraw,cancelWithdraw} = require('../controllers/WithdrawControler');
+const {getreqtime} = require('../controllers/TimeReqControler');
 // getUserByIdfromReq
 // const { registerRoom } = require('../controllers/RoomController');
 const authenticateToken = require('../middleware/auth');
@@ -44,6 +45,9 @@ router.get('/getStock',authenticateToken, getStock);
 router.get('/getWithdrawReq',authenticateToken, getWithdrawReq);
 router.get('/getWithdrawReqlist',authenticateToken, getWithdrawReqlist);
 router.get('/getWithdraw',authenticateToken, getWithdraw);
+
+router.get('/getreqtime',authenticateToken, getreqtime);
+
 
 
 
