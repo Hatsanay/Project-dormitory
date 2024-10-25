@@ -27,8 +27,8 @@ const registerRoom = async (req, res) => {
     if (Roomchecked) {
       return res.status(400).json({ error: "มีเลขห้องนี้อยู่แล้ว" });
     }
-    room_stat_ID= "STA000007"
-    ///////บันทึกลงฐานข้อมูล//////////
+
+    ///////บันทึกลงฐานข้อมล//////////
     const insertQuery = `
       INSERT INTO room
       (room_ID, room_Number, room_stat_ID)
@@ -85,129 +85,18 @@ const getAutotidRoom = async (req, res) => {
   }
 };
 
-//////////////API/////////////
-/////////getRoom//////////////
-///////////////////////////////
-const getRoom = async (req, res) => {
-  try {
-    const query = `SELECT
-      room_ID, 
-      room_Number, 
-      stat_Name
-    FROM
-      room
-    INNER JOIN
-      status ON room.room_stat_ID = status.stat_ID
-    `;
-    const [result] = await db.promise().query(query);
-    res.status(200).json(result);
-  } catch (err) {
-    console.error("เกิดข้อผิดพลาด:", err);
-    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
-  }
-};
+// const getUser = async (req, res) => {
+//     try {
+//         // สร้างคำสั่ง SQL สำหรับดึงข้อมูลผู้ใช้ทั้งหมดจากตาราง users
+//         const query = 'SELECT user_ID, user_Fname, user_Lname, user_Email, user_Phone, user_Name, user_Bdate, user_DateAdd, user_DateEdit, user_Role_ID, user_Status_ID FROM users';
+//         const [rows] = await db.promise().query(query);  // เรียกใช้งานคำสั่ง SQL ผ่าน db
 
-//////////////API//////////////
-///////getRoomByNumber/////////
-///////////////////////////////
-const getRoomByNumber = async (req, res) => {
-  try {
-    const roomID = req.query.ID;
-    if (!roomID) {
-      return res.status(400).json({ error: "โปรดระบุเลข ID" });
-    }
-    const query = ` 
-      SELECT
-        room_ID, 
-        room_Number, 
-        room_stat_ID
-      FROM
-        room
-      WHERE
-        room_ID = ?
-    `;
-    const [result] = await db.promise().query(query, [roomID]);
-    if (result.length === 0) {
-      return res.status(404).json({ error: "ไม่พบข้อมูลห้องพัก" });
-    }
-    res.status(200).json(result[0]);
-  } catch (err) {
-    console.error("เกิดข้อผิดพลาด:", err);
-    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
-  }
-};
-
-//////////////API//////////////
-//////////updateRoom///////////
-///////////////////////////////
-const updateRoom = async (req, res) => {
-  const roomID = req.query.ID;
-  const { roomnumber, room_stat_ID } = req.body;
-
-  try {
-    if (!roomID) {
-      return res.status(400).json({ error: "โปรดระบุ roomNumber" });
-    }
-    const [userCheck] = await db.promise().query("SELECT * FROM room WHERE room_Number = ?", [roomID]);
-    if (userCheck.length === 0) {
-      return res.status(404).json({ error: "ไม่พบข้อมูลห้อง" });
-    }
-    const Roomchecked = await checkRoom(roomnumber);
-    if (Roomchecked) {
-      return res.status(400).json({ error: "มีเลขห้องนี้อยู่แล้ว" });
-    }
-    const updateQuery = `
-      UPDATE room SET
-        room_Number = ?, 
-        room_stat_ID = ?
-      WHERE room_ID = ?
-    `;
-    await db.promise().query(updateQuery, [roomnumber, room_stat_ID, roomID]);
-    res.status(200).json({ message: "อัปเดตข้อมูลห้องพักเรียบร้อยแล้ว" });
-  } catch (err) {
-    console.error("เกิดข้อผิดพลาด:", err);
-    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
-  }
-};
-
-//////////////API//////////////
-///////updateRoomStatus////////
-///////////////////////////////
-const updateRoomStatus = async (req, res) => {
-  const { roomID, room_stat_ID } = req.body;
-
-  try {
-    if (!roomID || !room_stat_ID) {
-      return res.status(400).json({ error: "กรุณาระบุ roomID และ room_stat_ID" });
-    }
-    const [userCheck] = await db.promise().query("SELECT * FROM room WHERE room_ID = ?", [roomID]);
-    if (userCheck.length === 0) {
-      return res.status(404).json({ error: "ไม่พบข้อมูลห้องพัก" });
-    }
-
-    const updateQuery = "UPDATE room SET room_stat_ID = ? WHERE room_ID = ?";
-    await db.promise().query(updateQuery, [room_stat_ID, roomID]);
-
-    res.status(200).json({ message: "อัปเดตสถานะของห้องพักเรียบร้อยแล้ว" });
-  } catch (err) {
-    console.error("เกิดข้อผิดพลาดในการอัปเดตสถานะ:", err);
-    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
-  }
-};
-
-//////////////API//////////////
-//////////getStatusRoom////////
-///////////////////////////////
-const getStatusRoom = async (req, res) => {
-  try {
-    const query = 'SELECT stat_ID,stat_Name FROM status WHERE stat_StatTypID = "STT000003"';
-    const [result] = await db.promise().query(query);
-    res.status(200).json(result);
-  } catch (err) {
-    console.error("เกิดข้อผิดพลาด:", err);
-    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
-  }
-};
+//         res.status(200).json(rows);  // ส่งผลลัพธ์กลับไปในรูปแบบ JSON
+//     } catch (err) {
+//         console.error('เกิดข้อผิดพลาด:', err);
+//         res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลผู้ใช้' });
+//     }
+// };
 
 module.exports = {
   registerRoom,

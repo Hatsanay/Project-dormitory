@@ -89,7 +89,11 @@ const getAutotidStock = async (req, res) => {
 //////////////API//////////////
 ///////////getStock/////////////
 ///////////////////////////////
+<<<<<<< HEAD
 const getStockforstock = async (req, res) => {
+=======
+const getStock = async (req, res) => {
+>>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
   try {
     const query = `
     SELECT 
@@ -181,7 +185,11 @@ const updateStock = async (req, res) => {
 
 module.exports = {
   registerStock,
+<<<<<<< HEAD
   getStockforstock,
+=======
+  getStock,
+>>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
   getStockByID,
   getAutotidStock,
   updateStock,

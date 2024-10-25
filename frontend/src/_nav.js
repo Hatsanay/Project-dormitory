@@ -71,10 +71,44 @@ export default [
   },
   {
     component: 'CNavItem',
+<<<<<<< HEAD
     name: 'ผู้ใช้งาน',
     to: '/ViewResident',
     icon: 'cil-people',
   },
+=======
+    name: 'จัดการผู้ใช้งาน',
+    to: '/ViewResident',
+    icon: 'cil-people',
+  },
+  // {
+  //   component: 'CNavItem',
+  //   name: 'จัดการผู้ใช้งานในระบบ',
+  //   to: '/RegisResident',
+  //   icon: 'cil-people',
+  // },
+
+  // {
+  //   component: 'CNavItem',
+  //   name: 'จัดการนิติบุคคล',
+  //   to: '#',
+  //   icon: 'cil-people',
+  // },
+
+  // {
+  //   component: 'CNavItem',
+  //   name: 'จัดการเจ้าหน้าที่ซ่อมบำรุง',
+  //   to: '#',
+  //   icon: 'cil-people',
+  // },
+
+  // {
+  //   component: 'CNavItem',
+  //   name: 'จัดการผู้จัดการ',
+  //   to: '#',
+  //   icon: 'cil-people',
+  // },
+>>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
 
   ///จัดการค่าคงที่ห้องพัก///
   {
@@ -88,6 +122,47 @@ export default [
     icon: 'cil-people',
   },
 
+<<<<<<< HEAD
+=======
+  
+  {
+    component: 'CNavTitle',
+    name: 'จัดการข้อมูลอื่นๆ',
+  },
+  {
+    component: 'CNavGroup',
+    name: 'จัดการข้อมูลภายในระบบ',
+    to: '#',
+    icon: 'cil-notes',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'จัดการข้อมูลสถานะ',
+        to: '/UserSetView',
+      },
+      {
+        component: 'CNavItem',
+        name: 'จัดการข้อมูลประเภทสถานะ',
+        to: '/UserSetView',
+      },
+      {
+        component: 'CNavItem',
+        name: 'จัดการข้อมูลสต็อก',
+        to: '/ViewStockView',
+      },
+      {
+        component: 'CNavItem',
+        name: 'จัดการข้อมูลประเภทสต็อก',
+        to: '/ViewTypeStockView',
+      },
+      {
+        component: 'CNavItem',
+        name: 'จัดการข้อมูลหน่วย',
+        to: '/ViewUnitView',
+      },
+    ],
+  },
+>>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
 
   {
     component: 'CNavTitle',

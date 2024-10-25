@@ -119,7 +119,10 @@ import { ref, watch, onMounted, computed } from "vue";
 import axios from "axios";
 import RegisTypeStockComponent from "./RegisTypeStockComponent.vue";
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
 export default {
   name: "ViewTypeStockComponents",
   components: {
