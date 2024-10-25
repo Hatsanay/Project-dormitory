@@ -27,7 +27,16 @@
 
     <div class="tab-content mt-3">
       <div v-if="activeTab === '1'" class="tab-pane active">
-        <FullCalendar :events="events" :options="calendarOptions" ref="calendar" />
+        <CRows>
+          <CFormSelect v-model="selectedClass" aria-label="Filter by Class">
+          <option value="">ช่างทั้งหมด</option>
+
+        </CFormSelect>
+        <br>
+        </CRows>
+        <CRows>
+          <FullCalendar :events="events" :options="calendarOptions" ref="calendar" />
+        </CRows>
       </div>
 
       <div v-if="activeTab === '2'" class="tab-pane active">
@@ -38,7 +47,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watchEffect } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -52,42 +61,7 @@ export default {
   },
   setup() {
     const activeTab = ref("1");
-
     const events = ref([]);
-
-    const fetchRepairSchedule = async () => {
-      try {
-        const permissions = localStorage.getItem("permissions");
-        console.log(permissions);
-        const response = await axios.get("/api/auth/getreqtime");
-        console.log("API Response:", response.data); // ตรวจสอบข้อมูลจาก API
-
-        events.value = response.data.map((item) => {
-          // แปลงวันที่จาก พ.ศ. เป็น ค.ศ. และจัดรูปแบบวันที่เป็น YYYY-MM-DD
-          const [day, month, year] = item.Date.split("/");
-          const convertedYear = parseInt(year, 10) - 543; // แปลง พ.ศ. เป็น ค.ศ.
-
-          const formattedDate = `${convertedYear}-${month.padStart(
-            2,
-            "0"
-          )}-${day.padStart(2, "0")}`;
-          const formattedTime = `${formattedDate}T${item.Time}`; // รวมวันที่และเวลา
-
-          console.log(`Formatted Date: ${formattedDate}, Time: ${item.Time}`); // ตรวจสอบรูปแบบวันที่และเวลา
-
-          return {
-            title: `${item.Time} - ${item.sdr_mainr_ID}`,
-            start: formattedTime,
-            description: `รายละเอียดงานซ่อม ${item.sdr_mainr_ID}`,
-          };
-        });
-
-        console.log("Events:", events.value); // ตรวจสอบว่าข้อมูล events ถูกสร้างอย่างถูกต้อง
-      } catch (error) {
-        console.error("Error fetching repair schedule:", error);
-      }
-    };
-
     const calendarOptions = ref({
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: "dayGridMonth",
@@ -99,14 +73,53 @@ export default {
       editable: true,
       selectable: true,
       selectMirror: true,
+      eventClassNames: () => ["custom-event"], // กำหนด class name ให้กับ event
       eventContent: function (arg) {
         return {
-          html: `<span>${arg.event.title}</span>`, // Customize how events are displayed
+          html: `<div>
+                        <span class="event-time">${arg.event.startStr.slice(
+                          11,
+                          16
+                        )} - ${arg.event.endStr.slice(11, 16)}</span>
+                        <span class="event-title">${arg.event.title}</span>
+                      </div>`,
         };
       },
       dateClick(info) {
         alert("วันที่คุณเลือกคือ: " + info.dateStr);
       },
+    });
+
+    const fetchRepairSchedule = async () => {
+      try {
+        const response = await axios.get("/api/auth/getreqtime");
+        console.log("API Response:", response.data);
+
+        events.value = response.data.map((item) => {
+          const date = item.Date;
+          const formattedStartTime = `${date}T${item.startTime}`;
+          const formattedEndTime = `${date}T${item.endTime}`;
+
+          const technicians = item.technicians
+            .map((tech) => `<br>ช่าง: ${tech}`)
+            .join("");
+
+          return {
+            title: ` ${item.sdr_mainr_ID} ห้อง: ${item.room} ${technicians}`,
+            start: formattedStartTime,
+            end: formattedEndTime,
+            description: `รายละเอียดงานซ่อม ${item.sdr_mainr_ID}`,
+          };
+        });
+
+        console.log("Events:", events.value);
+      } catch (error) {
+        console.error("Error fetching repair schedule:", error);
+      }
+    };
+
+    watchEffect(() => {
+      calendarOptions.value.events = events.value;
     });
 
     const switchTab = (tab) => {
@@ -128,14 +141,38 @@ export default {
 </script>
 
 <style scoped>
-/* Customize event appearance */
-.fc-event-time {
-  display: none;
+.custom-event {
+  background-color: #e6f7ff; /* สีพื้นหลังแบบอ่อน */
+  border: 2px solid #007bff; /* เพิ่มกรอบสีน้ำเงิน */
+  border-radius: 8px; /* มุมมนของกรอบ */
+  padding: 8px;
+  margin: 4px 0;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2); /* เพิ่มเงา */
+  transition: background-color 0.3s ease; /* เพิ่มการเปลี่ยนสีเมื่อ hover */
 }
 
-.fc-event-title {
-  font-size: 12px;
+.custom-event:hover {
+  background-color: #cceeff; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+}
+
+.event-time {
   font-weight: bold;
-  color: blue;
+  font-size: 12px;
+  color: #007bff;
+}
+
+.event-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 5px;
+  color: #007bff;
+  white-space: pre-line; /* แก้ไขเพื่อแสดงบรรทัดใหม่ */
+}
+
+.fc-event-time {
+  display: none;
 }
 </style>
