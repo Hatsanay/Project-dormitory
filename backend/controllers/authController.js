@@ -28,9 +28,9 @@ const login = async (req, res) => {
 
     ///////////สร้าง JWT token/////////////
     const token = jwt.sign(
-      { id: user.user_ID, username: user.user_Name,roles: user.role_Name,permissions: user.permission_name, },
+      { id: user.user_ID, username: user.user_Name,permissions: user.permission_name, },
       process.env.JWT_SECRET,
-      // { expiresIn: "1m", algorithm: "HS256" }
+      { expiresIn: "12h", algorithm: "HS256" }
     );
 
     ///////////Respons/////////////

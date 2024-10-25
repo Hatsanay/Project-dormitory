@@ -1,43 +1,48 @@
-import { defineComponent, h, onMounted, ref, resolveComponent } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { defineComponent, h, onMounted, ref, resolveComponent } from 'vue';
+import { RouterLink, useRoute } from 'vue-router';
 
-import nav from '@/_nav.js'
-import { CBadge, CNavGroup, CNavItem, CNavTitle, CSidebarNav } from '@coreui/vue'
+import nav from '@/_nav.js';
+import { CBadge, CNavGroup, CNavItem, CNavTitle, CSidebarNav } from '@coreui/vue';
 
-import simplebar from 'simplebar-vue'
-import 'simplebar-vue/dist/simplebar.min.css'
+import simplebar from 'simplebar-vue';
+import 'simplebar-vue/dist/simplebar.min.css';
 
 const normalizePath = (path) =>
   decodeURI(path)
     .replace(/#.*$/, '')
-    .replace(/(index)?\.(html)$/, '')
+    .replace(/(index)?\.(html)$/, '');
 
 const isActiveLink = (route, link) => {
   if (link === undefined) {
-    return false
+    return false;
   }
 
   if (route.hash === link) {
-    return true
+    return true;
   }
 
-  const currentPath = normalizePath(route.path)
-  const targetPath = normalizePath(link)
+  const currentPath = normalizePath(route.path);
+  const targetPath = normalizePath(link);
 
-  return currentPath === targetPath
-}
+  return currentPath === targetPath;
+};
 
 const isActiveItem = (route, item) => {
   if (isActiveLink(route, item.to)) {
-    return true
+    return true;
   }
 
   if (item.items) {
-    return item.items.some((child) => isActiveItem(route, child))
+    return item.items.some((child) => isActiveItem(route, child));
   }
 
-  return false
-}
+  return false;
+};
+
+// ฟังก์ชันตรวจสอบสิทธิ์จาก index หลายๆ อัน
+const hasPermission = (permissions, indexes) => {
+  return indexes.some(index => permissions[index] === '1');
+};
 
 const AppSidebarNav = defineComponent({
   name: 'AppSidebarNav',
@@ -47,22 +52,39 @@ const AppSidebarNav = defineComponent({
     CNavTitle,
   },
   setup() {
-    const route = useRoute()
-    const firstRender = ref(true)
+    const route = useRoute();
+    const firstRender = ref(true);
+    const permissions = localStorage.getItem('permissions') || '';
 
     onMounted(() => {
-      firstRender.value = false
-    })
+      firstRender.value = false;
+    });
 
     const renderItem = (item) => {
+      // ตรวจสอบสิทธิ์ของรายการย่อยก่อนแสดง
+      if (Array.isArray(item.permission_index)) {
+        if (!hasPermission(permissions, item.permission_index)) {
+          return null;
+        }
+      } else if (item.permission_index !== undefined && permissions[item.permission_index] !== '1') {
+        return null;
+      }
+
+      // ตรวจสอบรายการย่อยใน CNavGroup
       if (item.items) {
+        const visibleItems = item.items.map((child) => renderItem(child)).filter(Boolean);
+
+        if (visibleItems.length === 0) {
+          return null; // ถ้าทุกรายการย่อยไม่มีสิทธิ์ ก็ไม่แสดง CNavGroup
+        }
+
         return h(
           CNavGroup,
           {
             as: 'div',
             compact: true,
             ...(firstRender.value && {
-              visible: item.items.some((child) => isActiveItem(route, child)),
+              visible: isActiveItem(route, item),
             }),
           },
           {
@@ -73,11 +95,12 @@ const AppSidebarNav = defineComponent({
               }),
               item.name,
             ],
-            default: () => item.items.map((child) => renderItem(child)),
+            default: () => visibleItems,
           },
-        )
+        );
       }
 
+      // แสดงเมนูปกติ
       return item.to
         ? h(
             RouterLink,
@@ -128,8 +151,8 @@ const AppSidebarNav = defineComponent({
             {
               default: () => item.name,
             },
-          )
-    }
+          );
+    };
 
     return () =>
       h(
@@ -140,48 +163,8 @@ const AppSidebarNav = defineComponent({
         {
           default: () => nav.map((item) => renderItem(item)),
         },
-      )
+      );
   },
-})
+});
 
-
-
-const decodeJWTNOTTH = (token) => {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const payload = JSON.parse(atob(base64));
-  return payload;
-}
-
-
-const decodeJWTTH = (token) => {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-  var payload = decodeURIComponent(
-    atob(base64)
-      .split("")
-      .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-      })
-      .join("")
-  );
-  return JSON.parse(payload);
-};
-
-const token = localStorage.getItem("token");
-
-if (token) {
-  const decodedPayload = decodeJWTTH(token);
-  
-  // console.log(decodedPayload);
-  const permissions = decodedPayload.permissions;
-
-  console.log("permissions:", permissions);
-} else {
-  console.log("Token not found in localStorage");
-}
-
-
-
-
-export { AppSidebarNav }
+export { AppSidebarNav };
