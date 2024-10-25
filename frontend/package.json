@@ -27,6 +27,7 @@
     "@coreui/vue-chartjs": "^3.0.0",
     "@popperjs/core": "^2.11.8",
     "@vuepic/vue-datepicker": "^9.0.2",
+    "@vueuse/core": "^11.0.3",
     "axios": "^1.7.4",
     "chart.js": "^4.4.3",
     "pinia": "^2.1.7",

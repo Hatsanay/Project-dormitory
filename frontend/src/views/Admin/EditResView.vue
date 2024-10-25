@@ -1,17 +1,17 @@
 <script setup>
-import RoomComponent from "../../components/Room/RoomComponent.vue";
+import EditResComponents from "../../components/RegisResComponents/EditResComponents.vue";
 </script>
 
 <template>
   <div>
-    <RoomComponent></RoomComponent>
+    <EditResComponents></EditResComponents>
   </div>
 </template>
 
 <script>
 // console.log(token);
 export default {
-  name: "RegisRoom",
+  name: "EditResView",
 };
 </script>
 

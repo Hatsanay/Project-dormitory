@@ -1,17 +1,17 @@
 <script setup>
-import RoomComponent from "../../components/Room/RoomComponent.vue";
+import RegisUnitComponent from '../../components/Unit/RegisUnitComponent.vue';
 </script>
 
 <template>
   <div>
-    <RoomComponent></RoomComponent>
+    <RegisUnitComponent></RegisUnitComponent>
   </div>
 </template>
 
 <script>
 // console.log(token);
 export default {
-  name: "RegisRoom",
+  name: "RegisUnit",
 };
 </script>
 
@@ -20,4 +20,5 @@ export default {
   background-color: gray;
   color: white;
 } */
+ 
 </style>

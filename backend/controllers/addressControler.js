@@ -4,8 +4,6 @@ require('dotenv').config();
 
 const getProvince = async (req, res) => {
     try {
-
-
         const query = 'SELECT id,name_th FROM thai_provinces';
         const [result] = await db.promise().query(query);
         res.status(200).json(result);
@@ -74,8 +72,6 @@ const getZipcode = async (req, res) => {
         res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดำเนินการ' });
     }
 };
-
-
 
 
 module.exports = {getProvince,getAmphures,getTambons,getZipcode};
