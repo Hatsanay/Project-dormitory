@@ -42,24 +42,48 @@ export const decodeJWTTH = (token) => {
     const permissionsMap = [
       'logout',                   //0
       'viewdashboard',            //1
+      'addmindashboard',          //2
+      'macdashboard',             //3
+      'managerdashboard',         //4
       ///ระบบแจ้งปัญหา///
-      'view_reques',              //2
-      'add_reques',               //3
+      'view_reques',              //5
+      'add_reques',               //6
       ///ระบบจัดการการแจ้งปัญหา///
-      'view_manage_reques',       //4
-      'view_macmanage_reques',    //5
+      'view_manage_reques',       //7
+      'view_macmanage_reques',    //8
       ///ระบบจัดการการเบิกวัสดุ///
-      'view_WithdrawReq',         //6
+      'view_WithdrawReq',         //9
       ///ระบบนัดเวลาเข้าซ่อม///
-      'view_TimeReq',             //7
+      'view_TimeReq',             //10
       ///จัดการค่าคงที่ผู้ใช้งาน///
-      'view_RegisResident',       //8
-      'add_RegisResident',        //9
-      'edit_Resident',            //10
-      ///ตั้งค่า///
-      'view_users_Setting',       //11
+      'view_RegisResident',       //11
+      'add_RegisResident',        //12
+      'edit_Resident',            //13
       ///จัดการค่าคงที่ห้องพัก///
-      'edit_RegisRoom',           //12
+      'view_Room',                //14
+      'add_RegisRoom',            //15
+      'Edit_Room',                //16
+
+      'View_Stock',               //17
+      'add_Stock',                //18
+      'edit_Stock',               //19
+
+      'View_TypeStock',           //20
+      'add_TypeStock',            //21
+      'edit_TypeStock',           //22
+
+      'View_Status',              //23
+      'add_Status',               //24
+      'edit_Status',              //25
+
+      'View_TypeStatus',          //26
+      'add_TypeStatus',           //27
+      'edit_TypeStatus',          //28
+
+      'View_Unit',                //29
+      'add_Unit',                 //30
+      'edit_Unit',                //31
+
     ];
     
     const permissionsToken = getPermissions();

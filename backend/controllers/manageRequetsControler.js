@@ -151,11 +151,11 @@ const getMacReq = async (req, res) => {
 
 const getMacReqById = async (req, res) => {
   try {
-    const userId = req.query.id;
+    // const userId = req.query.id;
 
-    if (!userId) {
-      return res.status(400).json({ error: "โปรดระบุ id" });
-    }
+    // if (!userId) {
+    //   return res.status(400).json({ error: "โปรดระบุ id" });
+    // }
 
     const query = `
     SELECT
@@ -177,13 +177,12 @@ const getMacReqById = async (req, res) => {
         INNER JOIN room on room.room_ID = renting.renting_room_ID
         INNER JOIN assessproblem ON assessproblem.asp_mainr_ID = maintenancerequests.mainr_ID
     WHERE
-      users.user_ID = ?
-      AND maintenancerequests.mainr_Stat_ID = "STA000012"
+      maintenancerequests.mainr_Stat_ID = "STA000012"
     ORDER BY
       maintenancerequests.mainr_ID ASC
     `;
 
-    const [result] = await db.promise().query(query, [userId]);
+    const [result] = await db.promise().query(query);
 
     if (result.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลการแจ้งซ่อม" });
