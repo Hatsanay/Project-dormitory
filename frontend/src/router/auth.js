@@ -72,8 +72,6 @@ export const decodeJWTTH = (token) => {
       'add_Stock',
 
       'View_TypeStatus',
-
-
       ///ตั้งค่า///
       'view_users_Setting',
 
