@@ -44,6 +44,7 @@ import {
   cilCheckCircle,
   cilChevronBottom,
   cilChevronTop,
+  cilClock,
   cilCloudDownload,
   cilCode,
   cilCommentSquare,
@@ -147,7 +148,7 @@ export const iconsSet = Object.assign(
     cilXCircle,
     cilAlarm,
     cilRoom,
-    cilSend,cilDescription,cilAccountLogout,
+    cilSend,cilDescription,cilAccountLogout,cilClock,
   },
   {
     cifUs,

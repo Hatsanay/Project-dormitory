@@ -51,6 +51,17 @@ export default [
     icon: 'cilBasket',
   },
 
+  ///ระบบนัดเวลาเข้าซ่อม///
+ {
+    component: 'CNavTitle',
+    name: 'จัดการนัดเวลาเข้าซ่อม',
+  },
+  {
+    component: 'CNavItem',
+    name: 'นัดเวลาเข้าซ่อม',
+    to: '/starffTimeReqView',
+    icon: 'cilClock',
+  },
   
 
   ///จัดการค่าคงที่ผู้ใช้งาน///

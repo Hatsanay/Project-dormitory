@@ -51,6 +51,8 @@ export const decodeJWTTH = (token) => {
       'view_macmanage_reques',
       ///ระบบจัดการการเบิกวัสดุ///
       'view_WithdrawReq',
+      ///ระบบนัดเวลาเข้าซ่อม///
+      'view_TimeReq',
       ///จัดการค่าคงที่ผู้ใช้งาน///
       'view_RegisResident', 
       'add_RegisResident',

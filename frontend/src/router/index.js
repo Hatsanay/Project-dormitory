@@ -10,6 +10,7 @@ import ViewResView from '../views/staticUsers/ViewResView.vue';
 
 import macMgnReqView from '../views/ManageRequets/macMgnReqView.vue';
 import StaffMgnReqView from '../views/ManageRequets/StaffMgnReqView.vue';
+import starffTimeReqView from '../views/ManageRequets/starffTimeReqView.vue';
 import starffWithdrawReqView from '../views/ManageRequets/starffWithdrawReqView.vue';
 
 
@@ -72,6 +73,14 @@ const routes = [
           name: 'เบิกวัสดุ', //เจ้าหน้าที่
           meta: { permission: 'view_WithdrawReq', requiresAuth: true },
           component: starffWithdrawReqView,
+        },
+
+        ///ระบบนัดเวลาเข้าซ่อม///
+        {
+          path: '/starffTimeReqView',
+          name: 'นัดเวลาเข้าซ่อม', //เจ้าหน้าที่
+          meta: { permission: 'view_TimeReq', requiresAuth: true },
+          component: starffTimeReqView,
         },
       
       ///จัดการค่าคงที่ผู้ใช้งาน///
