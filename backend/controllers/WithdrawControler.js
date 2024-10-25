@@ -165,5 +165,139 @@ const putReqWithdraw = async (req, res) => {
   }
 };
 
+const getWithdraw = async (req, res) => {
+  try {
+    const query = `SELECT 
+      requisition_ID,
+      requisition_Date,
+      requisition_mainr_ID,
+      requisition_user_ID,
+      CONCAT(users.user_Fname, ' ', users.user_Lname) AS fullname,
+      status.stat_Name AS statusRequis,
+      COUNT(requisition_ID) AS countlist
+  FROM 
+      requisition
+      INNER JOIN maintenancerequests on maintenancerequests.mainr_ID = requisition.requisition_mainr_ID
+      INNER JOIN users on users.user_ID = requisition.requisition_user_ID
+      INNER JOIN status  ON status.stat_ID = requisition.requisition_stat_ID
+      INNER JOIN requisition_list on requisition_list.reqlist_requisition_ID = requisition.requisition_ID
+      WHERE maintenancerequests.mainr_Stat_ID = "STA000023"
+      AND requisition.requisition_stat_ID = "STA000019"
 
-module.exports = { getWithdrawReq, getWithdrawReqlist, putReqWithdraw };
+ GROUP BY requisition_ID
+        `;
+
+    const [result] = await db.promise().query(query);
+    if (result.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลการแจ้งซ่อม" });
+    }
+    const formattedResult = result.map((item) => ({
+      ...item,
+      requisition_Date:
+        new Date(item.requisition_Date).toLocaleDateString("th-TH", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }) +
+        " " +
+        new Date(item.requisition_Date).toLocaleTimeString("th-TH", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+    }));
+
+    res.status(200).json(formattedResult);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
+const putAcceptWithdraw = async (req, res) => {
+  const { requisitionID, statusRequisition = "STA000021", statusRequisitionList = "STA000021" } = req.body;
+
+  try {
+    if (!requisitionID) {
+      return res.status(400).json({ error: "โปรดระบุ requisitionID" });
+    }
+
+    const updateRequisitionQuery = `
+      UPDATE requisition 
+      SET requisition_stat_ID = ? 
+      WHERE requisition_ID = ?
+    `;
+    await db.promise().query(updateRequisitionQuery, [statusRequisition, requisitionID]);
+
+    const getRequisitionListQuery = `
+      SELECT reqlist_stock_ID 
+      FROM requisition_list 
+      WHERE reqlist_requisition_ID = ?
+    `;
+    const [requisitionList] = await db.promise().query(getRequisitionListQuery, [requisitionID]);
+
+    for (const item of requisitionList) {
+      const { reqlist_stock_ID } = item;
+
+      const updateRequisitionListQuery = `
+        UPDATE requisition_list 
+        SET reqlist_stat_ID = ?
+        WHERE reqlist_stock_ID = ? AND reqlist_requisition_ID = ?
+      `;
+      await db.promise().query(updateRequisitionListQuery, [statusRequisitionList, reqlist_stock_ID, requisitionID]);
+    }
+
+    res.status(200).json({ message: "รับเรื่องเบิกวัสดุเรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
+const cancelWithdraw = async (req, res) => {
+  const { requisitionID, cancelStatusID = "STA000024" } = req.body;
+
+  try {
+    if (!requisitionID) {
+      return res.status(400).json({ error: "โปรดระบุ requisitionID" });
+    }
+
+    const updateRequisitionQuery = `
+      UPDATE requisition 
+      SET requisition_stat_ID = ? 
+      WHERE requisition_ID = ?
+    `;
+    await db.promise().query(updateRequisitionQuery, [cancelStatusID, requisitionID]);
+
+    const getRequisitionListQuery = `
+      SELECT reqlist_stock_ID, quantity 
+      FROM requisition_list 
+      WHERE reqlist_requisition_ID = ?
+    `;
+    const [requisitionList] = await db.promise().query(getRequisitionListQuery, [requisitionID]);
+
+    for (const item of requisitionList) {
+      const { reqlist_stock_ID, quantity } = item;
+
+      const updateStockQuery = `
+        UPDATE stock 
+        SET quantity = quantity + ? 
+        WHERE ID = ?
+      `;
+      await db.promise().query(updateStockQuery, [quantity, reqlist_stock_ID]);
+    }
+
+    res.status(200).json({ message: "ยกเลิกการเบิกวัสดุเรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+module.exports = { cancelWithdraw };
+
+
+
+
+module.exports = { getWithdrawReq, getWithdrawReqlist, putReqWithdraw, getWithdraw,putAcceptWithdraw, cancelWithdraw };

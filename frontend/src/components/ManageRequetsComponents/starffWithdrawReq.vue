@@ -130,7 +130,106 @@
       </div>
 
       <div v-if="activeTab === '2'" class="tab-pane active">
-        <!-- Similar content for tab 2, omitted for brevity -->
+        <CRow style="margin-bottom: 10px">
+          <CCol :md="9"></CCol>
+          <CCol :md="3" style="margin-bottom: 10px">
+            <CInputGroup>
+              <CFormInput placeholder="ค้นหา..." v-model="searchQuery" />
+              <CInputGroupText>
+                <CIcon name="cil-magnifying-glass" />
+              </CInputGroupText>
+            </CInputGroup>
+          </CCol>
+        </CRow>
+
+        <CRow>
+          <CCol
+            v-for="item in paginatedItems"
+            :key="item.requisition_ID"
+            md="12"
+            class="mb-4"
+          >
+            <CCard class="card-modern" @click="showModaltab2(item)">
+              <CCardHeader class="card-header-modern">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="m-0 card-title-modern">
+                    <i class="fa-solid fa-circle-user"></i> ผู้แจ้งเบิก:
+                    {{ item.fullname }}
+                  </h5>
+                  <span class="date-modern">{{ item.requisition_Date }}</span>
+                </div>
+              </CCardHeader>
+              <CCardBody>
+                <div class="d-flex flex-column">
+                  <p>
+                    <strong
+                      ><i class="fa-solid fa-basket-shopping"></i> รหัสการแจ้งเบิก:
+                    </strong>
+                    {{ item.requisition_ID }}
+                  </p>
+                  <p>
+                    <strong
+                      ><i class="fa-solid fa-screwdriver-wrench"></i>
+                      รหัสการแจ้งซ่อม:</strong
+                    >
+                    {{ item.requisition_mainr_ID }}
+                  </p>
+                  <p>
+                    <strong><i class="fa-solid fa-table-list"></i> จำนวน:</strong>
+                    {{ item.countlist }} รายการ
+                  </p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <p></p>
+                  <p class="status-modern mb-0">
+                    <strong>สถานะ:</strong> {{ item.statusRequis }}
+                  </p>
+                </div>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+
+        <div class="card-footer-modern">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <CButton
+              class="btn-modern"
+              :disabled="currentPage === 1"
+              @click="currentPage--"
+            >
+              Previous
+            </CButton>
+
+            <div>
+              <span>Showing page {{ currentPage }} of {{ totalPages }}</span>
+            </div>
+
+            <CButton
+              class="btn-modern"
+              :disabled="currentPage === totalPages"
+              @click="currentPage++"
+            >
+              Next
+            </CButton>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <span>Show</span>
+            <select
+              v-model="rowsPerPage"
+              class="form-select-modern mx-2"
+              style="width: auto"
+            >
+              <option :value="3">3</option>
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+              <option :value="100">100</option>
+            </select>
+            <span>entries</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -255,6 +354,120 @@
         <CButton color="primary" @click="acceptWithdrawRequest"> รับเรื่องแจ้งเบิก </CButton>
       </CModalFooter>
     </CModal>
+
+
+   <!-- Modal for Tab 2 -->
+<CModal
+  alignment="center"
+  :visible="visibleModelTab2"
+  @close="closeModelTab2"
+  aria-labelledby="VerticallyCenteredExample"
+  size="xl"
+  backdrop="static"
+  fullscreen
+>
+  <CModalHeader>
+    <CModalTitle id="ModelDetailTab2">
+      <h7>
+        การแจ้งเบิกวัสดุ ID: {{ selectedUserTab2.requisition_ID }}
+        <span>วันที่: {{ selectedUserTab2.requisition_Date }}</span>
+      </h7>
+    </CModalTitle>
+  </CModalHeader>
+  <CModalBody style="display: flex; flex-direction: column; height: 100%">
+    <CRow style="flex-grow: 1">
+      <CCol :md="12" style="flex-grow: 1; max-height: 800px; overflow-y: auto">
+        <CCard style="flex-grow: 1">
+          <CCardHeader>
+            <h7>ตารางรายการแจ้งเบิก</h7>
+          </CCardHeader>
+          <CModalBody style="flex-grow: 1; overflow-y: auto">
+            <CRow>
+              <CCol :md="8"> </CCol>
+              <CCol :md="4">
+                <CInputGroup style="margin-bottom: 10px">
+                  <CFormInput
+                    placeholder="ค้นหาวัสดุ..."
+                    v-model="searchQueryStock"
+                  />
+                  <CInputGroupText>
+                    <CIcon name="cil-magnifying-glass" />
+                  </CInputGroupText>
+                </CInputGroup>
+              </CCol>
+            </CRow>
+
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>ลำดับ</th>
+                  <th>ชื่อวัสดุ</th>
+                  <th>จำนวนที่ต้องการเบิก</th>
+                  <th>หน่วย</th>
+                  <th>สถานะ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(stock, index) in paginatedStockItems" :key="index">
+                  <td>{{ stock.listnumber }}</td>
+                  <td>{{ stock.stockname }}</td>
+                  <td>{{ stock.withdrawquantity }}</td>
+                  <td>{{ stock.unit }}</td>
+                  <td>{{ stock.statusRequislist }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <CButton
+                :disabled="currentPageStock === 1"
+                @click="currentPageStock--"
+                class="btn btn-secondary"
+              >
+                Previous
+              </CButton>
+
+              <span>Showing page {{ currentPageStock }} of {{ totalPagesStock }}</span>
+
+              <CButton
+                :disabled="currentPageStock === totalPagesStock"
+                @click="currentPageStock++"
+                class="btn btn-secondary"
+              >
+                Next
+              </CButton>
+            </div>
+
+            <div class="d-flex align-items-center mt-3">
+              <span>Show</span>
+              <select
+                v-model="rowsPerPageStock"
+                class="form-select-modern mx-2"
+                style="width: auto"
+              >
+                <option :value="3">3</option>
+                <option :value="5">5</option>
+                <option :value="10">10</option>
+                <option :value="20">20</option>
+                <option :value="50">50</option>
+                <option :value="100">100</option>
+              </select>
+              <span>entries</span>
+            </div>
+          </CModalBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CModalBody>
+
+  <CModalFooter>
+    <CButton color="primary" @click="acceptWithdrawTab2">เบิก/รับวัสดุ</CButton>
+    <CButton color="danger" @click="cancelWithdrawTab2">ลบการเบิก</CButton>
+    <CButton color="secondary" @click="closeModelTab2">ปิด</CButton>
+
+  </CModalFooter>
+</CModal>
+
   </div>
 </template>
 
@@ -280,11 +493,23 @@ export default {
     const currentPage = ref(1);
     const currentPageStock = ref(1);
     const visibleModelDetailRequest = ref(false);
+    const visibleModelTab2 = ref(false);
     const selectedUser = ref({});
+    const selectedUserTab2 = ref({});
+    
 
     const fetchRequisition = async () => {
       try {
         const response = await axios.get(`/api/auth/getWithdrawReq`);
+        items.value = response.data;
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลการแจ้งซ่อม:", error);
+      }
+    };
+
+    const fetchReqWithdraw = async () => {
+      try {
+        const response = await axios.get(`/api/auth/getWithdraw`);
         items.value = response.data;
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูลการแจ้งซ่อม:", error);
@@ -319,7 +544,9 @@ export default {
             requisitionID: requisitionID,
           });
 
-          Swal.fire("สำเร็จ", response.data.message, "success");
+          Swal.fire("สำเร็จ", response.data.message, "success").then(() => {
+                window.location.reload();
+              });
 
           closeModelDetailRequest();
 
@@ -334,18 +561,74 @@ export default {
       };
 
 
+      const acceptWithdrawTab2 = async () => {
+          try {
+            const requisitionID = selectedUserTab2.value.requisition_ID;
+
+            if (!requisitionID) {
+              Swal.fire("Error", "โปรดระบุ requisitionID", "error");
+              return;
+            }
+
+            const response = await axios.put('/api/auth/putAcceptWithdraw', {
+              requisitionID: requisitionID,
+            });
+
+            Swal.fire("สำเร็จ", response.data.message, "success").then(() => {
+                window.location.reload();
+              });
+
+            closeModelTab2();
+            fetchReqWithdraw();
+          } catch (error) {
+            console.error("เกิดข้อผิดพลาด:", error);
+            Swal.fire("Error", "เกิดข้อผิดพลาดในการดำเนินการ", "error");
+          }
+        };
+
+
+        const cancelWithdrawTab2 = async () => {
+          try {
+            const requisitionID = selectedUserTab2.value.requisition_ID;
+
+            if (!requisitionID) {
+              Swal.fire("Error", "โปรดระบุ requisitionID", "error");
+              return;
+            }
+
+            const response = await axios.put('/api/auth/cancelWithdraw', {
+              requisitionID: requisitionID,
+            });
+
+            Swal.fire("สำเร็จ", response.data.message, "success").then(() => {
+                window.location.reload();
+              });
+
+            closeModelTab2();
+            fetchReqWithdraw();
+          } catch (error) {
+            console.error("เกิดข้อผิดพลาด:", error);
+            Swal.fire("Error", "เกิดข้อผิดพลาดในการดำเนินการ", "error");
+          }
+        };
 
 
 
 
-    const switchTab = (tab) => {
-      activeTab.value = tab;
-      if (tab === "2") {
-        fetchRequisition();
-      } else {
-        fetchRequisition();
-      }
-    };
+
+
+
+      const switchTab = (tab) => {
+        activeTab.value = tab;
+        currentPage.value = 1;
+        currentPageStock.value = 1;
+        if (tab === "2") {
+          fetchReqWithdraw();
+        } else {
+          fetchRequisition();
+        }
+      };
+
 
     const filteredItems = computed(() => {
       return items.value.filter((item) =>
@@ -395,6 +678,18 @@ export default {
       selectedUser.value = {};
     };
 
+    const showModaltab2 = (item) => {
+      selectedUserTab2.value = item;
+      fetchRequisitionlist(item.requisition_ID); 
+      visibleModelTab2.value = true;
+    };
+
+
+    const closeModelTab2 = () => {
+      visibleModelTab2.value = false;
+      selectedUserTab2.value = {};
+    };
+
     const orderItem = (stock) => {
       console.log(`กำลังสั่งซื้อ: ${stock.stockname}`);
     };
@@ -423,6 +718,13 @@ export default {
       switchTab,
       orderItem,
       acceptWithdrawRequest,
+
+      visibleModelTab2,
+      showModaltab2,
+      closeModelTab2,
+      acceptWithdrawTab2,
+      cancelWithdrawTab2,
+      selectedUserTab2,
     };
   },
 };
