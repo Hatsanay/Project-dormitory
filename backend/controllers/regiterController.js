@@ -6,7 +6,6 @@ require("dotenv").config();
 //////////registerUser/////////
 ///////////////////////////////
 const registerUser = async (req, res) => {
-    const toDate = Date.now();
   const {
     userFname,
     userLname,
@@ -21,8 +20,8 @@ const registerUser = async (req, res) => {
     user_TambonsID,
     userPost,
     userBdate,
-    userDateAdd = toDate,
-    userDateEdit = toDate,
+    userDateAdd = new Date().toISOString(),
+    userDateEdit = new Date().toISOString(),
     userRole_ID,
     userStatus_ID,
     username,
@@ -58,30 +57,28 @@ const registerUser = async (req, res) => {
             user_DateEdit, user_Role_ID, user_Status_ID)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
-    await db
-      .promise()
-      .query(insertQuery, [
-        userID,
-        userFname,
-        userLname,
-        userEmail,
-        userPhone,
-        username,
-        hashedPassword,
-        userHnumber,
-        userGroup,
-        userAlley,
-        userRoad,
-        user_ProvincesID,
-        user_AmphuresID,
-        user_TambonsID,
-        // userPost,
-        userBdate,
-        userDateAdd,
-        userDateEdit,
-        userRole_ID,
-        userStatus_ID,
-      ]);
+    await db.promise().query(insertQuery, [
+      userID,
+      userFname,
+      userLname,
+      userEmail,
+      userPhone,
+      username,
+      hashedPassword,
+      userHnumber,
+      userGroup,
+      userAlley,
+      userRoad,
+      user_ProvincesID,
+      user_AmphuresID,
+      user_TambonsID,
+      // userPost,
+      userBdate,
+      userDateAdd,
+      userDateEdit,
+      userRole_ID,
+      userStatus_ID,
+    ]);
 
     res.status(201).json({ message: "ลงทะเบียนผู้ใช้เรียบร้อยแล้ว!" });
   } catch (err) {
@@ -131,6 +128,266 @@ const getAutotid = async (req, res) => {
   }
 };
 
+const getRole = async (req, res) => {
+  try {
+    const query = "SELECT role_id,role_Name FROM roles";
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+const getUser = async (req, res) => {
+  try {
+    // const query = 'SELECT user_ID,user_Fname,user_Lname,user_Email,user_Phone,user_Name,user_Hnumber,user_Group,user_Alley,user_Road,user_Provinces_ID,user_Amphures_ID,user_Tambons_ID,user_Bdate,user_DateAdd,user_DateEdit,user_Role_ID,	user_Status_ID FROM users';
+    const query = `SELECT
+      user_ID,
+      user_Fname,
+      user_Lname,
+      user_Email,
+      user_Phone,
+      user_Name,
+      user_Hnumber,
+      user_Group,
+      user_Alley,
+      user_Road,
+      user_Tambons_ID,
+      user_Amphures_ID,
+      user_Provinces_ID,
+      thai_tambons.name_th AS user_Tambons,
+      thai_amphures.name_th AS user_Amphures,
+      thai_provinces.name_th AS user_Provinces,
+      thai_tambons.zip_code AS user_Zipcode,
+      CONCAT(user_Hnumber, ' ม.', user_Group, ' ', user_Alley, ' ', user_Road, ' ', thai_tambons.name_th, ' ', thai_amphures.name_th, ' ', thai_provinces.name_th, ' ', thai_tambons.zip_code) AS address, 
+      user_Bdate,
+      user_DateAdd,
+      user_DateEdit,
+      user_Role_ID,
+      roles.role_Name as roleName,
+      user_Status_ID,
+      status.stat_Name
+  FROM
+      users
+  INNER JOIN
+      thai_provinces ON users.user_Provinces_ID = thai_provinces.id
+  INNER JOIN
+      thai_amphures ON users.user_Amphures_ID = thai_amphures.id
+  INNER JOIN
+      thai_tambons ON users.user_Tambons_ID = thai_tambons.id
+  INNER JOIN
+      status ON users.user_Status_ID = status.stat_ID
+  INNER JOIN
+      roles ON users.user_Role_ID = roles.role_ID
+  WHERE stat_ID  = "STA000003"`;
+
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+const getUserById = async (req, res) => {
+  try {
+    const userId = req.query.id;
+
+    if (!userId) {
+      return res.status(400).json({ error: "โปรดระบุ id" });
+    }
+
+    const query = `
+      SELECT
+        user_ID,
+        user_Fname,
+        user_Lname,
+        CONCAT(user_Fname, ' ', user_Lname) AS fullname, 
+        user_Email,
+        user_Phone,
+        user_Name,
+        user_Hnumber,
+        user_Group,
+        user_Alley,
+        user_Road,
+        user_Tambons_ID,
+        user_Amphures_ID,
+        user_Provinces_ID,
+        thai_tambons.name_th AS user_Tambons,
+        thai_amphures.name_th AS user_Amphures,
+        thai_provinces.name_th AS user_Provinces,
+        thai_tambons.zip_code AS user_Zipcode,
+        CONCAT(user_Hnumber, ' ม.', user_Group, ' ', user_Alley, ' ', user_Road, ' ', thai_tambons.name_th, ' ', thai_amphures.name_th, ' ', thai_provinces.name_th, ' ', thai_tambons.zip_code) AS address, 
+        user_Bdate,
+        user_DateAdd,
+        user_DateEdit,
+        user_Role_ID,
+        roles.role_Name as roleName,
+        user_Status_ID,
+        status.stat_Name
+      FROM
+        users
+      INNER JOIN
+        thai_provinces ON users.user_Provinces_ID = thai_provinces.id
+      INNER JOIN
+        thai_amphures ON users.user_Amphures_ID = thai_amphures.id
+      INNER JOIN
+        thai_tambons ON users.user_Tambons_ID = thai_tambons.id
+      INNER JOIN
+        status ON users.user_Status_ID = status.stat_ID
+      INNER JOIN
+        roles ON users.user_Role_ID = roles.role_ID
+      WHERE
+        user_ID = ?
+    `;
+
+    const [result] = await db.promise().query(query, [userId]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลผู้ใช้" });
+    }
+
+    res.status(200).json(result[0]);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
+//////////////API//////////////
+//////////updateUser///////////
+///////////////////////////////
+const updateUser = async (req, res) => {
+  const userID = req.query.userID;
+  const {
+    userFname,
+    userLname,
+    userEmail,
+    userPhone,
+    userHnumber,
+    userGroup,
+    userAlley,
+    userRoad,
+    user_ProvincesID,
+    user_AmphuresID,
+    user_TambonsID,
+    userPost,
+    userBdate,
+    userDateEdit = new Date().toISOString(),
+    userRole_ID,
+    userStatus_ID,
+    username,
+    password
+  } = req.body;
+
+  try {
+    if (!userID) {
+      return res.status(400).json({ error: 'โปรดระบุ userID' });
+    }
+
+ 
+    const [userCheck] = await db.promise().query("SELECT * FROM users WHERE user_ID = ?", [userID]);
+    if (userCheck.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลผู้ใช้" });
+    }
+
+    // ตรวจสอบว่า username ที่ส่งมาใหม่ซ้ำกับ user ไหม
+    if (username && username !== userCheck[0].user_Name) {
+      const [usernameCheck] = await db.promise().query("SELECT * FROM users WHERE user_Name = ?", [username]);
+      if (usernameCheck.length > 0) {
+        return res.status(400).json({ error: "มี Username นี้อยู่แล้ว" });
+      }
+    }
+
+    let hashedPassword = userCheck[0].user_Password; // หากไม่ได้เปลี่ยน password จะคงค่าเดิมเอาไว้
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    const updateQuery = `
+      UPDATE users SET 
+        user_Fname = ?, 
+        user_Lname = ?, 
+        user_Email = ?, 
+        user_Phone = ?, 
+        user_Name = ?, 
+        user_Password = ?, 
+        user_Hnumber = ?, 
+        user_Group = ?, 
+        user_Alley = ?, 
+        user_Road = ?, 
+        user_Provinces_ID = ?, 
+        user_Amphures_ID = ?, 
+        user_Tambons_ID = ?, 
+        user_Bdate = ?, 
+        user_DateEdit = ?, 
+        user_Role_ID = ?, 
+        user_Status_ID = ? 
+      WHERE user_ID = ?
+    `;
+    await db.promise().query(updateQuery, [
+      userFname,
+      userLname,
+      userEmail,
+      userPhone,
+      username || userCheck[0].user_Name,
+      hashedPassword,
+      userHnumber,
+      userGroup,
+      userAlley,
+      userRoad,
+      user_ProvincesID,
+      user_AmphuresID,
+      user_TambonsID,
+      userBdate,
+      userDateEdit,
+      userRole_ID,
+      userStatus_ID,
+      userID
+    ]);
+    res.status(200).json({ message: "อัปเดตข้อมูลผู้ใช้เรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
+
+//////////////API//////////////
+////updateUserStatus///////////
+///////////////////////////////
+const updateUserStatus = async (req, res) => {
+  const { userID, userStatus_ID } = req.body;
+
+  try {
+ 
+    if (!userID || !userStatus_ID) {
+      return res.status(400).json({ error: "กรุณาระบุ userID และ userStatus_ID" });
+    }
+    const [userCheck] = await db.promise().query("SELECT * FROM users WHERE user_ID = ?", [userID]);
+    if (userCheck.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลผู้ใช้" });
+    }
+
+    const updateQuery = "UPDATE users SET user_Status_ID = ?, user_DateEdit = ? WHERE user_ID = ?";
+    const EditDate = new Date().toISOString();
+    await db.promise().query(updateQuery, [userStatus_ID, EditDate, userID]);
+
+    res.status(200).json({ message: "อัปเดตสถานะของผู้ใช้เรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาดในการอัปเดตสถานะ:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
+
+
+
+
 // const getUser = async (req, res) => {
 //     try {
 //         // สร้างคำสั่ง SQL สำหรับดึงข้อมูลผู้ใช้ทั้งหมดจากตาราง users
@@ -144,4 +401,4 @@ const getAutotid = async (req, res) => {
 //     }
 // };
 
-module.exports = { registerUser, getAutotid };
+module.exports = { registerUser, getAutotid, getRole, getUser, getUserById, updateUser, updateUserStatus };

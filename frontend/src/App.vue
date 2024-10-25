@@ -1,32 +1,28 @@
 <script setup>
 import { useColorModes } from '@coreui/vue';
 import { onBeforeMount } from 'vue';
-import { useThemeStore } from '@/stores/theme.js';
 
-const { isColorModeSet, setColorMode } = useColorModes(
-  'coreui-free-vue-admin-template-theme',
-)
-const currentTheme = useThemeStore()
+import { useThemeStore } from '@/stores/theme.js';
+// import { useUserStore } from '@/stores/user';
+
+
+const { isColorModeSet, setColorMode } = useColorModes('coreui-free-vue-admin-template-theme');
+const currentTheme = useThemeStore();
+// const userStore = useUserStore();
+
+// userStore.initializeAuth();
 
 onBeforeMount(() => {
-  const urlParams = new URLSearchParams(window.location.href.split('?')[1])
-  let theme = urlParams.get('theme')
-
-  if (theme !== null && theme.match(/^[A-Za-z0-9\s]+/)) {
-    theme = theme.match(/^[A-Za-z0-9\s]+/)[0]
+  const urlParams = new URLSearchParams(window.location.search);
+  let theme = urlParams.get('theme');
+  if (theme && /^[A-Za-z0-9]+$/.test(theme.trim())) {
+    setColorMode(theme.trim());
+    return;
   }
-
-  if (theme) {
-    setColorMode(theme)
-    return
+  if (!isColorModeSet()) {
+    setColorMode(currentTheme.theme);
   }
-
-  if (isColorModeSet()) {
-    return
-  }
-
-  setColorMode(currentTheme.theme)
-})
+});
 </script>
 
 <template>
@@ -34,9 +30,6 @@ onBeforeMount(() => {
 </template>
 
 <style lang="scss">
-// Import Main styles for this application
 @import 'styles/style';
-
-// We use those styles to show code examples, you should remove them in your application.
 @import 'styles/examples';
 </style>
