@@ -5,7 +5,10 @@
       <CForm class="row g-3" @submit.prevent="submitForm">
         <CCol :md="6">
           <CCard class="mb-4">
-            <CCardHeader> <i class="fa-solid fa-screwdriver-wrench"></i> ข้อมูลแจ้งซ่อมบำรุง</CCardHeader>
+            <CCardHeader>
+              <i class="fa-solid fa-screwdriver-wrench"></i>
+              ข้อมูลแจ้งซ่อมบำรุง</CCardHeader
+            >
             <CCardBody>
               <CCol md="12">
                 <CRow class="mb-3">
@@ -29,18 +32,6 @@
                   </div>
                 </CRow>
                 <CRow class="mb-3">
-                  <CFormLabel for="roomNumber" class="col-sm-2 col-form-label"
-                    >ห้อง</CFormLabel
-                  >
-                  <div class="col-sm-10">
-                    <CFormInput
-                      v-model="roomNumber"
-                      type="text"
-                      id="roomNumber"
-                      readonly
-                      plain-text
-                    />
-                  </div>
                   <CFormLabel for="fullName" class="col-sm-2 col-form-label"
                     >ชื่อ-สกุล</CFormLabel
                   >
@@ -53,7 +44,32 @@
                       plain-text
                     />
                   </div>
+                  <!-- <CFormLabel for="roomNumber" class="col-sm-2 col-form-label"
+                    >ห้อง</CFormLabel
+                  >
+                  <div class="col-sm-10">
+                    <CFormInput
+                      v-model="roomNumber"
+                      type="text"
+                      id="roomNumber"
+                      readonly
+                      plain-text
+                    />
+                  </div> -->
                 </CRow>
+              </CCol>
+              <CCol md="12">
+                <CFormLabel for="roomNumber">ห้อง</CFormLabel>
+                <CFormSelect v-model="selectedRoom" id="roomNumber" required>
+                  <option value="">กรุณาเลือกห้อง</option>
+                  <option
+                    v-for="room in rooms"
+                    :key="room.renting_ID"
+                    :value="room.renting_ID"
+                  >
+                    {{ room.roomNumber }}
+                  </option>
+                </CFormSelect>
               </CCol>
               <CCol md="12">
                 <CFormLabel for="reqPetitiontype">ประเภทการแจ้งซ่อม</CFormLabel>
@@ -84,7 +100,6 @@
               </CCol>
             </CCardBody>
           </CCard>
-
         </CCol>
         <CCol :md="6">
           <CCard class="mb-4">
@@ -122,10 +137,10 @@
           </CCard>
         </CCol>
         <div>
-        <CButton class="submitbutton" type="submit" color="primary"><i class="fa-solid fa-floppy-disk"></i> บันทึก</CButton>
-
+          <CButton class="submitbutton" type="submit" color="primary"
+            ><i class="fa-solid fa-floppy-disk"></i> บันทึก</CButton
+          >
         </div>
-
       </CForm>
     </CRow>
 
@@ -141,7 +156,7 @@
 </template>
 
 <style scoped>
-.submitbutton{
+.submitbutton {
   width: 100%;
 }
 
@@ -154,7 +169,6 @@
 .col {
   padding: 0;
 }
-
 </style>
 
 <script>
@@ -176,7 +190,9 @@ export default {
     const selectedFiles = ref([]);
     const imagePreviews = ref([]);
     const petitiontype = ref([]);
+    const selectedRoom = ref([]);
     const toasts = ref([]);
+    const rooms = ref([]);
 
     const getUserByIdfromReq = async (uid) => {
       try {
@@ -194,6 +210,20 @@ export default {
         fullName.value = userData.fullname || "";
       } catch (error) {
         console.error("Error fetching user data:", error);
+      }
+    };
+
+    const fetchRooms = async (uid) => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("/api/auth/getroomByID", {
+          params: { id: uid },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log(response.data);
+        rooms.value = response.data;
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลห้อง:", error);
       }
     };
 
@@ -222,78 +252,106 @@ export default {
     };
 
     const submitForm = async () => {
-      const formData = new FormData();
-      formData.append("rentingID", rentingID.value);
-      formData.append("reqPetitiontype", reqPetitiontype.value);
-      formData.append("titleRepair", titleRepair.value);
-      formData.append("reqDetail", reqDetail.value);
+  // ตรวจสอบว่าผู้ใช้ได้เลือกห้องหรือไม่
+  if (!selectedRoom.value) {
+    await Swal.fire({
+      icon: "warning",
+      title: "กรุณาเลือกห้อง",
+      text: "กรุณาเลือกห้องก่อนส่งคำขอ",
+      confirmButtonText: "ตกลง",
+    });
+    return;
+  }
 
-      Array.from(selectedFiles.value).forEach((file) => {
-        formData.append("images", file);
+  if (!reqPetitiontype.value) {
+    await Swal.fire({
+      icon: "warning",
+      title: "กรุณาเลือกประเภทการแจ้งซ่อม",
+      text: "กรุณาเลือกประเภทการแจ้งซ่อมก่อนส่งคำขอ",
+      confirmButtonText: "ตกลง",
+    });
+    return;
+  }
+
+  if (!titleRepair.value.trim()) {
+    await Swal.fire({
+      icon: "warning",
+      title: "กรุณากรอกหัวเรื่อง",
+      text: "กรุณากรอกหัวเรื่องก่อนส่งคำขอ",
+      confirmButtonText: "ตกลง",
+    });
+    return;
+  }
+
+  if (!reqDetail.value.trim()) {
+    await Swal.fire({
+      icon: "warning",
+      title: "กรุณากรอกรายละเอียด",
+      text: "กรุณากรอกรายละเอียดปัญหาก่อนส่งคำขอ",
+      confirmButtonText: "ตกลง",
+    });
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("rentingID", selectedRoom.value);
+  formData.append("reqPetitiontype", reqPetitiontype.value);
+  formData.append("titleRepair", titleRepair.value);
+  formData.append("reqDetail", reqDetail.value);
+
+  Array.from(selectedFiles.value).forEach((file) => {
+    formData.append("images", file);
+  });
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.post("/api/auth/submitRepairRequest", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (response.status === 201) {
+      await Swal.fire({
+        icon: "success",
+        title: "บันทึกสำเร็จ",
+        text: "ส่งคำขอเรียบร้อยแล้ว!",
+        confirmButtonText: "ตกลง",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.reload();
+        }
       });
 
-      try {
-        const token = localStorage.getItem("token");
-        await axios.post("/api/auth/submitRepairRequest", formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        await Swal.fire({
-          icon: "success",
-          title: "บันทึกสำเร็จ",
-          text: "ส่งคำขอเรียบร้อยแล้ว!",
-          confirmButtonText: "ตกลง",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.reload()
-            // this.$router.push("/UserReqView");
-          }
-        });
+      selectedRoom.value = "";
+      reqPetitiontype.value = "";
+      titleRepair.value = "";
+      reqDetail.value = "";
+      selectedFiles.value = [];
+      imagePreviews.value = [];
+    } else {
+      throw new Error("Unexpected response status: " + response.status);
+    }
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล:", error);
 
-        // await Swal.fire({
-        //   position: "top-end",
-        //   icon: "success",
-        //   title: "บันทึกสำเร็จ",
-        //   showConfirmButton: false,
-        //   timer: 1500,
-        // }).then((result) => {
-        //   if (result.isConfirmed) {
-        //     window.location.reload();
-        //     // this.$router.push("/UserReqView");
-        //   }
-        // });
+    await Swal.fire({
+      icon: "error",
+      title: "เกิดข้อผิดพลาด",
+      text: "ไม่สามารถบันทึกข้อมูลได้ กรุณาลองอีกครั้ง",
+      confirmButtonText: "ตกลง",
+    });
+  }
+};
 
-        rentingID.value = "";
-        reqPetitiontype.value = "";
-        titleRepair.value = "";
-        reqDetail.value = "";
-        selectedFiles.value = [];
-        imagePreviews.value = [];
-      } catch (error) {
-        // console.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล:", error);
-        // await Swal.fire({
-        //   icon: "error",
-        //   title: "เกิดข้อผิดพลาด",
-        //   text: "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองอีกครั้ง!",
-        //   confirmButtonText: "ตกลง",
-        // });
-        await Swal.fire({
-          position: "top-end",
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองอีกครั้ง!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
-    };
 
     onMounted(() => {
       if (userId.value) {
         getUserByIdfromReq(userId.value);
         fetchPetitiontype();
+        fetchRooms(userId.value);
       }
     });
 
@@ -311,6 +369,8 @@ export default {
       submitForm,
       handleFileUpload,
       imagePreviews,
+      rooms,
+      selectedRoom,
     };
   },
 };

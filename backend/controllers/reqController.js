@@ -338,6 +338,39 @@ const cancelReq = async (req, res) => {
   }
 };
 
+const getroomByID= async (req, res) => {
+  try {
+    const userID = req.query.id;
+
+    if (!userID) {
+      return res.status(400).json({ error: "โปรดระบุ id" });
+    }
+
+    const query = `
+    SELECT 
+      renting_ID ,
+      room.room_Number AS roomNumber
+    FROM
+      renting
+      INNER JOIN room on room.room_ID = renting.renting_room_ID
+    WHERE
+      renting_user_ID = ?
+      AND renting_stat_ID = "STA000009"
+    `;
+
+    const [result] = await db.promise().query(query, [userID]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลดารเช่าห้อง" });
+    }
+
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
 module.exports = {
   getReqById,
   getHisReqById,
@@ -347,4 +380,5 @@ module.exports = {
   getPetitiontype,
   getImgById,
   cancelReq,
+  getroomByID,
 };
