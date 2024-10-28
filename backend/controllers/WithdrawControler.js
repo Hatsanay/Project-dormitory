@@ -86,6 +86,7 @@ FROM
     INNER JOIN status statusRequilist on statusRequilist.stat_ID = requisition.requisition_stat_ID
     INNER JOIN unit on unit.ID = stock.stock_unit_ID
 WHERE maintenancerequests.mainr_Stat_ID = "STA000023"
+OR maintenancerequests.mainr_Stat_ID = "STA000013"
 AND requisition_ID =  ?
       `;
 
@@ -116,10 +117,13 @@ AND requisition_ID =  ?
 };
 
 const putReqWithdraw = async (req, res) => {
-  const { requisitionID, Withdrawtatus_ID = "STA000019" } = req.body;
+  const { requisitionID, Withdrawtatus_ID = "STA000019", mainr_ID } = req.body;
 
   try {
     if (!requisitionID) {
+      return res.status(400).json({ error: "โปรดระบุ requisitionID" });
+    }
+    if (!mainr_ID) {
       return res.status(400).json({ error: "โปรดระบุ requisitionID" });
     }
 
@@ -135,14 +139,19 @@ const putReqWithdraw = async (req, res) => {
       FROM requisition_list 
       WHERE reqlist_requisition_ID = ?
     `;
-    const [stockItems] = await db.promise().query(getStockQuery, [requisitionID]);
+    const [stockItems] = await db
+      .promise()
+      .query(getStockQuery, [requisitionID]);
 
     for (const item of stockItems) {
       const { reqlist_stock_ID, quantity } = item;
 
-      const [stock] = await db.promise().query(`
+      const [stock] = await db.promise().query(
+        `
         SELECT quantity FROM stock WHERE ID = ?
-      `, [reqlist_stock_ID]);
+      `,
+        [reqlist_stock_ID]
+      );
 
       if (stock[0].quantity < quantity) {
         return res.status(400).json({
@@ -157,6 +166,12 @@ const putReqWithdraw = async (req, res) => {
       `;
       await db.promise().query(updateStockQuery, [quantity, reqlist_stock_ID]);
     }
+    const updatemaintenancerequests = `
+    UPDATE maintenancerequests 
+    SET mainr_Stat_ID = "STA000013"
+    WHERE mainr_ID = ?
+  `;
+    await db.promise().query(updatemaintenancerequests, [mainr_ID]);
 
     res.status(200).json({ message: "รับเรื่องเบิกวัสดุเรียบร้อยแล้ว" });
   } catch (err) {
@@ -181,7 +196,7 @@ const getWithdraw = async (req, res) => {
       INNER JOIN users on users.user_ID = requisition.requisition_user_ID
       INNER JOIN status  ON status.stat_ID = requisition.requisition_stat_ID
       INNER JOIN requisition_list on requisition_list.reqlist_requisition_ID = requisition.requisition_ID
-      WHERE maintenancerequests.mainr_Stat_ID = "STA000023"
+      WHERE maintenancerequests.mainr_Stat_ID = "STA000013"
       AND requisition.requisition_stat_ID = "STA000019"
 
  GROUP BY requisition_ID
@@ -213,9 +228,12 @@ const getWithdraw = async (req, res) => {
   }
 };
 
-
 const putAcceptWithdraw = async (req, res) => {
-  const { requisitionID, statusRequisition = "STA000021", statusRequisitionList = "STA000021" } = req.body;
+  const {
+    requisitionID,
+    statusRequisition = "STA000021",
+    statusRequisitionList = "STA000021",
+  } = req.body;
 
   try {
     if (!requisitionID) {
@@ -227,14 +245,18 @@ const putAcceptWithdraw = async (req, res) => {
       SET requisition_stat_ID = ? 
       WHERE requisition_ID = ?
     `;
-    await db.promise().query(updateRequisitionQuery, [statusRequisition, requisitionID]);
+    await db
+      .promise()
+      .query(updateRequisitionQuery, [statusRequisition, requisitionID]);
 
     const getRequisitionListQuery = `
       SELECT reqlist_stock_ID 
       FROM requisition_list 
       WHERE reqlist_requisition_ID = ?
     `;
-    const [requisitionList] = await db.promise().query(getRequisitionListQuery, [requisitionID]);
+    const [requisitionList] = await db
+      .promise()
+      .query(getRequisitionListQuery, [requisitionID]);
 
     for (const item of requisitionList) {
       const { reqlist_stock_ID } = item;
@@ -244,7 +266,13 @@ const putAcceptWithdraw = async (req, res) => {
         SET reqlist_stat_ID = ?
         WHERE reqlist_stock_ID = ? AND reqlist_requisition_ID = ?
       `;
-      await db.promise().query(updateRequisitionListQuery, [statusRequisitionList, reqlist_stock_ID, requisitionID]);
+      await db
+        .promise()
+        .query(updateRequisitionListQuery, [
+          statusRequisitionList,
+          reqlist_stock_ID,
+          requisitionID,
+        ]);
     }
 
     res.status(200).json({ message: "รับเรื่องเบิกวัสดุเรียบร้อยแล้ว" });
@@ -253,7 +281,6 @@ const putAcceptWithdraw = async (req, res) => {
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
 };
-
 
 const cancelWithdraw = async (req, res) => {
   const { requisitionID, cancelStatusID = "STA000024" } = req.body;
@@ -268,14 +295,18 @@ const cancelWithdraw = async (req, res) => {
       SET requisition_stat_ID = ? 
       WHERE requisition_ID = ?
     `;
-    await db.promise().query(updateRequisitionQuery, [cancelStatusID, requisitionID]);
+    await db
+      .promise()
+      .query(updateRequisitionQuery, [cancelStatusID, requisitionID]);
 
     const getRequisitionListQuery = `
       SELECT reqlist_stock_ID, quantity 
       FROM requisition_list 
       WHERE reqlist_requisition_ID = ?
     `;
-    const [requisitionList] = await db.promise().query(getRequisitionListQuery, [requisitionID]);
+    const [requisitionList] = await db
+      .promise()
+      .query(getRequisitionListQuery, [requisitionID]);
 
     for (const item of requisitionList) {
       const { reqlist_stock_ID, quantity } = item;
@@ -297,7 +328,11 @@ const cancelWithdraw = async (req, res) => {
 
 module.exports = { cancelWithdraw };
 
-
-
-
-module.exports = { getWithdrawReq, getWithdrawReqlist, putReqWithdraw, getWithdraw,putAcceptWithdraw, cancelWithdraw };
+module.exports = {
+  getWithdrawReq,
+  getWithdrawReqlist,
+  putReqWithdraw,
+  getWithdraw,
+  putAcceptWithdraw,
+  cancelWithdraw,
+};

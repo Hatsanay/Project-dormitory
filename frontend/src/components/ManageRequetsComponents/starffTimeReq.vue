@@ -8,8 +8,8 @@
           @click.prevent="switchTab('1')"
           href="#"
         >
-          <i class="fa-solid fa-calendar-days"></i>
-          ปฎิทินเวลาซ่อม
+          <i class="fa-solid fa-clock"></i>
+          การแจ้งซ่อมที่รอนัด
         </a>
       </li>
       <li class="nav-item">
@@ -19,35 +19,292 @@
           @click.prevent="switchTab('2')"
           href="#"
         >
-          <i class="fa-solid fa-clock"></i>
+          <i class="fa-solid fa-calendar-days"></i>
           นัดเวลาซ่อม
+        </a>
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          :class="{ active: activeTab === '3' }"
+          @click.prevent="switchTab('3')"
+          href="#"
+        >
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          ประวัติการนัดเวลา
         </a>
       </li>
     </ul>
 
     <div class="tab-content mt-3">
-      <div v-if="activeTab === '1'" class="tab-pane active">
+      <div v-if="activeTab === '2'" class="tab-pane active">
         <CRows>
           <CFormSelect v-model="selectedClass" aria-label="Filter by Class">
-          <option value="">ช่างทั้งหมด</option>
-
-        </CFormSelect>
-        <br>
+            <option value="">ช่างทั้งหมด</option>
+            <option
+              v-for="technician in technicians"
+              :key="technician.user_ID"
+              :value="technician.fullname"
+            >
+              {{ technician.fullname }}
+            </option>
+          </CFormSelect>
+          <br />
         </CRows>
         <CRows>
           <FullCalendar :events="events" :options="calendarOptions" ref="calendar" />
         </CRows>
       </div>
 
-      <div v-if="activeTab === '2'" class="tab-pane active">
-        <!-- Content for scheduling repairs -->
+      <div v-if="activeTab === '1'" class="tab-pane active">
+        <CRow style="margin-bottom: 10px">
+          <CCol :md="9"></CCol>
+          <CCol :md="3" style="margin-bottom: 10px">
+            <CInputGroup>
+              <CFormInput placeholder="ค้นหา..." v-model="searchQuery" />
+              <CInputGroupText>
+                <CIcon name="cil-magnifying-glass" />
+              </CInputGroupText>
+            </CInputGroup>
+          </CCol>
+        </CRow>
+
+        <CRow>
+          <CCol v-for="item in paginatedItems" :key="item.mainr_ID" md="12" class="mb-4">
+            <CCard class="card-modern" @click="showModal(item)">
+              <CCardHeader class="card-header-modern">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="m-0 card-title-modern">
+                    <i class="fa-solid fa-circle-user"></i> ผู้แจ้ง: {{ item.fullname }}
+                  </h5>
+                  <span class="date-modern">{{ item.mainr_Date }}</span>
+                </div>
+              </CCardHeader>
+              <CCardBody>
+                <div class="d-flex flex-column">
+                  <p>
+                    <strong><i class="fa-regular fa-id-card"></i> รหัส: </strong>
+                    {{ item.mainr_ID }}
+                  </p>
+                  <p>
+                    <strong><i class="fa-solid fa-igloo"></i> ห้อง:</strong>
+                    {{ item.roomNumber }}
+                  </p>
+                  <p>
+                    <strong><i class="fa-regular fa-newspaper"></i> หัวเรื่อง:</strong>
+                    {{ item.mainr_ProblemTitle }}
+                  </p>
+                  <p>
+                    <strong
+                      ><i class="fa-solid fa-screwdriver-wrench"></i> ประเภท:</strong
+                    >
+                    {{ item.Type }}
+                  </p>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <p></p>
+                  <p class="status-modern mb-0">
+                    <strong>สถานะ:</strong> {{ item.status }}
+                  </p>
+                </div>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+
+        <div class="card-footer-modern">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <CButton
+              class="btn-modern"
+              :disabled="currentPage === 1"
+              @click="currentPage--"
+            >
+              Previous
+            </CButton>
+
+            <div>
+              <span>Showing page {{ currentPage }} of {{ totalPages }}</span>
+            </div>
+
+            <CButton
+              class="btn-modern"
+              :disabled="currentPage === totalPages"
+              @click="currentPage++"
+            >
+              Next
+            </CButton>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <span>Show</span>
+            <select
+              v-model="rowsPerPage"
+              class="form-select-modern mx-2"
+              style="width: auto"
+            >
+              <option :value="3">3</option>
+              <option :value="5">5</option>
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+              <option :value="100">100</option>
+            </select>
+            <span>entries</span>
+          </div>
+        </div>
       </div>
+      <div v-if="activeTab === '3'" class="tab-pane active">ประวัติการนัดเวลา</div>
     </div>
+
+    <CModal
+      alignment="center"
+      :visible="visibleModelDetailRequest"
+      @close="closeModelDetailRequest"
+      size="xl"
+      fullscren
+      backdrop="static"
+    >
+      <CModalHeader>
+        <CModalTitle id="ModelDetailRequest">
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+          รายละเอียดการแจ้งซ่อม ID: {{ selectedUser.mainr_ID }}
+          <span>วันที่: {{ selectedUser.mainr_Date }}</span>
+        </CModalTitle>
+      </CModalHeader>
+      <CModalBody style="max-height: 400px; overflow-y: auto">
+        <p><strong>ผู้แจ้ง: </strong> {{ selectedUser.fullname }}</p>
+        <p><strong>ห้อง:</strong> {{ selectedUser.roomNumber }}</p>
+        <p><strong>หัวเรื่อง:</strong> {{ selectedUser.mainr_ProblemTitle }}</p>
+        <p><strong>รายละเอียด:</strong> {{ selectedUser.mainr_ProblemDescription }}</p>
+        <p><strong>ประเภท:</strong> {{ selectedUser.Type }}</p>
+        <p><strong>สถานะ:</strong> {{ selectedUser.status }}</p>
+
+        <div v-if="imageUrls.length > 0" class="mt-3">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center">
+            <img
+              v-for="(url, index) in imageUrls"
+              :key="index"
+              :src="getImageUrl(url)"
+              alt="รูปภาพแจ้งซ่อม"
+              style="
+                max-width: 500px;
+                max-height: 500px;
+                object-fit: cover;
+                cursor: pointer;
+              "
+              @click="openImageModal(index)"
+            />
+          </div>
+        </div>
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeModelDetailRequest">ปิด</CButton>
+      </CModalFooter>
+    </CModal>
+
+    <CModal
+      alignment="center"
+      :visible="visibleModal"
+      @close="closeModal"
+      size="xl"
+      backdrop="static"
+      class="custom-modal"
+    >
+      <CModalHeader class="custom-modal-header">
+        <CModalTitle class="custom-modal-title">
+          <i class="fa-solid fa-calendar-check"></i>
+          มอบหมายงานสำหรับวันที่: {{ selectedDate }}
+        </CModalTitle>
+      </CModalHeader>
+      <CModalBody class="custom-modal-body">
+        <div class="form-group">
+          <label for="repair-select" class="form-label">เลือกรายการแจ้งซ่อม:</label>
+          <CFormSelect
+            v-model="selectedRepair"
+            aria-label="เลือกรายการแจ้งซ่อม"
+            id="repair-select"
+          >
+            <option value="">เลือกรายการ</option>
+            <option v-for="item in items" :key="item.mainr_ID" :value="item.mainr_ID">
+              {{ item.mainr_ProblemTitle }} (ID: {{ item.mainr_ID }})
+            </option>
+          </CFormSelect>
+        </div>
+
+        <div class="form-group">
+          <label for="technician-select" class="form-label">เลือกช่างหลัก:</label>
+          <CFormSelect
+            v-model="selectedTechnician"
+            aria-label="เลือกช่างหลัก"
+            id="technician-select"
+          >
+            <option value="">เลือกช่างหลัก</option>
+            <option
+              v-for="technician in technicians"
+              :key="technician.user_ID"
+              :value="technician.fullname"
+            >
+              {{ technician.fullname }}
+            </option>
+          </CFormSelect>
+        </div>
+
+        <div class="form-group">
+          <label for="assistants-select" class="form-label">เลือกผู้ช่วยช่าง:</label>
+          <div class="d-flex align-items-center">
+            <CFormSelect
+              v-model="newAssistant"
+              aria-label="เลือกผู้ช่วยช่าง"
+              id="assistants-select"
+              :disabled="!selectedTechnician"
+              >
+              <option value="">เลือกผู้ช่วย</option>
+              <option
+                v-for="technician in filteredAssistants"
+                :key="technician.user_ID"
+                :value="technician.fullname"
+              >
+                {{ technician.fullname }}
+              </option>
+            </CFormSelect>
+            <CButton @click="addAssistant" class="ml-2" :disabled="!newAssistant">
+              +
+            </CButton>
+          </div>
+          <ul class="mt-2 assistant-list">
+            <li
+              v-for="(assistant, index) in selectedAssistants"
+              :key="index"
+              class="d-flex justify-content-between align-items-center"
+            >
+              {{ assistant }}
+              <CButton @click="removeAssistant(index)" color="danger" size="sm">
+                ลบ
+              </CButton>
+            </li>
+          </ul>
+        </div>
+
+        <div class="form-group">
+          <label for="start-time" class="form-label">เลือกเวลาเริ่มต้น:</label>
+          <input type="time" v-model="startTime" id="start-time" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="end-time" class="form-label">เลือกเวลาสิ้นสุด:</label>
+          <input type="time" v-model="endTime" id="end-time" class="form-control" />
+        </div>
+      </CModalBody>
+      <CModalFooter class="custom-modal-footer">
+        <CButton color="secondary" @click="closeModal">ยกเลิก</CButton>
+        <CButton color="primary" @click="assignWork">ยืนยันการมอบหมาย</CButton>
+      </CModalFooter>
+    </CModal>
   </div>
 </template>
 
 <script>
-import { ref, onMounted, watchEffect } from "vue";
+import { ref, onMounted, watchEffect, computed } from "vue";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -62,6 +319,22 @@ export default {
   setup() {
     const activeTab = ref("1");
     const events = ref([]);
+    const allEvents = ref([]);
+    const selectedClass = ref("");
+    const technicians = ref([]);
+    const visibleModal = ref(false);
+    const selectedDate = ref("");
+    const selectedTechnician = ref("");
+    const items = ref([]);
+    const searchQuery = ref("");
+    const rowsPerPage = ref(3);
+    const currentPage = ref(1);
+    const visibleModelDetailRequest = ref(false);
+    const selectedUser = ref({});
+    const imageUrls = ref([]);
+    const selectedAssistants = ref([]);
+    const newAssistant = ref("");
+
     const calendarOptions = ref({
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
       initialView: "dayGridMonth",
@@ -73,33 +346,60 @@ export default {
       editable: true,
       selectable: true,
       selectMirror: true,
-      eventClassNames: () => ["custom-event"], // กำหนด class name ให้กับ event
+      eventClassNames: () => ["custom-event"],
       eventContent: function (arg) {
         return {
           html: `<div>
-                        <span class="event-time">${arg.event.startStr.slice(
-                          11,
-                          16
-                        )} - ${arg.event.endStr.slice(11, 16)}</span>
-                        <span class="event-title">${arg.event.title}</span>
-                      </div>`,
+                   <span class="event-time">${arg.event.startStr.slice(
+                     11,
+                     16
+                   )} - ${arg.event.endStr.slice(11, 16)}</span>
+                   <span class="event-title">${arg.event.title}</span>
+                 </div>`,
         };
       },
       dateClick(info) {
-        alert("วันที่คุณเลือกคือ: " + info.dateStr);
+        selectedDate.value = info.dateStr;
+        visibleModal.value = true;
       },
     });
+
+    const filteredItems = computed(() => {
+      return items.value.filter((item) => {
+        return Object.keys(item).some((key) => {
+          return String(item[key])
+            .toLowerCase()
+            .includes(searchQuery.value.toLowerCase());
+        });
+      });
+    });
+
+    const totalPages = computed(() => {
+      return Math.ceil(filteredItems.value.length / rowsPerPage.value);
+    });
+
+    const paginatedItems = computed(() => {
+      const start = (currentPage.value - 1) * rowsPerPage.value;
+      const end = start + rowsPerPage.value;
+      return filteredItems.value.slice(start, end);
+    });
+
+    const fetchRequests = async () => {
+      try {
+        const response = await axios.get(`/api/auth/getReqwaitForShc`);
+        items.value = response.data;
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
 
     const fetchRepairSchedule = async () => {
       try {
         const response = await axios.get("/api/auth/getreqtime");
-        console.log("API Response:", response.data);
-
-        events.value = response.data.map((item) => {
+        allEvents.value = response.data.map((item) => {
           const date = item.Date;
           const formattedStartTime = `${date}T${item.startTime}`;
           const formattedEndTime = `${date}T${item.endTime}`;
-
           const technicians = item.technicians
             .map((tech) => `<br>ช่าง: ${tech}`)
             .join("");
@@ -109,24 +409,136 @@ export default {
             start: formattedStartTime,
             end: formattedEndTime,
             description: `รายละเอียดงานซ่อม ${item.sdr_mainr_ID}`,
+            technicians: item.technicians,
           };
         });
-
-        console.log("Events:", events.value);
+        filterEvents();
       } catch (error) {
         console.error("Error fetching repair schedule:", error);
       }
     };
 
-    watchEffect(() => {
-      calendarOptions.value.events = events.value;
+    const fetchtechnicians = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("/api/auth/getMacForShc", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        technicians.value = response.data;
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูล role:", error);
+      }
+    };
+
+    const filterEvents = () => {
+      if (selectedClass.value) {
+        events.value = allEvents.value.filter((event) =>
+          event.technicians.includes(selectedClass.value)
+        );
+      } else {
+        events.value = allEvents.value;
+      }
+    };
+
+    const closeModal = () => {
+      visibleModal.value = false;
+      selectedTechnician.value = "";
+    };
+
+    const filteredAssistants = computed(() => {
+      return technicians.value.filter(
+        (technician) => technician.fullname !== selectedTechnician.value
+      );
     });
+
+    const addAssistant = () => {
+      if (
+        newAssistant.value &&
+        !selectedAssistants.value.includes(newAssistant.value)
+      ) {
+        selectedAssistants.value.push(newAssistant.value);
+        newAssistant.value = ""; // ล้างค่าหลังจากเพิ่ม
+      } else if (!newAssistant.value) {
+        alert("กรุณาเลือกผู้ช่วยช่างก่อนเพิ่ม");
+      } else {
+        alert("ผู้ช่วยช่างนี้ถูกเพิ่มแล้ว");
+      }
+    };
+    
+    const removeAssistant = (index) => {
+      selectedAssistants.value.splice(index, 1);
+    };
+
+    const assignWork = () => {
+      if (
+        selectedRepair.value &&
+        selectedTechnician.value &&
+        startTime.value &&
+        endTime.value
+      ) {
+        const assignmentData = {
+          repairID: selectedRepair.value,
+          technician: selectedTechnician.value,
+          assistants: selectedAssistants.value, // ผู้ช่วยช่างที่ถูกเลือก
+          date: selectedDate.value,
+          startTime: startTime.value,
+          endTime: endTime.value,
+        };
+
+        axios
+          .post("/api/auth/assignWork", assignmentData)
+          .then((response) => {
+            alert("มอบหมายงานสำเร็จ");
+            closeModal();
+          })
+          .catch((error) => {
+            console.error("Error assigning work:", error);
+          });
+      } else {
+        alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      }
+    };
+
+    const showModal = (item) => {
+      selectedUser.value = item;
+      fetchImages(item.mainr_ID);
+      visibleModelDetailRequest.value = true;
+    };
+
+    const closeModelDetailRequest = () => {
+      visibleModelDetailRequest.value = false;
+      selectedUser.value = {};
+      imageUrls.value = [];
+    };
+
+    const fetchImages = async (mainr_ID) => {
+      try {
+        const response = await axios.get(`/api/auth/getImgById?id=${mainr_ID}`);
+        imageUrls.value = response.data.map((img) => img.imges_Path);
+      } catch (error) {
+        console.error("Error fetching images:", error);
+        imageUrls.value = [];
+      }
+    };
+
+    const getImageUrl = (path) => {
+      return `http://localhost:3030/uploads/${path}`;
+    };
 
     const switchTab = (tab) => {
       activeTab.value = tab;
     };
 
+    watchEffect(() => {
+      filterEvents();
+      calendarOptions.value.events = events.value;
+    });
+
     onMounted(() => {
+      fetchRequests();
+      fetchtechnicians();
       fetchRepairSchedule();
     });
 
@@ -135,27 +547,74 @@ export default {
       switchTab,
       events,
       calendarOptions,
+      technicians,
+      selectedClass,
+      visibleModal,
+      selectedDate,
+      selectedTechnician,
+      closeModal,
+      assignWork,
+      items,
+      searchQuery,
+      filteredItems,
+      totalPages,
+      paginatedItems,
+      currentPage,
+      rowsPerPage,
+      showModal,
+      closeModelDetailRequest,
+      selectedUser,
+      visibleModelDetailRequest,
+      imageUrls,
+      getImageUrl,
+      newAssistant,
+      selectedAssistants,
+      addAssistant,
+      removeAssistant,
+      assignWork,
+      filteredAssistants,
     };
   },
 };
 </script>
 
 <style scoped>
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+}
+
 .custom-event {
-  background-color: #e6f7ff; /* สีพื้นหลังแบบอ่อน */
-  border: 2px solid #007bff; /* เพิ่มกรอบสีน้ำเงิน */
-  border-radius: 8px; /* มุมมนของกรอบ */
+  background-color: #e6f7ff;
+  border: 2px solid #007bff;
+  border-radius: 8px;
   padding: 8px;
   margin: 4px 0;
   color: #333;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2); /* เพิ่มเงา */
-  transition: background-color 0.3s ease; /* เพิ่มการเปลี่ยนสีเมื่อ hover */
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
+  transition: background-color 0.3s ease;
 }
 
 .custom-event:hover {
-  background-color: #cceeff; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+  background-color: #cceeff;
 }
 
 .event-time {
@@ -169,10 +628,174 @@ export default {
   font-weight: bold;
   margin-top: 5px;
   color: #007bff;
-  white-space: pre-line; /* แก้ไขเพื่อแสดงบรรทัดใหม่ */
+  white-space: pre-line;
 }
 
 .fc-event-time {
   display: none;
+}
+
+.card-body p {
+  margin: 0;
+}
+
+.date {
+  font-weight: bold;
+  color: white;
+}
+
+.cancelButton {
+  color: white;
+}
+
+.status {
+  font-size: 18px;
+  color: rgb(228, 148, 0);
+  text-align: right;
+  margin-top: 10px;
+}
+
+.card-modern {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.card-modern:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header-modern {
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 10px;
+}
+
+.card-title-modern {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.date-modern {
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
+.status-modern {
+  font-size: 16px;
+  color: #ff9800;
+  text-align: right;
+}
+
+.cancelButton-modern {
+  width: 100%;
+  color: white;
+  background-color: #f44336;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.card-footer-modern {
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-modern {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-modern:hover {
+  background-color: #5a6268;
+}
+
+.form-select-modern {
+  border-radius: 5px;
+  padding: 5px;
+  border: 1px solid #ced4da;
+}
+.custom-modal {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  background-color: #f9f9f9;
+  max-width: 800px;
+  width: 100%;
+}
+
+.custom-modal-header {
+  background-color: #007bff;
+  color: #fff;
+  padding: 20px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.custom-modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.custom-modal-body {
+  padding: 20px;
+  background-color: #fff;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.custom-modal-footer {
+  background-color: #f1f1f1;
+  padding: 15px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  margin-top: 5px;
+}
+
+.assistant-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0 0;
+}
+
+.assistant-list li {
+  background-color: #e9ecef;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.assistant-list li:hover {
+  background-color: #dee2e6;
+}
+
+.ml-2 {
+  margin-left: 10px;
 }
 </style>

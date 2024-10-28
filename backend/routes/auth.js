@@ -6,7 +6,7 @@ const {getStatus,getStatusUserDelete,registerStatus} = require('../controllers/s
 const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq,getroomByID} = require('../controllers/reqController');
 const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById,getStock,submitRequisition} = require('../controllers/manageRequetsControler');
 const {getWithdrawReqlist,getWithdrawReq,putReqWithdraw,getWithdraw,putAcceptWithdraw,cancelWithdraw} = require('../controllers/WithdrawControler');
-const {getreqtime} = require('../controllers/TimeReqControler');
+const {getreqtime,getMacForShc,getReqwaitForShc} = require('../controllers/TimeReqControler');
 
 
 const { registerRoom, getAutotidRoom, getRoom, getRoomByNumber, updateRoom, updateRoomStatus ,getStatusRoom} = require('../controllers/RoomController');
@@ -62,6 +62,8 @@ router.get('/getWithdrawReqlist',authenticateToken, getWithdrawReqlist);
 router.get('/getWithdraw',authenticateToken, getWithdraw);
 
 router.get('/getreqtime',authenticateToken, getreqtime);
+router.get('/getMacForShc',authenticateToken, getMacForShc);
+router.get('/getReqwaitForShc',authenticateToken, getReqwaitForShc);
 
 router.get('/getAutotidRoom',authenticateToken, getAutotidRoom);
 router.get('/getRoom',authenticateToken, getRoom);

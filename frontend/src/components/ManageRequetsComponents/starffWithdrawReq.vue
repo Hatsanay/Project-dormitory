@@ -477,6 +477,7 @@ import axios from "axios";
 import VueEasyLightbox from "vue-easy-lightbox";
 import Swal from "sweetalert2";
 
+
 export default {
   name: "starffWithdrawReq",
   components: {
@@ -517,18 +518,22 @@ export default {
     };
 
     const fetchRequisitionlist = async (requiid) => {
-      try {
-        const response = await axios.get(`/api/auth/getWithdrawReqlist?id=${requiid}`);
-        stockItems.value = response.data;
-      } catch (error) {
-        console.error("Error fetching history requests:", error);
-      }
-    };
+  try {
+    const response = await axios.get(`/api/auth/getWithdrawReqlist?id=${requiid}`);
+    stockItems.value = response.data.filter(
+      (item) => item.requisition_ID === requiid
+    ); 
+  } catch (error) {
+    console.error("Error fetching history requests:", error);
+  }
+};
+
 
     const acceptWithdrawRequest = async () => {
         try {
           const requisitionID = selectedUser.value.requisition_ID;
-
+          const mainr_ID = selectedUser.value.requisition_mainr_ID;
+          
           if (!requisitionID) {
             Swal.fire("Error", "โปรดระบุ requisitionID", "error");
             return;
@@ -542,11 +547,16 @@ export default {
 
           const response = await axios.put('/api/auth/putReqWithdraw', {
             requisitionID: requisitionID,
+            mainr_ID: mainr_ID,
           });
+
 
           Swal.fire("สำเร็จ", response.data.message, "success").then(() => {
                 window.location.reload();
               });
+              console.log('requisitionID:', requisitionID);
+console.log('mainr_ID:', mainr_ID);
+
 
           closeModelDetailRequest();
 
@@ -618,16 +628,24 @@ export default {
 
 
 
-      const switchTab = (tab) => {
-        activeTab.value = tab;
-        currentPage.value = 1;
-        currentPageStock.value = 1;
-        if (tab === "2") {
-          fetchReqWithdraw();
-        } else {
-          fetchRequisition();
-        }
-      };
+        const switchTab = (tab) => {
+  activeTab.value = tab;
+  searchQuery.value = "";
+  searchQueryStock.value = "";
+  selectedUser.value = {};
+  selectedUserTab2.value = {};
+  items.value = [];
+  stockItems.value = [];
+  currentPage.value = 1;
+  currentPageStock.value = 1;
+
+  if (tab === "2") {
+    fetchReqWithdraw();
+  } else {
+    fetchRequisition();
+  }
+};
+
 
 
     const filteredItems = computed(() => {

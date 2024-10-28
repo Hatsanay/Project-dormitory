@@ -220,7 +220,7 @@ export default {
           params: { id: uid },
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(response.data);
+        console.log(response.data); 
         rooms.value = response.data;
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการดึงข้อมูลห้อง:", error);
@@ -252,7 +252,6 @@ export default {
     };
 
     const submitForm = async () => {
-  // ตรวจสอบว่าผู้ใช้ได้เลือกห้องหรือไม่
   if (!selectedRoom.value) {
     await Swal.fire({
       icon: "warning",
@@ -292,6 +291,7 @@ export default {
     });
     return;
   }
+
 
   const formData = new FormData();
   formData.append("rentingID", selectedRoom.value);
