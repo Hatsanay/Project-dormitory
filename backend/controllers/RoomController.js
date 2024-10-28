@@ -27,12 +27,13 @@ const registerRoom = async (req, res) => {
     if (Roomchecked) {
       return res.status(400).json({ error: "มีเลขห้องนี้อยู่แล้ว" });
     }
-    room_stat_ID= "STA000007"
+    const room_stat_ID= "STA000007";
+    const room_status_ID= "STA000006";
     ///////บันทึกลงฐานข้อมูล//////////
     const insertQuery = `
       INSERT INTO room
-      (room_ID, room_Number, room_stat_ID)
-      VALUES (?, ?, ?)
+      (room_ID, room_Number, room_stat_ID,room_status_ID)
+      VALUES (?, ?, ?,?)
     `;
     await db
       .promise()
@@ -40,6 +41,7 @@ const registerRoom = async (req, res) => {
         roomID,
         roomnumber,
         room_stat_ID,
+        room_status_ID
       ]);
 
     res.status(201).json({ message: "ลงทะเบียนห้องพักเรียบร้อยแล้ว!" });
@@ -93,11 +95,15 @@ const getRoom = async (req, res) => {
     const query = `SELECT
       room_ID, 
       room_Number, 
-      stat_Name
+      status.stat_Name ,
+      sta.stat_Name AS status
     FROM
       room
     INNER JOIN
       status ON room.room_stat_ID = status.stat_ID
+    INNER JOIN
+      status sta ON room.room_status_ID = sta.stat_ID
+    WHERE room_status_ID = "STA000006"
     `;
     const [result] = await db.promise().query(query);
     res.status(200).json(result);
@@ -120,7 +126,8 @@ const getRoomByNumber = async (req, res) => {
       SELECT
         room_ID, 
         room_Number, 
-        room_stat_ID
+        room_stat_ID,
+        room_status_ID
       FROM
         room
       WHERE
@@ -142,13 +149,13 @@ const getRoomByNumber = async (req, res) => {
 ///////////////////////////////
 const updateRoom = async (req, res) => {
   const roomID = req.query.ID;
-  const { roomnumber, room_stat_ID } = req.body;
+  const { roomnumber } = req.body;
 
   try {
     if (!roomID) {
-      return res.status(400).json({ error: "โปรดระบุ roomNumber" });
+      return res.status(400).json({ error: "โปรดระบุ roomID" });
     }
-    const [userCheck] = await db.promise().query("SELECT * FROM room WHERE room_Number = ?", [roomID]);
+    const [userCheck] = await db.promise().query("SELECT * FROM room WHERE room_ID = ?", [roomID]);
     if (userCheck.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลห้อง" });
     }
@@ -158,11 +165,10 @@ const updateRoom = async (req, res) => {
     }
     const updateQuery = `
       UPDATE room SET
-        room_Number = ?, 
-        room_stat_ID = ?
+        room_Number = ? 
       WHERE room_ID = ?
     `;
-    await db.promise().query(updateQuery, [roomnumber, room_stat_ID, roomID]);
+    await db.promise().query(updateQuery, [roomnumber,roomID]);
     res.status(200).json({ message: "อัปเดตข้อมูลห้องพักเรียบร้อยแล้ว" });
   } catch (err) {
     console.error("เกิดข้อผิดพลาด:", err);
@@ -174,10 +180,10 @@ const updateRoom = async (req, res) => {
 ///////updateRoomStatus////////
 ///////////////////////////////
 const updateRoomStatus = async (req, res) => {
-  const { roomID, room_stat_ID } = req.body;
+  const { roomID, room_status_ID } = req.body;
 
   try {
-    if (!roomID || !room_stat_ID) {
+    if (!roomID || !room_status_ID) {
       return res.status(400).json({ error: "กรุณาระบุ roomID และ room_stat_ID" });
     }
     const [userCheck] = await db.promise().query("SELECT * FROM room WHERE room_ID = ?", [roomID]);
@@ -185,8 +191,8 @@ const updateRoomStatus = async (req, res) => {
       return res.status(404).json({ error: "ไม่พบข้อมูลห้องพัก" });
     }
 
-    const updateQuery = "UPDATE room SET room_stat_ID = ? WHERE room_ID = ?";
-    await db.promise().query(updateQuery, [room_stat_ID, roomID]);
+    const updateQuery = "UPDATE room SET room_status_ID = ? WHERE room_ID = ?";
+    await db.promise().query(updateQuery, [room_status_ID, roomID]);
 
     res.status(200).json({ message: "อัปเดตสถานะของห้องพักเรียบร้อยแล้ว" });
   } catch (err) {
@@ -209,6 +215,17 @@ const getStatusRoom = async (req, res) => {
   }
 };
 
+const getStatusRoomDelete = async (req, res) => {
+  try {
+    const query = 'SELECT * FROM status WHERE stat_StatTypID = "STT000002"';
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
 module.exports = {
   registerRoom,
   getAutotidRoom,
@@ -217,4 +234,5 @@ module.exports = {
   updateRoom,
   updateRoomStatus,
   getStatusRoom,
+  getStatusRoomDelete
 };

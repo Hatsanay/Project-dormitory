@@ -1,16 +1,17 @@
 <script setup>
-import ViewTypeStatusComponents from '../../components/TypeStatus/ViewTypeStatusComponents.vue';
+import EditeStockComponents from '../../components/Stock/EditeStockComponents.vue';
 </script>
 
 <template>
   <div>
-    <ViewTypeStatusComponents></ViewTypeStatusComponents>
+    <EditeStockComponents></EditeStockComponents>
   </div>
 </template>
 
 <script>
+// console.log(token);
 export default {
-  name: "ViewTypeStatusView",
+  name: "EditStockView",
 };
 </script>
 

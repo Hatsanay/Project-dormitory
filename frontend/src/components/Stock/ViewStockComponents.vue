@@ -62,13 +62,17 @@
                   <td>
                     <button
                       class="btn btn-warning btn-sm fontwhite"
-                      @click="$router.push({ path: '', query: { id: item.ID } })"
-                    >
+                      @click="
+                      $router.push({ 
+                        path: '/EditStockView', 
+                        query: { id: item.ID } })"
+                    ><i class="fa-solid fa-user-pen"></i>
                       แก้ไข
                     </button>
                   </td>
                   <td>
                     <button class="btn btn-danger btn-sm fontwhite" @click="showModalDelete(item)">
+                      <i class="fa-solid fa-trash"></i>
                       ลบ
                     </button>
                   </td>
@@ -129,12 +133,14 @@
 import { ref, watch, onMounted, computed } from "vue";
 import axios from "axios";
 import RegisStockComponent from "./RegisStockComponent.vue";
+import EditeStockComponents from "./EditeStockComponents.vue";
 
 
 export default {
   name: "ViewStockComponents",
   components: {
     RegisStockComponent,
+    EditeStockComponents
     },
   setup() {
     const columns = ref([
@@ -161,7 +167,7 @@ export default {
     const fetchStock = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getStock", {
+        const response = await axios.get("/api/auth/getStockforstock", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

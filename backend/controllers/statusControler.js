@@ -68,7 +68,7 @@ const getAutotidSta = async (req, res) => {
     }
     const num = maxId + 1;
     const newStatID = "STA" + String(num).padStart(6, "0");
-    res.status(200).json(ID);
+    res.status(200).json(newStatID);
   } catch (err) {
     console.error("เกิดข้อผิดพลาด:", err);
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
@@ -85,10 +85,11 @@ const getStatusByID = async (req, res) => {
     SELECT 
       stat_ID, 
       stat_name,
-      stat_stat_ID
+      stat_stat_ID,
+      stat_StatTypID
     FROM 
 	  status
-    WHERE name = ?
+    WHERE stat_ID = ?
     `;
     const [result] = await db.promise().query(query, [statusID]);
     if (result.length === 0) {
@@ -114,6 +115,7 @@ const getStatusForView = async (req, res) => {
       status
     INNER JOIN statustype on statustype.statTyp_ID = status.stat_StatTypID
     INNER JOIN status Sta on Sta.stat_ID = status.stat_stat_ID
+    WHERE status.stat_stat_ID = "STA000006"
     `;
     const [result] = await db.promise().query(query);
     res.status(200).json(result);
@@ -145,6 +147,69 @@ const getStatusUserDelete = async (req, res) => {
       res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
     }
   };
+
+  const updateStatus = async (req, res) => {
+    const ID = req.query.ID;
+    const { newName, stat_StatTypID,  } = req.body;
+  
+    try {
+      if (!ID) {
+        return res.status(400).json({ error: "โปรดระบุIDวัสดุ" });
+      }
+      const [stockCheck] = await db.promise().query("SELECT * FROM status WHERE stat_ID = ?", [ID]);
+      if (stockCheck.length === 0) {
+        return res.status(404).json({ error: "ไม่พบข้อมูลสถานะ" });
+      }
+      const updateQuery = `
+        UPDATE status SET
+          stat_Name = ?, 
+          stat_StatTypID = ?
+        WHERE 
+          stat_ID = ?
+      `;
+      await db.promise().query(updateQuery, [newName , stat_StatTypID, ID]);
+      res.status(200).json({ message: "อัปเดตข้อมูลวัสดุเรียบร้อยแล้ว" });
+    } catch (err) {
+      console.error("เกิดข้อผิดพลาด:", err);
+      res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+    }
+  };
+
+  const updateStatusSta = async (req, res) => {
+    const { ID, statusName } = req.body; 
+  
+    try {
+      if (!ID || !statusName) {
+        return res.status(400).json({ error: "กรุณาระบุ ID และ statusName" });
+      }
+  
+      const [itemCheck] = await db.promise().query("SELECT * FROM status WHERE stat_ID = ?", [ID]);
+      if (itemCheck.length === 0) {
+        return res.status(404).json({ error: "ไม่พบข้อมูลรายการที่ต้องการอัปเดต" });
+      }
+  
+      const updateQuery = "UPDATE items SET stat_Name = ? WHERE stat_ID = ?";
+      await db.promise().query(updateQuery, [statusName, ID]);
+  
+      res.status(200).json({ message: "อัปเดตสถานะเรียบร้อยแล้ว" });
+    } catch (err) {
+      console.error("เกิดข้อผิดพลาดในการอัปเดตสถานะ:", err);
+      res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+    }
+  };
+  const getDeletableStatus = async (req, res) => {
+    try {
+      // ดึงสถานะที่เกี่ยวข้องกับการลบได้
+      const query = 'SELECT * FROM status WHERE status_type_ID = "STT000002"'; 
+      const [result] = await db.promise().query(query);
+      res.status(200).json(result);
+    } catch (err) {
+      console.error("เกิดข้อผิดพลาด:", err);
+      res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+    }
+  };
+  
+  
   
 
-module.exports = {registerStatus,getStatus,getStatusUserDelete,getStatusForView,getStatusByID,getAutotidSta};
+module.exports = {registerStatus,getStatus,getStatusUserDelete,getStatusForView,getStatusByID,getAutotidSta,updateStatus,updateStatusSta,getDeletableStatus};

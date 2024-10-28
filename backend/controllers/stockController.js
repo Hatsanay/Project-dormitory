@@ -129,7 +129,7 @@ const getStockByID = async (req, res) => {
         name, 
         quantity, 
         stock_unit_id, 
-        stock_type_stock_ID ,
+        stock_type_stock_ID,
         stock_statID
       FROM 
         stock 
@@ -151,13 +151,13 @@ const getStockByID = async (req, res) => {
 ///////////////////////////////
 const updateStock = async (req, res) => {
   const ID = req.query.ID;
-  const { newName, quantity, stock_unit_id, stock_type_stock_ID,stock_statID } = req.body;
+  const { newName, quantity, stock_unit_id, stock_type_stock_ID, } = req.body;
 
   try {
     if (!ID) {
       return res.status(400).json({ error: "โปรดระบุชื่อวัสดุ" });
     }
-    const [stockCheck] = await db.promise().query("SELECT * FROM stock WHERE name = ?", [ID]);
+    const [stockCheck] = await db.promise().query("SELECT * FROM stock WHERE ID = ?", [ID]);
     if (stockCheck.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลวัสดุ" });
     }
@@ -166,11 +166,11 @@ const updateStock = async (req, res) => {
         name = ?, 
         quantity = ?, 
         stock_unit_id = ?, 
-        stock_type_stock_ID = ?,
-        stock_statID
-      WHERE name = ?
+        stock_type_stock_ID = ?
+      WHERE 
+        ID = ?
     `;
-    await db.promise().query(updateQuery, [newName , quantity, stock_unit_id, stock_type_stock_ID, stock_statID , ID]);
+    await db.promise().query(updateQuery, [newName , quantity, stock_unit_id, stock_type_stock_ID, ID]);
     res.status(200).json({ message: "อัปเดตข้อมูลวัสดุเรียบร้อยแล้ว" });
   } catch (err) {
     console.error("เกิดข้อผิดพลาด:", err);

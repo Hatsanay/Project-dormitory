@@ -53,11 +53,11 @@
                         class="btn btn-warning btn-sm fontwhite"
                         @click="
                           $router.push({
-                            path: '',
+                            path: '/EditUnitView',
                             query: { id: item.ID },
                           })
                         "
-                      >
+                      ><i class="fa-solid fa-user-pen"></i>
                         แก้ไข
                       </button>
                     </td>
@@ -65,7 +65,7 @@
                       <button
                         class="btn btn-danger btn-sm fontwhite"
                         @click="showModalDelete(item)"
-                      >
+                      ><i class="fa-solid fa-trash"></i>
                         ลบ
                       </button>
                     </td>

@@ -6,7 +6,7 @@
         <CCard class="mb-4">
           <CCardHeader>เพิ่มข้อมูลประเภทสถานะ</CCardHeader>
           <CCardBody>
-            <CForm class="row g-2 needs-validation" novalidate @submit="handleSubmitTooltip01">
+            <CForm class="row g-2 needs-validation" novalidate @submit.prevent="handleSubmitTooltip01">
               <CCol md="12">
                 <CRow class="mb-3">
                   <CCol md="2">
@@ -49,6 +49,7 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
+
 export default {
   name: "RegisTypeStatusComponent",
 
@@ -58,30 +59,27 @@ export default {
     const validatedTooltip01 = ref(false);
     const toasts = ref([]);
 
-    // Status type name validation
+    // Computed property to check if the status name input is invalid
     const isStatusInvalid = computed(() => {
       return validatedTooltip01.value && typestatusname.value.trim() === "";
     });
 
     const nameErrorMessage = computed(() => {
-      if (typestatusname.value.trim() === "") {
-        return "กรุณากรอกชื่อประเภทสถานะ"; // "Please enter status type name"
-      }
-      return "";
+      return typestatusname.value.trim() === "" ? "กรุณากรอกชื่อประเภทสถานะ" : "";
     });
 
-    const handleSubmitTooltip01 = (event) => {
+    // Form submission with validation check
+    const handleSubmitTooltip01 = () => {
       validatedTooltip01.value = true;
 
-      // Prevent submission if input is invalid
       if (isStatusInvalid.value) {
-        event.preventDefault();
-        event.stopPropagation();
-      } else {
-        handleSubmit();
+        return; // Stop form submission if input is invalid
       }
+
+      handleSubmit(); // Call submit function if valid
     };
 
+    // Function to handle the form submission
     const handleSubmit = async () => {
       try {
         const response = await axios.post("/api/auth/registerStatusType", {
@@ -94,7 +92,7 @@ export default {
           window.location.reload();
         }, 1000);
       } catch (error) {
-        let errorMessage = "เกิดข้อผิดพลาดในการลงทะเบียนประเภทสถานะ"; // "Error registering status type"
+        let errorMessage = "เกิดข้อผิดพลาดในการลงทะเบียนประเภทสถานะ"; // Default error message
 
         if (error.response && error.response.data && error.response.data.error) {
           errorMessage = error.response.data.error;
@@ -105,38 +103,32 @@ export default {
       }
     };
 
+    // Function to create and manage toast notifications
     const createToast = (title, content) => {
-      toasts.value.push({
-        title: title,
-        content: content,
-      });
-
-      setTimeout(() => {
-        toasts.value.shift();
-      }, 5000);
+      toasts.value.push({ title, content });
+      setTimeout(() => toasts.value.shift(), 5000); // Auto-remove after 5 seconds
     };
 
+    // Fetch the auto-generated ID for the status type
     const fetchAutoID = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get("/api/auth/getAutotidStatusType", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         autoID.value = response.data;
       } catch (error) {
+        let errorMessage = "Error in fetching Auto ID";
         if (error.response && error.response.data && error.response.data.error) {
-          console.error("Error:", error.response.data.error);
-          createToast("ดึงข้อมูล ID เกิดข้อผิดพลาด:", error.response.data.error); // "Error fetching ID data:"
-        } else {
-          console.error("Error in fetching Auto ID:", error.message || error);
+          errorMessage = error.response.data.error;
         }
+        console.error("Error:", error);
+        createToast("Error", errorMessage);
       }
     };
-    onMounted(() => {
-      fetchAutoID();
-    });
+
+    // Fetch the auto ID when the component is mounted
+    onMounted(fetchAutoID);
 
     return {
       autoID,

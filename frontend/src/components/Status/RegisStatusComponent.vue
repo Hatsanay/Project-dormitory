@@ -4,52 +4,32 @@
     <CRow>
       <CCol :md="12">
         <CCard class="mb-4">
-          <CCardHeader>เพิ่มข้อมูลสต็อก</CCardHeader>
+          <CCardHeader>เพิ่มข้อมูลสถานะ</CCardHeader>
           <CCardBody>
             <CForm class="row g-2 needs-validation" novalidate @submit="handleSubmitTooltip">
               <CCol md="12">
                 <CRow class="mb-3">
                   <CCol md="2">
-                    <CFormLabel for="autoID">รหัสสต็อก</CFormLabel>
+                    <CFormLabel for="autoID">รหัสสถานะ</CFormLabel>
                     <CFormInput v-model="autoID" type="text" id="autoID" disabled />
                   </CCol>
                   <CCol md="3">
-                    <CFormLabel for="stockname">ชื่อวัสดุ</CFormLabel>
+                    <CFormLabel for="statusname">ชื่อสถานะ</CFormLabel>
                     <CFormInput
-                      v-model="stockname"
+                      v-model="statusname"
                       type="text"
-                      id="stockname"
+                      id="statusname"
                       required
-                      :class="{ 'is-invalid': isStockInvalid }"
-                    />
+                      :class="{ 'is-invalid': isStatusInvalid }" />
                     <CFormFeedback invalid>{{ nameErrorMessage }}</CFormFeedback>
                   </CCol>
-                  <CCol md="1">
-                    <CFormLabel for="quantity">จำนวน</CFormLabel>
-                    <CFormInput
-                      v-model="quantity"
-                      type="number"
-                      id="quantity"
-                      required
-                      :class="{ 'is-invalid': isQuantityInvalid }"
-                    />
-                    <CFormFeedback invalid>{{ quantityErrorMessage }}</CFormFeedback>
-                  </CCol>
                   <CCol md="3">
-                    <CFormLabel for="selectedType">ประเภท</CFormLabel>
+                    <CFormLabel for="selectedType">ประเภทสถานะ</CFormLabel>
                     <CFormSelect v-model="selectedType" id="selectedType" required :class="{ 'is-invalid': isTypeInvalid }">
-                      <option value="">กรุณาเลือกประเภท</option>
-                      <option v-for="type in types" :key="type.ID" :value="type.ID">{{ type.name }}</option>
+                      <option value="">กรุณาเลือกประเภทสถานะ</option>
+                      <option v-for="type in types" :key="type.statTyp_ID" :value="type.statTyp_ID">{{ type.Name }}</option>
                     </CFormSelect>
                     <CFormFeedback invalid>{{ typeErrorMessage }}</CFormFeedback>
-                  </CCol>
-                  <CCol md="3">
-                    <CFormLabel for="selectedUnit">หน่วย</CFormLabel>
-                    <CFormSelect v-model="selectedUnit" id="selectedUnit" required :class="{ 'is-invalid': isUnitInvalid }">
-                      <option value="">กรุณาเลือกหน่วย</option>
-                      <option v-for="unit in units" :key="unit.ID" :value="unit.ID">{{ unit.Name }}</option>
-                    </CFormSelect>
-                    <CFormFeedback invalid>{{ unitErrorMessage }}</CFormFeedback>
                   </CCol>
                 </CRow>
               </CCol>
@@ -77,34 +57,28 @@ import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 
 export default {
-  name: "RegisStockComponent",
+  name: "RegisStatusComponent",
   setup() {
     const autoID = ref("");
-    const stockname = ref("");
-    const quantity = ref(0);
+    const statusname = ref("");
+    const description = ref("");
     const selectedType = ref("");
-    const selectedUnit = ref("");
     const toasts = ref([]);
-    const units = ref([]);
     const types = ref([]);
     const validatedTooltip = ref(false);
 
     // Validation Computed Properties
-    const isStockInvalid = computed(() => validatedTooltip.value && !stockname.value);
-    const isQuantityInvalid = computed(() => validatedTooltip.value && (isNaN(quantity.value) || quantity.value <= 0));
+    const isStatusInvalid = computed(() => validatedTooltip.value && !statusname.value);
     const isTypeInvalid = computed(() => validatedTooltip.value && !selectedType.value);
-    const isUnitInvalid = computed(() => validatedTooltip.value && !selectedUnit.value);
 
     // Error Messages
-    const nameErrorMessage = computed(() => (isStockInvalid.value ? "กรุณากรอกชื่อวัสดุ" : ""));
-    const quantityErrorMessage = computed(() => (isQuantityInvalid.value ? "กรุณากรอกจำนวนให้ถูกต้อง" : ""));
-    const typeErrorMessage = computed(() => (isTypeInvalid.value ? "กรุณาเลือกประเภท" : ""));
-    const unitErrorMessage = computed(() => (isUnitInvalid.value ? "กรุณาเลือกหน่วย" : ""));
+    const nameErrorMessage = computed(() => (isStatusInvalid.value ? "กรุณากรอกชื่อสถานะ" : ""));
+    const typeErrorMessage = computed(() => (isTypeInvalid.value ? "กรุณาเลือกประเภทสถานะ" : ""));
 
     // Handle Form Submission
     const handleSubmitTooltip = (event) => {
       validatedTooltip.value = true;
-      if (isStockInvalid.value || isQuantityInvalid.value || isTypeInvalid.value || isUnitInvalid.value) {
+      if (isStatusInvalid.value || isTypeInvalid.value) {
         event.preventDefault();
         event.stopPropagation();
       } else {
@@ -116,11 +90,9 @@ export default {
     const handleSubmit = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.post("/api/auth/registerStock", {
-          name: stockname.value,
-          quantity: quantity.value,
-          stock_type_stock_ID: selectedType.value,
-          stock_unit_id: selectedUnit.value,
+        const response = await axios.post("/api/auth/registerStatus", {
+          stat_Name: statusname.value,
+          stat_StatTypID: selectedType.value,
         }, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -128,7 +100,7 @@ export default {
         createToast("Success", response.data.message);
         setTimeout(() => window.location.reload(), 1000);
       } catch (error) {
-        createToast("Error", error.response?.data?.error || "เกิดข้อผิดพลาดในการลงทะเบียนวัสดุ");
+        createToast("Error", error.response?.data?.error || "เกิดข้อผิดพลาดในการลงทะเบียนสถานะ");
         console.error("Error:", error);
       }
     };
@@ -143,7 +115,7 @@ export default {
     const fetchAutoID = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getAutotidStock", {
+        const response = await axios.get("/api/auth/getAutotidSta", {
           headers: { Authorization: `Bearer ${token}` },
         });
         autoID.value = response.data;
@@ -152,54 +124,35 @@ export default {
       }
     };
 
-    const fetchUnits = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getStockforstock", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        units.value = response.data;
-      } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลหน่วย:", error);
-      }
-    };
-
     const fetchStatusTypes = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getTypeStock", {
+        const response = await axios.get("/api/auth/getStatusType", {
           headers: { Authorization: `Bearer ${token}` },
         });
         types.value = response.data;
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลประเภทสต็อก:", error);
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลประเภทสถานะ:", error);
       }
     };
 
     onMounted(() => {
       fetchAutoID();
-      fetchUnits();
       fetchStatusTypes();
     });
 
     return {
       autoID,
-      stockname,
-      quantity,
+      statusname,
+      description,
       selectedType,
-      selectedUnit,
       handleSubmitTooltip,
-      isStockInvalid,
+      isStatusInvalid,
       nameErrorMessage,
-      isQuantityInvalid,
-      quantityErrorMessage,
       isTypeInvalid,
       typeErrorMessage,
-      isUnitInvalid,
-      unitErrorMessage,
       toasts,
       types,
-      units,
     };
   },
 };

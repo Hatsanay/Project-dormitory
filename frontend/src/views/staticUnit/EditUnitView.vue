@@ -1,17 +1,17 @@
 <script setup>
-import RegisStockComponent from '../../components/Stock/RegisStockComponent.vue';
+import EditeUnitComponents from '../../components/Unit/EditeUnitComponents.vue';
 </script>
 
 <template>
   <div>
-    <RegisStockComponent></RegisStockComponent>
+    <EditeUnitComponents></EditeUnitComponents>
   </div>
 </template>
 
 <script>
 // console.log(token);
 export default {
-  name: "RegisStock",
+  name: "EditUnitView",
 };
 </script>
 
@@ -20,5 +20,4 @@ export default {
   background-color: gray;
   color: white;
 } */
- 
 </style>

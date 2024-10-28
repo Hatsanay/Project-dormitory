@@ -85,9 +85,19 @@ export default [
     component: 'CNavItem',
     name: 'จัดการห้องพักอาศัย',
     to: '/ViewRoomView',
-    icon: 'cil-people',
+    icon: 'cilRoom',
   },
-
+//=========เพิ่มมาใหม่ตำแหน่งเเละสิทธ์//======
+  {
+    component: 'CNavTitle',
+    name: 'จัดการตำแหน่งและสิทธ์',
+  },
+  {
+    component: 'CNavItem',
+    name: 'จัดการตำแหน่ง',
+    to: '/',
+    icon: 'cilPuzzle',
+  },
 
   {
     component: 'CNavTitle',

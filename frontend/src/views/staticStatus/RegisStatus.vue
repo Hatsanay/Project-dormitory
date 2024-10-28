@@ -1,17 +1,17 @@
 <script setup>
-import RegisTypeStatusComponent from '../../components/TypeStatus/RegisTypeStatusComponent.vue';
+import RegisStatusComponent from '../../components/Status/RegisStatusComponent.vue';
 </script>
 
 <template>
-<div>
-    <RegisTypeStatusComponent></RegisTypeStatusComponent>
-</div>
+  <div>
+      <RegisStatusComponent></RegisStatusComponent>
+  </div>
 </template>
 
 <script>
 // console.log(token);
 export default {
-  name: "RegisTypeStatus",
+  name: "RegisStatus",
 };
 </script>
 

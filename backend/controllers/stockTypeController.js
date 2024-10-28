@@ -99,13 +99,13 @@ const getTypeStock = async (req, res) => {
 };
 
 //////////////API//////////////
-///////getTypeStockByName/////////////
+///////getTypeStockByID/////////////
 ///////////////////////////////
-const getTypeStockByName = async (req, res) => {
+const getTypeStockByID = async (req, res) => {
   try {
-    const name = req.query.name;
-    if (!name) {
-      return res.status(400).json({ error: "โปรดระบุชื่อประเภทวัสดุ" });
+    const ID = req.query.ID;
+    if (!ID) {
+      return res.status(400).json({ error: "โปรดระบุ ID ประเภทวัสดุ" });
     }
     const query = `
       SELECT 
@@ -113,9 +113,9 @@ const getTypeStockByName = async (req, res) => {
         name 
       FROM 
         type_stock 
-      WHERE name = ?
+      WHERE ID = ?
     `;
-    const [result] = await db.promise().query(query, [name]);
+    const [result] = await db.promise().query(query, [ID]);
     if (result.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลประเภทวัสดุ" });
     }
@@ -130,14 +130,14 @@ const getTypeStockByName = async (req, res) => {
 //////////updateTypeStock///////////
 ///////////////////////////////
 const updateTypeStock = async (req, res) => {
-  const name = req.query.name;
+  const ID = req.query.ID;
   const { newName } = req.body;
 
   try {
-    if (!name) {
+    if (!ID) {
       return res.status(400).json({ error: "โปรดระบุชื่อประเภทวัสดุ" });
     }
-    const [typeStockCheck] = await db.promise().query("SELECT * FROM type_stock WHERE name = ?", [name]);
+    const [typeStockCheck] = await db.promise().query("SELECT * FROM type_stock WHERE ID = ?", [ID]);
     if (typeStockCheck.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลประเภทวัสดุ" });
     }
@@ -145,9 +145,9 @@ const updateTypeStock = async (req, res) => {
     const updateQuery = `
       UPDATE type_stock SET
         name = ?
-      WHERE name = ?
+      WHERE ID = ?
     `;
-    await db.promise().query(updateQuery, [newName || name, name]);
+    await db.promise().query(updateQuery, [newName , ID]);
     res.status(200).json({ message: "อัปเดตข้อมูลประเภทวัสดุเรียบร้อยแล้ว" });
   } catch (err) {
     console.error("เกิดข้อผิดพลาด:", err);
@@ -158,7 +158,7 @@ const updateTypeStock = async (req, res) => {
 module.exports = {
   registerTypeStock,
   getTypeStock,
-  getTypeStockByName,
+  getTypeStockByID,
   getAutotidTypeStock,
   updateTypeStock,
 };

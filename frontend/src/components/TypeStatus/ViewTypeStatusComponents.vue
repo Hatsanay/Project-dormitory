@@ -52,13 +52,17 @@
                   <td>
                     <button
                       class="btn btn-warning btn-sm fontwhite"
-                      @click="$router.push({ path: '', query: { id: item.ID } })"
-                    >
+                      @click="
+                      $router.push({ 
+                        path: '/EditTypeStatusView', 
+                        query: { id: item.statTyp_ID } })"
+                    ><i class="fa-solid fa-user-pen"></i>
                       แก้ไข
                     </button>
                   </td>
                   <td>
-                    <button class="btn btn-danger btn-sm fontwhite" @click="showModalDelete(item)">
+                    <button class="btn btn-danger btn-sm fontwhite" @click="showToast('Feature not implemented yet', 'error')">
+                      <i class="fa-solid fa-trash"></i>
                       ลบ
                     </button>
                   </td>
@@ -82,7 +86,7 @@
                 </div>
               </div>
               <div class="col-md-8 d-flex justify-content-end">
-                <button class="btn btn-secondary" :disabled="currentPage === 1" @click="currentPage--">
+                <button class="btn btn-secondary" :disabled="currentPage === 1" @click="prevPage">
                   Previous
                 </button>
                 <button
@@ -93,7 +97,7 @@
                 >
                   {{ page }}
                 </button>
-                <button class="btn btn-secondary" :disabled="currentPage === totalPages" @click="currentPage++">
+                <button class="btn btn-secondary" :disabled="currentPage === totalPages" @click="nextPage">
                   Next
                 </button>
               </div>
@@ -118,19 +122,22 @@
 import { ref, watch, onMounted, computed } from "vue";
 import axios from "axios";
 import RegisTypeStatusComponent from "./RegisTypeStatusComponent.vue";
+import EditeTypeStatusComponents from "./EditeTypeStatusComponents.vue";
 
 export default {
   name: "ViewTypeStatusComponents",
   components: {
     RegisTypeStatusComponent,
+    EditeTypeStatusComponents
     },
+
   setup() {
     const columns = ref([
-      { key: "ID", label: "รหัสประเภทสถานะ" },
-      { key: "name", label: "ชื่อประเภท" },
+      { key: "statTyp_ID", label: "รหัสประเภทสถานะ" },
+      { key: "Name", label: "ชื่อประเภท" },
       { key: "stat_Name", label: "สถานะ" },
     ]);
-    
+
     const statusTypes = ref([]); // Store the status types
     const filteredItems = ref([]); // Filtered items for display
     const searchQuery = ref(""); // Search query for filtering
@@ -165,18 +172,32 @@ export default {
       });
     };
 
+    const prevPage = () => {
+      if (currentPage.value > 1) {
+        currentPage.value--;
+        filterItems();
+      }
+    };
+
+    const nextPage = () => {
+      if (currentPage.value < totalPages.value) {
+        currentPage.value++;
+        filterItems();
+      }
+    };
+
     // Filter items based on search query
     const filterItems = () => {
       filteredItems.value = statusTypes.value
         .filter((item) => {
           const matchesSearch =
-            item.ID?.toString().includes(searchQuery.value) ||
-            item.name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            item.statTyp_ID?.toString().includes(searchQuery.value) ||
+            item.Name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
             item.stat_Name?.toLowerCase().includes(searchQuery.value.toLowerCase());
 
           return matchesSearch;
         })
-        .sort((a, b) => a.ID - b.ID); // Sort numerically by ID
+        .sort((a, b) => a.statTyp_ID - b.statTyp_ID); // Sort numerically by ID
     };
 
     const setPage = (page) => {
@@ -206,6 +227,8 @@ export default {
       totalPages,
       setPage,
       showToast,
+      prevPage,
+      nextPage,
       toasts,
     };
   },

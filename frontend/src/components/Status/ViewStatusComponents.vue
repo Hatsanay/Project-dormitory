@@ -8,7 +8,7 @@
           class="w-100"
           block
           style="margin-bottom: 10px"
-          @click="$router.push('/')"
+          @click="$router.push('/RegisStatus')"
         >
           New
         </CButton>
@@ -20,7 +20,7 @@
         <CFormSelect v-model="selectedType" aria-label="Filter by Type" @change="filterItems">
           <option value="">ประเภท</option>
           <option v-for="type in types" :key="type.ID" :value="type.name">
-            {{ type.name }}
+            {{ type.Name }}
           </option>
         </CFormSelect>
       </CCol>
@@ -60,13 +60,15 @@
                   <td>
                     <button
                       class="btn btn-warning btn-sm fontwhite"
-                      @click="$router.push({ path: '', query: { id: item.ID } })"
-                    >
+                      @click="$router.push({ path: '/EditStatusView', query: { id: item.stat_ID } })"
+                    ><i class="fa-solid fa-user-pen"></i>
                       แก้ไข
                     </button>
                   </td>
                   <td>
-                    <button class="btn btn-danger btn-sm fontwhite" @click="showModalDelete(item)">
+                    <button class="btn btn-danger btn-sm fontwhite" @click="showModalDelete(item)"
+                    >
+                    <i class="fa-solid fa-trash"></i> 
                       ลบ
                     </button>
                   </td>
@@ -166,6 +168,20 @@ export default {
       }
     };
 
+    const fetchStatusTypes = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("/api/auth/getStatusType", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        types.value = response.data;
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลประเภทสถานะ:", error);
+      }
+    };
+
     const showToast = (content, type = "success") => {
       toasts.value.push({
         title: type === "error" ? "Error" : "Success",
@@ -202,6 +218,7 @@ export default {
 
     onMounted(() => {
       fetchStatus();
+      fetchStatusTypes();
     });
 
     watch([searchQuery, selectedType], filterItems);

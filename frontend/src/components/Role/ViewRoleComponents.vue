@@ -8,8 +8,8 @@
           class="w-100"
           block
           style="margin-bottom: 10px"
-          @click="$router.push('/RegisRoom')"
-        >
+          @click="$router.push('/')"
+        ><i class="fa-solid fa-user-plus"></i>
           New
         </CButton>
       </CCol>
@@ -19,7 +19,7 @@
       <CCol :md="2">
         <CFormSelect v-model="selectedStatus" aria-label="Filter by Status" @change="filterItems">
           <option value="">สถานะ</option>
-          <option v-for="status in statuss" :key="status.stat_ID" :value="status.stat_Name">
+          <option v-for="status in statuses" :key="status.stat_ID" :value="status.stat_Name">
             {{ status.stat_Name }}
           </option>
         </CFormSelect>
@@ -38,7 +38,7 @@
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
-          <div class="card-header">ตารางห้องพัก</div>
+          <div class="card-header">ตารางตำแหน่ง</div>
           <div class="card-body table-responsive p-0">
             <table class="table">
               <thead>
@@ -49,22 +49,16 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in paginatedItems" :key="item.room_ID">
-                  <td>{{ item.room_ID }}</td>
-                  <td>{{ item.room_Number }}</td>
-                  <td>{{ item.stat_Name }}</td>
-                  <td>{{ item.status }}</td>
+                <tr v-for="item in paginatedItems" :key="item.role_ID">
+                  <td>{{ item.role_ID }}</td>
+                  <td>{{ item.role_Name }}</td>
+                  <td>{{ item.Status }}</td>
                   <td>
                     <button
                       class="btn btn-warning btn-sm fontwhite"
-                      @click="
-                          $router.push({
-                            path: '/EditRoomView',
-                            query: { id: item.room_ID },
-                          })
-                        "
-                    > <i class="fa-solid fa-user-pen"></i>
-                      แก้ไข
+                      @click="editRole(item.role_ID)"
+                    ><i class="fa-solid fa-user-pen"></i>
+                    แก้ไข
                     </button>
                   </td>
                   <td>
@@ -72,7 +66,7 @@
                       class="btn btn-danger btn-sm fontwhite"
                       @click="showModalDelete(item)"
                     ><i class="fa-solid fa-trash"></i>
-                      ลบ
+                    ลบ
                     </button>
                   </td>
                 </tr>
@@ -127,27 +121,9 @@
           </div>
         </div>
       </div>
-      <div class="col-md-6"></div>
     </div>
 
-    <CModal
-      alignment="center"
-      :visible="visibleViewModal"
-      @close="closeModal"
-      aria-labelledby="VerticallyCenteredExample"
-      size="lg"
-    >
-      <CModalHeader>
-        <CModalTitle id="VerticallyCenteredExample">ข้อมูลห้องพัก</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-        <!-- <modelViewRoomComponents :selectedRoom="selectedRoom" /> -->
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" @click="closeModal">Close</CButton>
-      </CModalFooter>
-    </CModal>
-
+    <!-- Delete Confirmation Modal -->
     <CModal
       alignment="center"
       :visible="visibleDeleteModal"
@@ -156,13 +132,13 @@
       size="lg"
     >
       <CModalHeader>
-        <CModalTitle id="VerticallyCenteredExample">ข้อมูลห้องพัก</CModalTitle>
+        <CModalTitle id="VerticallyCenteredExample">Confirm Deletion</CModalTitle>
       </CModalHeader>
       <CModalBody>
-        <DeleteRoomComponent
-          :selectedRoom="selectedRoom"
+        <DeleteRoleComponent
+          :selectedRole="selectedRole"
           :closeModal="closeDeleteModal"
-          :refreshViewData="fetchRoom"
+          :refreshViewData="fetchRoles"
         />
       </CModalBody>
       <CModalFooter>
@@ -170,6 +146,7 @@
       </CModalFooter>
     </CModal>
 
+    <!-- Toaster for Notifications -->
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
@@ -185,93 +162,81 @@
 import { ref, watch, onMounted, computed } from "vue";
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from "@coreui/vue";
 import axios from "axios";
-import DeleteRoomComponent from "./DeleteRoomComponent.vue";
+
 
 export default {
-  name: "ViewRoomComponents",
-  components: {
-    DeleteRoomComponent,
-  },
+  name: "ViewRoleComponents",
+
   setup() {
     const columns = ref([
-      { key: "room_ID", label: "รหัส" },
-      { key: "room_Number", label: "เลขห้อง" },
-      { key: "stat_Name", label: "สถานะห้อง" },
-      { key: "status", label: "สถานะ" },
+      { key: "role_ID", label: "รหัสตำแหน่ง" },
+      { key: "role_Name", label: "ชื่อตำแหน่ง" },
+      { key: "Status", label: "สถานะ" },
     ]);
 
-    const room = ref([]);
-    const statuss = ref([]);
+    const roles = ref([]);
+    const statuses = ref([]);
     const searchQuery = ref("");
     const selectedStatus = ref("");
     const filteredItems = ref([]);
     const rowsPerPage = ref(10);
     const currentPage = ref(1);
-    const visibleViewModal = ref(false);
     const visibleDeleteModal = ref(false);
-    const selectedRoom = ref({});
+    const selectedRole = ref({});
 
     const totalPages = computed(() => {
       return Math.ceil(filteredItems.value.length / rowsPerPage.value);
     });
 
-    const fetchRoom = async () => {
+    const fetchRoles = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getRoom", {
+        const response = await axios.get("/api/auth/getRoles", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        room.value = response.data;
+        roles.value = response.data;
         filterItems();
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลห้องพัก:", error);
+        console.error("Error fetching roles:", error);
       }
     };
 
-    const fetchStatus = async () => {
+    const fetchStatuses = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getStatusRoom", {
+        const response = await axios.get("/api/auth/getStatusRole", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        statuss.value = response.data;
+        statuses.value = response.data;
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงข้อมูล Status:", error);
+        console.error("Error fetching statuses:", error);
       }
     };
 
     const filterItems = () => {
-      filteredItems.value = room.value.filter((item) => {
-        const matchesClass = selectedStatus.value
-          ? item.stat_Name === selectedStatus.value
-          : true;
+      filteredItems.value = roles.value
+        .filter((item) => {
+          const matchesStatus = selectedStatus.value
+            ? item.stat_Name === selectedStatus.value
+            : true;
 
-        const matchesSearch =
-          item.room_ID?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-          item.room_Number?.toLowerCase().includes(searchQuery.value.toLowerCase());
+          const matchesSearch =
+            item.role_ID?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            item.role_Name?.toLowerCase().includes(searchQuery.value.toLowerCase());
 
-        return matchesClass && matchesSearch;
-      }).sort((a, b) => a.room_ID.localeCompare(b.room_ID));
-    };
-
-    const showModalDelete = (item) => {
-      selectedRoom.value = item;
-      visibleDeleteModal.value = true;
-    };
-
-    const closeModal = () => {
-      visibleViewModal.value = false;
-      selectedRoom.value = {};
+          return matchesStatus && matchesSearch;
+        })
+        .sort((a, b) => a.role_ID.localeCompare(b.role_ID));
     };
 
     const closeDeleteModal = () => {
       visibleDeleteModal.value = false;
-      selectedRoom.value = {};
-      fetchRoom();
+      selectedRole.value = {};
+      fetchRoles();
     };
 
     const paginatedItems = computed(() => {
@@ -283,13 +248,13 @@ export default {
       currentPage.value = page;
     };
 
-    const editRoom = (roomId) => {
-      $router.push({ path: '/EditRoomView', query: { id: roomId } });
+    const editRole = (roleId) => {
+      $router.push({ path: '/EditRoleView', query: { id: roleId } });
     };
 
     onMounted(() => {
-      fetchRoom();
-      fetchStatus();
+      fetchRoles();
+      fetchStatuses();
     });
 
     watch([selectedStatus, searchQuery], () => {
@@ -299,8 +264,8 @@ export default {
 
     return {
       columns,
-      room,
-      statuss,
+      roles,
+      statuses,
       searchQuery,
       selectedStatus,
       filteredItems,
@@ -309,13 +274,10 @@ export default {
       currentPage,
       totalPages,
       setPage,
-      showModalDelete,
-      closeModal,
-      visibleViewModal,
       visibleDeleteModal,
       closeDeleteModal,
-      selectedRoom,
-      editRoom,
+      selectedRole,
+      editRole,
     };
   },
 };

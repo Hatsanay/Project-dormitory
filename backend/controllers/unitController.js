@@ -107,7 +107,7 @@ const getUnit = async (req, res) => {
 //////////////API//////////////
 ///////getUnitByID/////////////
 ///////////////////////////////
-const getUnitByName = async (req, res) => {
+const getUnitByID = async (req, res) => {
   try {
     const unitID = req.query.ID;
     if (!unitID) {
@@ -167,7 +167,7 @@ const updateUnit = async (req, res) => {
 module.exports = {
   registerUnit,
   getUnit,
-  getUnitByName,
+  getUnitByID,
   getAutotidUnit,
   updateUnit,
 };

@@ -19,17 +19,23 @@ import EditRoomView from '../views/staticRoom/EditRoomView.vue';
 
 import ViewUnitView from '../views/staticUnit/ViewUnitView.vue';
 import RegisUnit from '../views/staticUnit/RegisUnit.vue';
+import EditUnitView from '../views/staticUnit/EditUnitView.vue';
 
 import ViewStockView from '../views/staticStock/ViewStockView.vue';
 import RegisStock from '../views/staticStock/RegisStock.vue';
+import EditStockView from '../views/staticStock/EditStockView.vue';
 
 import ViewTypeStockView from '../views/staticTypeStock/ViewTypeStockView.vue';
 import RegisTypeStock from '../views/staticTypeStock/RegisTypeStock.vue';
+import EditTypeStockView from '../views/staticTypeStock/EditTypeStockView.vue';
 
 import ViewTypeStatusView from '../views/staticTypeStatus/ViewTypeStatusView.vue';
 import RegisTypeStatus from '../views/staticTypeStatus/RegisTypeStatus.vue';
+import EditTypeStatusView from '../views/staticTypeStatus/EditTypeStatusView.vue';
 
 import ViewStatusView from '../views/staticStatus/ViewStatusView.vue';
+import RegisStatus from '../views/staticStatus/RegisStatus.vue';
+import EditStatusView from '../views/staticStatus/EditStatusView.vue';
 
 import { clearToken, hasPermission, isAuthenticated } from './auth';
 
@@ -152,6 +158,12 @@ const routes = [
         meta: { permission: 'add_Unit', requiresAuth: true },
         component: RegisUnit,
       },
+      {
+        path: '/EditUnitView',
+        name: 'ตั้งค่าหน่วยสต็อก',
+        meta: { permission: 'edit_Unit', requiresAuth: true },
+        component: EditUnitView,
+      },
 
       ///จัดการค่าคงที่ประเภทสต็อก///
       {
@@ -165,6 +177,12 @@ const routes = [
         name: 'เพิ่มข้อมูลประเภทสต็อก',
         meta: { permission: 'add_TypeStock', requiresAuth: true },
         component: RegisTypeStock,
+      },
+      {
+        path: '/EditTypeStockView',
+        name: 'แก้ไขข้อมูลประเภทสต็อก',
+        meta: { permission: 'edit_TypeStock', requiresAuth: true },
+        component: EditTypeStockView,
       },
 
       ///จัดการค่าคงที่สต็อก///
@@ -180,8 +198,15 @@ const routes = [
         meta: { permission: 'add_Stock', requiresAuth: true },
         component: RegisStock,
       },
+      
+      {
+        path: '/EditStockView',
+        name: 'เพิ่มข้อมูลสต็อก',
+        meta: { permission: 'edit_Stock', requiresAuth: true },
+        component: EditStockView,
+      },
 
-      ///จัดการค่าคงที่สต็อก///
+      ///จัดการค่าคงที่ประเภทสถานะ///
       {
         path: '/ViewTypeStatusView',
         name: 'จัดการข้อมูลประเภทสถานะ',
@@ -194,13 +219,33 @@ const routes = [
         meta: { permission: 'add_TypeStatus', requiresAuth: true },
         component: RegisTypeStatus,
       },
+      {
+        path: '/EditTypeStatusView',
+        name: 'แก้ไขข้อมูลประเภทสถานะ',
+        meta: { permission: 'edit_TypeStatus', requiresAuth: true },
+        component: EditTypeStatusView,
+      },
 
+      ///จัดการค่าคงที่สถานะ///
       {
         path: '/ViewStatusView',
-        name: 'จัดการข้อมูลประเภทสถานะ',
+        name: 'จัดการข้อมูลสถานะ',
         meta: { permission: 'View_Status', requiresAuth: true },
         component: ViewStatusView,
       },
+      {
+        path: '/RegisStatus',
+        name: 'เพิ่มข้อมูลสถานะ',
+        meta: { permission: 'add_Status', requiresAuth: true },
+        component: RegisStatus,
+      },
+      {
+        path: '/EditStatusView',
+        name: 'เพิ่มข้อมูลสถานะ',
+        meta: { permission: 'edit_Status', requiresAuth: true },
+        component: EditStatusView,
+      },
+
       ///ตั้งค่า///
       {
         path: '/UserSetView',

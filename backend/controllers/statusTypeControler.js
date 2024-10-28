@@ -104,7 +104,7 @@ const getStatusType = async (req, res) => {
 //////////////API//////////////
 ///////getStatusTypeByName/////////////
 ///////////////////////////////
-const getStatusTypeByName = async (req, res) => {
+const getStatusTypeByID = async (req, res) => {
   try {
     const statTyp_ID = req.query.ID;
     if (!statTyp_ID) {
@@ -117,7 +117,7 @@ const getStatusTypeByName = async (req, res) => {
         statTyp_stat_ID
       FROM 
         statustype 
-      WHERE stat_Name = ?
+      WHERE statTyp_ID = ?
     `;
     const [result] = await db.promise().query(query, [statTyp_ID]);
     if (result.length === 0) {
@@ -139,9 +139,9 @@ const updateStatusType = async (req, res) => {
 
   try {
     if (!statTyp_ID) {
-      return res.status(400).json({ error: "โปรดระบุชื่อประเภทสถานะ" });
+      return res.status(400).json({ error: "โปรดระบุ ID ประเภทสถานะ" });
     }
-    const [statusTypeCheck] = await db.promise().query("SELECT * FROM statustype WHERE stat_Name = ?", [statTyp_ID]);
+    const [statusTypeCheck] = await db.promise().query("SELECT * FROM statustype WHERE statTyp_ID = ?", [statTyp_ID]);
     if (statusTypeCheck.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลประเภทสถานะ" });
     }
@@ -149,7 +149,7 @@ const updateStatusType = async (req, res) => {
     const updateQuery = `
       UPDATE statustype SET
         stat_Name = ?
-      WHERE stat_Name = ?
+      WHERE statTyp_ID = ?
     `;
     await db.promise().query(updateQuery, [newStatName || stat_Name, statTyp_ID]);
     res.status(200).json({ message: "อัปเดตข้อมูลประเภทสถานะเรียบร้อยแล้ว" });
@@ -162,7 +162,7 @@ const updateStatusType = async (req, res) => {
 module.exports = {
   registerStatusType,
   getStatusType,
-  getStatusTypeByName,
+  getStatusTypeByID,
   getAutotidStatusType,
   updateStatusType,
 };
