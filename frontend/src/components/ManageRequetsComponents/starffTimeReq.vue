@@ -257,7 +257,7 @@
               aria-label="เลือกผู้ช่วยช่าง"
               id="assistants-select"
               :disabled="!selectedTechnician"
-              >
+            >
               <option value="">เลือกผู้ช่วย</option>
               <option
                 v-for="technician in filteredAssistants"
@@ -310,6 +310,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   name: "starffTimeReq",
@@ -350,17 +351,31 @@ export default {
       eventContent: function (arg) {
         return {
           html: `<div>
-                   <span class="event-time">${arg.event.startStr.slice(
-                     11,
-                     16
-                   )} - ${arg.event.endStr.slice(11, 16)}</span>
-                   <span class="event-title">${arg.event.title}</span>
-                 </div>`,
+               <span class="event-time">${arg.event.startStr.slice(
+                 11,
+                 16
+               )} - ${arg.event.endStr.slice(11, 16)}</span>
+               <span class="event-title">${arg.event.title}</span>
+             </div>`,
         };
       },
       dateClick(info) {
-        selectedDate.value = info.dateStr;
-        visibleModal.value = true;
+        const selectedDateTime = new Date(info.dateStr);
+        const currentDateTime = new Date();
+
+        currentDateTime.setHours(0, 0, 0, 0);
+
+        if (selectedDateTime < currentDateTime) {
+          Swal.fire({
+            icon: "warning",
+            title: "ไม่สามารถนัดวันที่ที่ผ่านไปแล้วได้",
+            text: "กรุณาเลือกวันที่ที่ถูกต้อง",
+            confirmButtonText: "ตกลง",
+          });
+        } else {
+          selectedDate.value = info.dateStr;
+          visibleModal.value = true;
+        }
       },
     });
 
@@ -454,50 +469,66 @@ export default {
     });
 
     const addAssistant = () => {
-      if (
-        newAssistant.value &&
-        !selectedAssistants.value.includes(newAssistant.value)
-      ) {
+      if (newAssistant.value && !selectedAssistants.value.includes(newAssistant.value)) {
         selectedAssistants.value.push(newAssistant.value);
         newAssistant.value = ""; // ล้างค่าหลังจากเพิ่ม
       } else if (!newAssistant.value) {
-        alert("กรุณาเลือกผู้ช่วยช่างก่อนเพิ่ม");
+        Swal.fire({
+          icon: "warning",
+          title: "ไม่สามารถเพิ่มได้",
+          text: "กรุณาเลือกผู้ช่วยช่างก่อนเพิ่ม",
+          confirmButtonText: "ตกลง",
+        });
       } else {
-        alert("ผู้ช่วยช่างนี้ถูกเพิ่มแล้ว");
+        Swal.fire({
+          icon: "success",
+          title: "เพิ่มสำเร็จ",
+          text: "ผู้ช่วยช่างนี้ถูกเพิ่มแล้ว!",
+          confirmButtonText: "ตกลง",
+        });
       }
     };
-    
+
     const removeAssistant = (index) => {
       selectedAssistants.value.splice(index, 1);
     };
 
-    const assignWork = () => {
-      if (
-        selectedRepair.value &&
-        selectedTechnician.value &&
-        startTime.value &&
-        endTime.value
-      ) {
+    const assignWork = async () => {
+      if (selectedRepair.value && selectedTechnician.value && startTime.value && endTime.value) {
         const assignmentData = {
           repairID: selectedRepair.value,
           technician: selectedTechnician.value,
-          assistants: selectedAssistants.value, // ผู้ช่วยช่างที่ถูกเลือก
+          assistants: selectedAssistants.value,
           date: selectedDate.value,
           startTime: startTime.value,
           endTime: endTime.value,
         };
 
-        axios
-          .post("/api/auth/assignWork", assignmentData)
-          .then((response) => {
-            alert("มอบหมายงานสำเร็จ");
-            closeModal();
-          })
-          .catch((error) => {
-            console.error("Error assigning work:", error);
+        try {
+          await axios.post("/api/auth/assignWork", assignmentData);
+          Swal.fire({
+            icon: "success",
+            title: "มอบหมายงานสำเร็จ",
+            text: "ข้อมูลได้ถูกบันทึกแล้ว",
+            confirmButtonText: "ตกลง",
           });
+          closeModal();
+        } catch (error) {
+          console.error("เกิดข้อผิดพลาดในการมอบหมายงาน:", error);
+          Swal.fire({
+            icon: "error",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถบันทึกข้อมูลได้",
+            confirmButtonText: "ตกลง",
+          });
+        }
       } else {
-        alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+        Swal.fire({
+          icon: "warning",
+          title: "กรุณากรอกข้อมูลให้ครบถ้วน",
+          text: "โปรดระบุช่างหลักและข้อมูลที่เกี่ยวข้อง",
+          confirmButtonText: "ตกลง",
+        });
       }
     };
 
@@ -571,7 +602,7 @@ export default {
       selectedAssistants,
       addAssistant,
       removeAssistant,
-      assignWork,
+      // assignWork,
       filteredAssistants,
     };
   },

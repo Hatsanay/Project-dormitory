@@ -6,7 +6,7 @@ const {getStatus,getStatusUserDelete,registerStatus} = require('../controllers/s
 const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq,getroomByID} = require('../controllers/reqController');
 const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById,getStock,submitRequisition} = require('../controllers/manageRequetsControler');
 const {getWithdrawReqlist,getWithdrawReq,putReqWithdraw,getWithdraw,putAcceptWithdraw,cancelWithdraw} = require('../controllers/WithdrawControler');
-const {getreqtime,getMacForShc,getReqwaitForShc} = require('../controllers/TimeReqControler');
+const {getreqtime,getMacForShc,getReqwaitForShc,assignWork} = require('../controllers/TimeReqControler');
 
 
 const { registerRoom, getAutotidRoom, getRoom, getRoomByNumber, updateRoom, updateRoomStatus ,getStatusRoom} = require('../controllers/RoomController');
@@ -28,6 +28,9 @@ router.post('/registerStatus', authenticateToken, registerStatus);
 router.post('/registerStatusType', authenticateToken, registerStatusType);
 router.post('/registerStock', authenticateToken, registerStock);
 router.post('/registerTypeStock', authenticateToken, registerTypeStock);
+
+router.post('/assignWork', authenticateToken, assignWork);
+
 
 router.post('/submitRepairRequest', authenticateToken, upload.array('images'), submitRepairRequest);
 

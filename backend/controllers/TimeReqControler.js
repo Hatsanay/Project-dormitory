@@ -128,4 +128,53 @@ const getReqwaitForShc = async (req, res) => {
   }
 };
 
-module.exports = { getreqtime,getMacForShc,getReqwaitForShc };
+const assignWork = async (req, res) => {
+  try {
+    const { repairID, technician, assistants, date, startTime, endTime } = req.body;
+
+    const query = "SELECT ID FROM schedulerepairs ORDER BY ID DESC LIMIT 1";
+    const [result] = await db.promise().query(query);
+    let maxId;
+    if (result.length === 0) {
+      maxId = 0; // กรณีที่ยังไม่มีข้อมูลในตาราง
+    } else {
+      const lastScheduleId = result[0].ID; // รหัสแถวสุดท้าย
+      maxId = parseInt(lastScheduleId.slice(-6)) || 0; // แปลงสตริงให้เป็นเลข 6 หลักสุดท้าย
+    }
+    const num = maxId + 1; // เพิ่มค่า ID ที่ได้มาอีก 1
+    const scheduleID = "SCH" + String(num).padStart(6, "0"); // เติมเลข 0 ด้านหน้าให้ครบ 6 หลัก
+
+    const insertScheduleQuery = `
+      INSERT INTO schedulerepairs (ID, Date, startTime, endTime, sdr_mainr_ID)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    await db.promise().query(insertScheduleQuery, [scheduleID, date, startTime, endTime, repairID]);
+
+    const insertTechnicianQuery = `
+      INSERT INTO scheculerepairsn_list (Order_MN, srl_sdr_ID, srl_user_ID)
+      VALUES (?, ?, ?)
+    `;
+
+    await db.promise().query(insertTechnicianQuery, [1, scheduleID, technician]);
+
+    for (let i = 0; i < assistants.length; i++) {
+      await db.promise().query(insertTechnicianQuery, [i + 2, scheduleID, assistants[i]]);
+    }
+
+    const updateStatusQuery = `
+      UPDATE maintenancerequests
+      SET mainr_Stat_ID = 'STA000014'
+      WHERE mainr_ID = ?
+    `;
+    await db.promise().query(updateStatusQuery, [repairID]);
+
+    res.status(201).json({ message: "การมอบหมายงานสำเร็จ" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการบันทึกข้อมูล" });
+  }
+};
+
+
+
+module.exports = { getreqtime,getMacForShc,getReqwaitForShc,assignWork };
