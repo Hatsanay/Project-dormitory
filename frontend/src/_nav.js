@@ -13,92 +13,92 @@ export default [
   {
     component: 'CNavTitle',
     name: 'แจ้งซ่อมบำรุงห้องพัก',
-    permission_index: 5,  
+    permission_index: 6,  
   },
   {
     component: 'CNavItem',
     name: 'ส่งคำร้องแจ้งซ่อม',
     to: '/UserReqView',
     icon: 'cilSend',
-    permission_index: 5, 
+    permission_index: 6, 
   },
   ///ระบบจัดการการแจ้งปัญหา///
   {
     component: 'CNavTitle',
     name: 'จัดการการแจ้งซ่อม',
-    permission_index: [7, 8],
+    permission_index: [8, 89],
   },
   {
     component: 'CNavItem',
     name: 'คำร้องขอแจ้งซ่อม',
     to: '/StaffMgnReqView',
     icon: 'cilEnvelopeOpen',
-    permission_index: 7,
+    permission_index: 8,
   },
   {
     component: 'CNavItem',
     name: 'รับคำร้องขอแจ้งซ่อม',
     to: '/macMgnReqView',
     icon: 'cilDescription',
-    permission_index: 8,
+    permission_index: 9,
   },
   ///ระบบจัดการการเบิกวัสดุ///
   {
     component: 'CNavTitle',
     name: 'จัดการการเบิกวัสดุ',
-    permission_index: 9,
+    permission_index: 10,
   },
   {
     component: 'CNavItem',
     name: 'เบิกวัสดุ',
     to: '/starffWithdrawReqView',
     icon: 'cilBasket',
-    permission_index: 9, 
+    permission_index: 10, 
   },
   ///ระบบนัดเวลาเข้าซ่อม///
   {
     component: 'CNavTitle',
     name: 'จัดการนัดเวลาเข้าซ่อม',
-    permission_index: 10, 
+    permission_index: 11, 
   },
   {
     component: 'CNavItem',
     name: 'นัดเวลาเข้าซ่อม',
     to: '/starffTimeReqView',
     icon: 'cilClock',
-    permission_index: 10,
+    permission_index: 11,
   },
   ///จัดการค่าคงที่ผู้ใช้งาน///
   {
     component: 'CNavTitle',
     name: 'จัดการผู้ใช้งาน',
-    permission_index: 11, 
+    permission_index: 12, 
   },
   {
     component: 'CNavItem',
     name: 'ผู้ใช้งาน',
     to: '/ViewResident',
     icon: 'cil-people',
-    permission_index: 11, 
+    permission_index: 12, 
   },
   ///จัดการค่าคงที่ห้องพัก///
   {
     component: 'CNavTitle',
     name: 'จัดการห้องพักอาศัย',
-    permission_index: 14, 
+    permission_index: 15, 
   },
   {
     component: 'CNavItem',
     name: 'ห้องพักอาศัย',
     to: '/ViewRoomView',
     icon: 'cilRoom',
-    permission_index: 14,
+    permission_index: 15,
   },
   ///ตั้งค่า///
   {
     component: 'CNavTitle',
     name: 'ตั้งค่าข้อมูลระบบ',
-    permission_index: [17, 20, 23, 26, 29],
+    permission_index: [18, 21, 24, 27, 30],
   },
 
   {
@@ -111,31 +111,31 @@ export default [
         component: 'CNavItem',
         name: 'จัดการข้อมูลสต็อก',
         to: '/ViewStockView',
-        permission_index: 17,
+        permission_index: 18,
       },
       {
         component: 'CNavItem',
         name: 'จัดการข้อมูลประเภทสต็อก',
         to: '/ViewTypeStockView',
-        permission_index: 20,
+        permission_index: 21,
       },
       {
         component: 'CNavItem',
         name: 'จัดการข้อมูลสถานะ',
         to: '/',
-        permission_index: 23,
+        permission_index: 24,
       },
       {
         component: 'CNavItem',
         name: 'จัดการข้อมูลประเภทสถานะ',
         to: '/ViewTypeStatusView',
-        permission_index: 26,
+        permission_index: 27,
       },
       {
         component: 'CNavItem',
         name: 'จัดการข้อมูลหน่วย',
         to: '/ViewUnitView',
-        permission_index: 29,
+        permission_index: 30,
       },
 
     ],

@@ -45,7 +45,7 @@ const routes = [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        meta: { permission: 'viewdashboard', requiresAuth: true },
+        meta: { permission: 'home', requiresAuth: true },
         component: userDasboard,
       },
 

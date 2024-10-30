@@ -44,7 +44,7 @@
             <option
               v-for="technician in technicians"
               :key="technician.user_ID"
-              :value="technician.fullname"
+              :value="technician.user_ID"
             >
               {{ technician.fullname }}
             </option>
@@ -242,7 +242,7 @@
             <option
               v-for="technician in technicians"
               :key="technician.user_ID"
-              :value="technician.fullname"
+              :value="technician.user_ID"
             >
               {{ technician.fullname }}
             </option>
@@ -262,7 +262,7 @@
               <option
                 v-for="technician in filteredAssistants"
                 :key="technician.user_ID"
-                :value="technician.fullname"
+                :value="technician.user_ID"
               >
                 {{ technician.fullname }}
               </option>
@@ -335,6 +335,10 @@ export default {
     const imageUrls = ref([]);
     const selectedAssistants = ref([]);
     const newAssistant = ref("");
+
+    const selectedRepair = ref("");
+    const startTime = ref("");
+    const endTime = ref("");
 
     const calendarOptions = ref({
       plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -447,6 +451,14 @@ export default {
       }
     };
 
+    const filteredTechnicians = computed(() => {
+      return selectedClass.value
+        ? technicians.value.filter(
+            (technician) => technician.user_ID === selectedClass.value
+          )
+        : technicians.value;
+    });
+
     const filterEvents = () => {
       if (selectedClass.value) {
         events.value = allEvents.value.filter((event) =>
@@ -464,7 +476,7 @@ export default {
 
     const filteredAssistants = computed(() => {
       return technicians.value.filter(
-        (technician) => technician.fullname !== selectedTechnician.value
+        (technician) => technician.user_ID !== selectedTechnician.value
       );
     });
 
@@ -494,39 +506,45 @@ export default {
     };
 
     const assignWork = async () => {
-      if (selectedRepair.value && selectedTechnician.value && startTime.value && endTime.value) {
-        const assignmentData = {
-          repairID: selectedRepair.value,
-          technician: selectedTechnician.value,
-          assistants: selectedAssistants.value,
-          date: selectedDate.value,
-          startTime: startTime.value,
-          endTime: endTime.value,
-        };
-
-        try {
-          await axios.post("/api/auth/assignWork", assignmentData);
-          Swal.fire({
-            icon: "success",
-            title: "มอบหมายงานสำเร็จ",
-            text: "ข้อมูลได้ถูกบันทึกแล้ว",
-            confirmButtonText: "ตกลง",
-          });
-          closeModal();
-        } catch (error) {
-          console.error("เกิดข้อผิดพลาดในการมอบหมายงาน:", error);
-          Swal.fire({
-            icon: "error",
-            title: "เกิดข้อผิดพลาด",
-            text: "ไม่สามารถบันทึกข้อมูลได้",
-            confirmButtonText: "ตกลง",
-          });
-        }
-      } else {
+      if (
+        !selectedRepair.value ||
+        !selectedTechnician.value ||
+        !startTime.value ||
+        !endTime.value
+      ) {
         Swal.fire({
           icon: "warning",
           title: "กรุณากรอกข้อมูลให้ครบถ้วน",
           text: "โปรดระบุช่างหลักและข้อมูลที่เกี่ยวข้อง",
+          confirmButtonText: "ตกลง",
+        });
+        return;
+      }
+
+      const assignmentData = {
+        repairID: selectedRepair.value,
+        technician: selectedTechnician.value, // ใช้ user_ID
+        assistants: selectedAssistants.value, // ใช้ user_ID array
+        date: selectedDate.value,
+        startTime: startTime.value,
+        endTime: endTime.value,
+      };
+
+      try {
+        await axios.post("/api/auth/assignWork", assignmentData);
+        Swal.fire({
+          icon: "success",
+          title: "มอบหมายงานสำเร็จ",
+          text: "ข้อมูลได้ถูกบันทึกแล้ว",
+          confirmButtonText: "ตกลง",
+        });
+        closeModal();
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการมอบหมายงาน:", error);
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถบันทึกข้อมูลได้",
           confirmButtonText: "ตกลง",
         });
       }
@@ -604,6 +622,9 @@ export default {
       removeAssistant,
       // assignWork,
       filteredAssistants,
+      selectedRepair,
+      startTime,
+      endTime,
     };
   },
 };

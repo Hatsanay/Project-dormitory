@@ -41,48 +41,53 @@ export const decodeJWTTH = (token) => {
   export const hasPermission = (permission) => {
     const permissionsMap = [
       'logout',                   //0
-      'viewdashboard',            //1
-      'addmindashboard',          //2
-      'macdashboard',             //3
-      'managerdashboard',         //4
+      'home',                     //1
+      'userdashboard',            //2
+      'addmindashboard',          //3
+      'macdashboard',             //4
+      'managerdashboard',         //5
       ///ระบบแจ้งปัญหา///
-      'view_reques',              //5
-      'add_reques',               //6
+      'view_reques',              //6
+      'add_reques',               //7
       ///ระบบจัดการการแจ้งปัญหา///
-      'view_manage_reques',       //7
-      'view_macmanage_reques',    //8
+      'view_manage_reques',       //8
+      'view_macmanage_reques',    //9
       ///ระบบจัดการการเบิกวัสดุ///
-      'view_WithdrawReq',         //9
+      'view_WithdrawReq',         //10
       ///ระบบนัดเวลาเข้าซ่อม///
-      'view_TimeReq',             //10
+      'view_TimeReq',             //11
       ///จัดการค่าคงที่ผู้ใช้งาน///
-      'view_RegisResident',       //11
-      'add_RegisResident',        //12
-      'edit_Resident',            //13
+      'view_RegisResident',       //12
+      'add_RegisResident',        //13
+      'edit_Resident',            //14
       ///จัดการค่าคงที่ห้องพัก///
-      'view_Room',                //14
-      'add_RegisRoom',            //15
-      'Edit_Room',                //16
+      'view_Room',                //15
+      'add_RegisRoom',            //16
+      'Edit_Room',                //17
 
-      'View_Stock',               //17
-      'add_Stock',                //18
-      'edit_Stock',               //19
+      'View_Stock',               //18
+      'add_Stock',                //19
+      'edit_Stock',               //20
 
-      'View_TypeStock',           //20
-      'add_TypeStock',            //21
-      'edit_TypeStock',           //22
+      'View_TypeStock',           //21
+      'add_TypeStock',            //22
+      'edit_TypeStock',           //23
 
-      'View_Status',              //23
-      'add_Status',               //24
-      'edit_Status',              //25
+      'View_Status',              //24
+      'add_Status',               //25
+      'edit_Status',              //26
 
-      'View_TypeStatus',          //26
-      'add_TypeStatus',           //27
-      'edit_TypeStatus',          //28
+      'View_TypeStatus',          //27
+      'add_TypeStatus',           //28
+      'edit_TypeStatus',          //29
 
-      'View_Unit',                //29
-      'add_Unit',                 //30
-      'edit_Unit',                //31
+      'View_Unit',                //30
+      'add_Unit',                 //31
+      'edit_Unit',                //32
+
+      'View_Role',                //33
+      'add_Role',                 //34
+      'edit_Role',                //35
 
     ];
     
