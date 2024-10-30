@@ -87,6 +87,7 @@ FROM
     INNER JOIN unit on unit.ID = stock.stock_unit_ID
 WHERE maintenancerequests.mainr_Stat_ID = "STA000023"
 OR maintenancerequests.mainr_Stat_ID = "STA000013"
+OR maintenancerequests.mainr_Stat_ID = "STA000014"
 AND requisition_ID =  ?
       `;
 
@@ -197,6 +198,7 @@ const getWithdraw = async (req, res) => {
       INNER JOIN status  ON status.stat_ID = requisition.requisition_stat_ID
       INNER JOIN requisition_list on requisition_list.reqlist_requisition_ID = requisition.requisition_ID
       WHERE maintenancerequests.mainr_Stat_ID = "STA000013"
+      OR maintenancerequests.mainr_Stat_ID = "STA000014"
       AND requisition.requisition_stat_ID = "STA000019"
 
  GROUP BY requisition_ID

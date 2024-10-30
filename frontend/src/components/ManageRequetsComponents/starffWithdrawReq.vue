@@ -627,8 +627,7 @@ console.log('mainr_ID:', mainr_ID);
 
 
 
-
-        const switchTab = (tab) => {
+const switchTab = (tab) => {
   activeTab.value = tab;
   searchQuery.value = "";
   searchQueryStock.value = "";
