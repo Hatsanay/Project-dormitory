@@ -3,7 +3,7 @@ const { login } = require('../controllers/authController');
 const { registerUser, getAutotid ,getRole ,getUser, getUserById, updateUser, updateUserStatus} = require('../controllers/regiterController');
 const { getProvince,getAmphures,getTambons,getZipcode } = require('../controllers/addressControler');
 const {getStatus,getStatusUserDelete,registerStatus} = require('../controllers/statusControler');
-const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq,getroomByID} = require('../controllers/reqController');
+const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq,getroomByID,successReq} = require('../controllers/reqController');
 const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById,getStock,submitRequisition} = require('../controllers/manageRequetsControler');
 const {getWithdrawReqlist,getWithdrawReq,putReqWithdraw,getWithdraw,putAcceptWithdraw,cancelWithdraw} = require('../controllers/WithdrawControler');
 const {getreqtime,getMacForShc,getReqwaitForShc,assignWork} = require('../controllers/TimeReqControler');
@@ -95,6 +95,7 @@ router.put('/updateUser',authenticateToken, updateUser);
 router.put('/updateUserStatus',authenticateToken, updateUserStatus);
 
 router.put('/cancelReq',authenticateToken, cancelReq);
+router.put('/successReq',authenticateToken, successReq);
 
 router.put('/denyReq',authenticateToken, denyReq);
 router.put('/sendtomacReq',authenticateToken, sendtomacReq);

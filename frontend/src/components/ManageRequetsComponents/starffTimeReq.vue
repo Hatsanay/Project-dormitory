@@ -153,7 +153,7 @@
           </div>
         </div>
       </div>
-      <div v-if="activeTab === '3'" class="tab-pane active">ประวัติการนัดเวลา</div>
+      <div v-if="activeTab === '3'" class="tab-pane active">ฟีเจอร์กำลังพัฒนา</div>
     </div>
 
     <CModal

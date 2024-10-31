@@ -83,11 +83,19 @@
                     {{ item.Type }}
                   </p>
                 </div>
+                <div v-if="item.scheduleTime" class="d-flex justify-content-between align-items-center">
+                  <p></p>
+                  <p class="status-modern mb-0">
+                    <strong>เวลานัด:</strong> {{ item.scheduleTime }}
+                  </p>
+                  
+                </div>
                 <div class="d-flex justify-content-between align-items-center">
                   <p></p>
                   <p class="status-modern mb-0">
                     <strong>สถานะ:</strong> {{ item.status }}
                   </p>
+                  
                 </div>
               </CCardBody>
             </CCard>
@@ -187,6 +195,12 @@
                     <strong>สถานะ:</strong> {{ item.status }}
                   </p>
                 </div>
+                <div v-if="item.SuccessDate != 'Invalid Date Invalid Date'" class="d-flex justify-content-between align-items-center">
+                  <p></p>
+                  <p class="status-modern mb-0">
+                    <strong>เวลา:</strong> {{ item.SuccessDate }}
+                  </p>
+                </div>
               </CCardBody>
             </CCard>
           </CCol>
@@ -283,6 +297,14 @@
         >
           <i class="fa-regular fa-circle-xmark"></i>
           ยกเลิกแจ้งซ่อม
+        </CButton>
+        <CButton
+          class="cancelButton"
+          color="success"
+          @click.stop="successClick(selectedUser)"
+        >
+        <i class="fa-solid fa-circle-check"></i>
+          เสร็จสิ้น
         </CButton>
       </CModalFooter>
     </CModal>
@@ -517,6 +539,43 @@ export default {
       });
     };
 
+    const successClick = (selectedUser) => {
+      Swal.fire({
+        title: "คุณแน่ใจหรือไม่?",
+        text: "กดเสร็จสิ้นแล้วไม่สามารถย้อนกลับได้!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ยืนยันการเสร็จสิ้น",
+        cancelButtonText: "ยกเลิก",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.put(`/api/auth/successReq`, {
+              mainr_ID: selectedUser.mainr_ID,
+            });
+
+            Swal.fire({
+              title: "เรียบร้อย!",
+              text: "การแจ้งซ่อมของคุณถูกเสร็จสิ้นแล้ว.",
+              icon: "success",
+            });
+
+            closeModelDetailRequest();
+            fetchRequests();
+          } catch (error) {
+            console.error("Error canceling request:", error);
+            Swal.fire({
+              title: "เกิดข้อผิดพลาด!",
+              text: "ไม่สามารถเสร็จสิ้นการแจ้งซ่อมได้.",
+              icon: "error",
+            });
+          }
+        }
+      });
+    };
+
     onMounted(() => {
       fetchRequests();
     });
@@ -544,6 +603,7 @@ export default {
       handlePreviousImage,
       handleNextImage,
       cancelClick,
+      successClick,
       switchTab,
     };
   },

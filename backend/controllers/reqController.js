@@ -13,28 +13,37 @@ const getReqById = async (req, res) => {
 
     const query = `
     SELECT
-      mainr_ID,
-      CONCAT(users.user_Fname, ' ', users.user_Lname) AS fullname,
-      room.room_Number AS roomNumber,
-      mainr_ProblemTitle,
-      mainr_ProblemDescription,
-      mainr_Date,
-      petitiontype.Type AS Type,
-      status.stat_Name AS status
-    FROM 
-      maintenancerequests
-        INNER JOIN renting on renting.renting_ID = maintenancerequests.mainr_renting_ID
-        INNER JOIN users on users.user_ID = renting.renting_user_ID
-        INNER JOIN petitiontype on petitiontype.ID = mainr_pattyp_ID
-        INNER JOIN status on status.stat_ID = maintenancerequests.mainr_Stat_ID
-        INNER JOIN room on room.room_ID = renting.renting_room_ID
-    WHERE
-      users.user_ID = ?
-      AND maintenancerequests.mainr_Stat_ID != "STA000017"
-      AND maintenancerequests.mainr_Stat_ID != "STA000016"
-      AND maintenancerequests.mainr_Stat_ID != "STA000018"
-    ORDER BY
-      maintenancerequests.mainr_ID ASC
+    mainr_ID,
+    CONCAT(users.user_Fname, ' ', users.user_Lname) AS fullname,
+    room.room_Number AS roomNumber,
+    mainr_ProblemTitle,
+    mainr_ProblemDescription,
+    mainr_Date,
+    petitiontype.Type AS Type,
+    status.stat_Name AS status,
+    CONCAT(
+        MIN(schedulerepairs.Date), ' ', 
+        MIN(schedulerepairs.startTime), ' - ', 
+        MIN(schedulerepairs.endTime)
+    ) AS scheduleTime,
+    MIN(schedulerepairs.Date) AS Date,
+    MIN(schedulerepairs.startTime) AS startTime,
+    MIN(schedulerepairs.endTime) AS endTime
+FROM 
+    maintenancerequests
+    INNER JOIN renting ON renting.renting_ID = maintenancerequests.mainr_renting_ID
+    INNER JOIN users ON users.user_ID = renting.renting_user_ID
+    INNER JOIN petitiontype ON petitiontype.ID = maintenancerequests.mainr_pattyp_ID
+    INNER JOIN status ON status.stat_ID = maintenancerequests.mainr_Stat_ID
+    INNER JOIN room ON room.room_ID = renting.renting_room_ID
+    LEFT JOIN schedulerepairs ON schedulerepairs.sdr_mainr_ID = maintenancerequests.mainr_ID
+WHERE
+    users.user_ID = ?
+    AND maintenancerequests.mainr_Stat_ID NOT IN ('STA000017', 'STA000016', 'STA000018')
+GROUP BY
+    mainr_ID
+ORDER BY
+    maintenancerequests.mainr_ID ASC;
     `;
 
     const [result] = await db.promise().query(query, [userId]);
@@ -73,29 +82,30 @@ const getHisReqById = async (req, res) => {
     }
 
     const query = `
-    SELECT
-      mainr_ID,
-      CONCAT(users.user_Fname, ' ', users.user_Lname) AS fullname,
-      room.room_Number AS roomNumber,
-      mainr_ProblemTitle,
-      mainr_ProblemDescription,
-      mainr_Date,
-      petitiontype.Type AS Type,
-      status.stat_Name AS status
-    FROM 
-      maintenancerequests
-        INNER JOIN renting on renting.renting_ID = maintenancerequests.mainr_renting_ID
-        INNER JOIN users on users.user_ID = renting.renting_user_ID
-        INNER JOIN petitiontype on petitiontype.ID = mainr_pattyp_ID
-        INNER JOIN status on status.stat_ID = maintenancerequests.mainr_Stat_ID
-        INNER JOIN room on room.room_ID = renting.renting_room_ID
-    WHERE
-      users.user_ID = ?
-      AND maintenancerequests.mainr_Stat_ID = "STA000016"
-      OR maintenancerequests.mainr_Stat_ID = "STA000017"
-      OR maintenancerequests.mainr_Stat_ID = "STA000018"
-    ORDER BY
-      maintenancerequests.mainr_ID ASC
+        SELECT
+        mainr_ID,
+        CONCAT(users.user_Fname, ' ', users.user_Lname) AS fullname,
+        room.room_Number AS roomNumber,
+        mainr_ProblemTitle,
+        mainr_ProblemDescription,
+        mainr_Date,
+        petitiontype.Type AS Type,
+        status.stat_Name AS status,
+        maintenancerequests.mainr_SuccessDate AS SuccessDate
+      FROM 
+        maintenancerequests
+          INNER JOIN renting on renting.renting_ID = maintenancerequests.mainr_renting_ID
+          INNER JOIN users on users.user_ID = renting.renting_user_ID
+          INNER JOIN petitiontype on petitiontype.ID = mainr_pattyp_ID
+          INNER JOIN status on status.stat_ID = maintenancerequests.mainr_Stat_ID
+          INNER JOIN room on room.room_ID = renting.renting_room_ID
+      WHERE
+        users.user_ID = ?
+        AND (maintenancerequests.mainr_Stat_ID = "STA000016"
+        OR maintenancerequests.mainr_Stat_ID = "STA000017"
+        OR maintenancerequests.mainr_Stat_ID = "STA000018")
+      ORDER BY
+        maintenancerequests.mainr_ID ASC
     `;
 
     const [result] = await db.promise().query(query, [userId]);
@@ -103,6 +113,7 @@ const getHisReqById = async (req, res) => {
     if (result.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลการแจ้งซ่อม" });
     }
+
     const formattedResult = result.map((item) => ({
       ...item,
       mainr_Date:
@@ -116,6 +127,18 @@ const getHisReqById = async (req, res) => {
           hour: "2-digit",
           minute: "2-digit",
         }),
+      SuccessDate: item.SuccessDate
+        ? new Date(item.SuccessDate).toLocaleDateString("th-TH", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }) +
+          " " +
+          new Date(item.SuccessDate).toLocaleTimeString("th-TH", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : null,
     }));
 
     res.status(200).json(formattedResult);
@@ -338,7 +361,32 @@ const cancelReq = async (req, res) => {
   }
 };
 
-const getroomByID= async (req, res) => {
+const successReq = async (req, res) => {
+  const { mainr_ID, mainrstatus_ID = "STA000016" } = req.body;
+
+  try {
+    if (!mainr_ID) {
+      return res.status(400).json({ error: "โปรดระบุ mainr_ID" });
+    }
+
+    const updateQuery = `
+      UPDATE maintenancerequests SET
+      mainr_Stat_ID = ?,
+      mainr_SuccessDate = NOW()  -- เพิ่มเวลาปัจจุบันลงในฟิลด์ mainr_SuccessDate
+      WHERE mainr_ID = ?
+    `;
+
+    await db.promise().query(updateQuery, [mainrstatus_ID, mainr_ID]);
+
+    res.status(200).json({ message: "เสร็จสิ้นการแจ้งซ่อมเรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
+const getroomByID = async (req, res) => {
   try {
     const userID = req.query.id;
 
@@ -381,4 +429,5 @@ module.exports = {
   getImgById,
   cancelReq,
   getroomByID,
+  successReq,
 };

@@ -35,13 +35,13 @@
 
     <div class="tab-content mt-3">
       <div v-if="showTab1 && activeTab === '1'" class="tab-pane active">
-        Dashboard ผู้ใช้งาน
+        Dashboard ผู้ใช้งาน ---กำลังพัฒนา---
       </div>
       <div v-if="showTab2 && activeTab === '2'" class="tab-pane active">
-        Dashboard นิติ
+        Dashboard นิติ ---กำลังพัฒนา---
       </div>
       <div v-if="showTab3 && activeTab === '3'" class="tab-pane active">
-        Dashboard ช่าง
+        Dashboard ช่าง ---กำลังพัฒนา---
       </div>
     </div>
   </div>
