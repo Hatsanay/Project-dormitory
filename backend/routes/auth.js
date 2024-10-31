@@ -59,10 +59,11 @@ const {
   getReqwaitForShc,
   assignWork,
 } = require("../controllers/TimeReqControler");
+
 const {
   getInprogressCount,
   getreqTimeLine,
-} = require("../controllers/dashboardControler");
+} = require("../controllers/DashboardControler");
 
 const {
   registerRoom,
@@ -73,6 +74,8 @@ const {
   updateRoomStatus,
   getStatusRoom,
 } = require("../controllers/RoomController");
+
+
 const {
   registerUnit,
   getAutotidUnit,

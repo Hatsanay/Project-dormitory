@@ -32,12 +32,10 @@ const getInprogressCount = async (req, res) => {
     const data = result[0];
     const { InprogressCount, ScheduledCount, CompletedCount, TotalCount } = data;
 
-    // คำนวณเปอร์เซ็นต์
     const inprogressPercent = TotalCount ? (InprogressCount / TotalCount) * 100 : 0;
     const scheduledPercent = TotalCount ? (ScheduledCount / TotalCount) * 100 : 0;
     const completedPercent = TotalCount ? (CompletedCount / TotalCount) * 100 : 0;
 
-    // ส่งข้อมูลกลับพร้อมกับเปอร์เซ็นต์
     res.status(200).json({
       InprogressCount,
       ScheduledCount,
@@ -80,4 +78,4 @@ const getreqTimeLine= async (req, res) => {
 };
 
 
-module.exports = { getInprogressCount,getreqTimeLine };
+module.exports = { getInprogressCount, getreqTimeLine };

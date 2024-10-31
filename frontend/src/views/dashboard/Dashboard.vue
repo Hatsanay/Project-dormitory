@@ -1,7 +1,6 @@
 <template>
   <div>
     <ul class="nav nav-tabs">
-      <!-- Nav Tabs -->
       <li v-if="showTab1" class="nav-item">
         <a
           class="nav-link"
@@ -9,7 +8,7 @@
           @click.prevent="switchTab('1')"
           href="#"
         >
-          Dashboard ผู้ใช้งาน
+          Dashboard
         </a>
       </li>
       <li v-if="showTab2" class="nav-item">
@@ -19,7 +18,7 @@
           @click.prevent="switchTab('2')"
           href="#"
         >
-          Dashboard นิติ
+          Dashboard
         </a>
       </li>
       <li v-if="showTab3" class="nav-item">
@@ -29,7 +28,7 @@
           @click.prevent="switchTab('3')"
           href="#"
         >
-          Dashboard ช่าง
+          Dashboard
         </a>
       </li>
       <li v-if="showTab4" class="nav-item">
@@ -39,7 +38,7 @@
           @click.prevent="switchTab('4')"
           href="#"
         >
-          Dashboard ผู้จัดการ
+          Dashboard
         </a>
       </li>
     </ul>
@@ -88,7 +87,6 @@
           </CCol>
         </CRow>
 
-
         <CRow>
           <CCol :md="12">
             <CCard>
@@ -130,13 +128,57 @@
       </div>
 
       <div v-if="showTab2 && activeTab === '2'" class="tab-pane active">
-        Dashboard นิติ ---กำลังพัฒนา---
+        <CRow
+          class="d-flex justify-content-center align-items-center"
+          style="height: 300px"
+        >
+          <CCol :md="12" class="text-center"> Dashboard นิติ ---กำลังพัฒนา--- 
+            <CButton
+            color="primary"
+            class="w-80"
+            block
+            style="margin: 100px"
+            @click="$router.push('/StaffMgnReqView')"
+            >ไปหน้ารับคำร้องขอแจ้งซ่อม</CButton
+          >
+          </CCol>
+        </CRow>
       </div>
+
       <div v-if="showTab3 && activeTab === '3'" class="tab-pane active">
-        Dashboard ช่าง ---กำลังพัฒนา---
+        <CRow
+          class="d-flex justify-content-center align-items-center"
+          style="height: 300px"
+        >
+          <CCol :md="12" class="text-center"> Dashboard ช่าง ---กำลังพัฒนา--- 
+            <CButton
+            color="primary"
+            class="w-80"
+            block
+            style="margin: 100px"
+            @click="$router.push('/macMgnReqView')"
+            >ไปหน้าคำร้องขอแจ้งซ่อม</CButton
+          >
+          </CCol>
+        </CRow>
       </div>
+
       <div v-if="showTab4 && activeTab === '4'" class="tab-pane active">
-        Dashboard ผู้จัดการ ---กำลังพัฒนา---
+        <CRow
+          class="d-flex justify-content-center align-items-center"
+          style="height: 300px"
+        >
+          <CCol :md="12" class="text-center"> Dashboard ผู้จัดการ ---กำลังพัฒนา--- 
+            <CButton
+            color="primary"
+            class="w-80"
+            block
+            style="margin: 100px"
+            @click="$router.push('/StaffMgnReqView')"
+            >ไปหน้ารับคำร้องขอแจ้งซ่อม</CButton
+          >
+          </CCol>
+        </CRow>
       </div>
     </div>
   </div>
