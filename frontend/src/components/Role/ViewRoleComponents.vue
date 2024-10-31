@@ -8,7 +8,7 @@
           class="w-100"
           block
           style="margin-bottom: 10px"
-          @click="$router.push('')"
+          @click="$router.push('/RegisRole')"
         ><i class="fa-solid fa-user-plus"></i>
           New
         </CButton>
@@ -143,11 +143,15 @@
 import { ref, watch, onMounted, computed } from "vue";
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from "@coreui/vue";
 import axios from "axios";
-
+import RegisRoleComponent from "./RegisRoleComponent.vue";
 
 
 export default {
   name: "ViewRoleComponents",
+  components: {
+    RegisRoleComponent,
+
+    },
 
   setup() {
     const columns = ref([
