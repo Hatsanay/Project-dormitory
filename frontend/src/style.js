@@ -1,1 +1,0 @@
-let primaryColor = '#ffa500';
