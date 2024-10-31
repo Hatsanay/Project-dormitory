@@ -344,6 +344,122 @@ const submitRequisition = async (req, res) => {
   }
 };
 
+
+const getSuccessReq = async (req, res) => {
+  try {
+    const query = `
+    SELECT
+    mainr_ID,
+    CONCAT(users.user_Fname, ' ', users.user_Lname) AS fullname,
+    room.room_Number AS roomNumber,
+    mainr_ProblemTitle,
+    mainr_ProblemDescription,
+    mainr_Date,
+    petitiontype.Type AS Type,
+    status.stat_Name AS status,
+    CONCAT(
+        MIN(schedulerepairs.Date), ' ', 
+        MIN(schedulerepairs.startTime), ' - ', 
+        MIN(schedulerepairs.endTime)
+    ) AS scheduleTime,
+    MIN(schedulerepairs.Date) AS Date,
+    MIN(schedulerepairs.startTime) AS startTime,
+    MIN(schedulerepairs.endTime) AS endTime
+FROM 
+    maintenancerequests
+    INNER JOIN renting ON renting.renting_ID = maintenancerequests.mainr_renting_ID
+    INNER JOIN users ON users.user_ID = renting.renting_user_ID
+    INNER JOIN petitiontype ON petitiontype.ID = maintenancerequests.mainr_pattyp_ID
+    INNER JOIN status ON status.stat_ID = maintenancerequests.mainr_Stat_ID
+    INNER JOIN room ON room.room_ID = renting.renting_room_ID
+    LEFT JOIN schedulerepairs ON schedulerepairs.sdr_mainr_ID = maintenancerequests.mainr_ID
+WHERE
+    maintenancerequests.mainr_Stat_ID IN ('STA000014', 'STA000015')
+GROUP BY
+    mainr_ID
+ORDER BY
+    maintenancerequests.mainr_ID ASC;
+    `;
+
+    const [result] = await db.promise().query(query);
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลการแจ้งซ่อม" });
+    }
+    const formattedResult = result.map((item) => ({
+      ...item,
+      mainr_Date:
+        new Date(item.mainr_Date).toLocaleDateString("th-TH", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }) +
+        " " +
+        new Date(item.mainr_Date).toLocaleTimeString("th-TH", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+    }));
+
+    res.status(200).json(formattedResult);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+const getStatusReq = async (req, res) => {
+  try {
+    const query = `SELECT * FROM status 
+    WHERE stat_ID = "STA000014"
+    OR stat_ID = "STA000015"
+    OR stat_ID = "STA000016"
+    `;
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+const updateStatusReq = async (req, res) => {
+  const { mainr_ID, mainrstatus_ID } = req.body;
+
+  try {
+    if (!mainr_ID || !mainrstatus_ID) {
+      return res.status(400).json({ error: "โปรดระบุ mainr_ID และ mainrstatus_ID" });
+    }
+
+    let updateQuery = `
+      UPDATE maintenancerequests 
+      SET mainr_Stat_ID = ?
+      WHERE mainr_ID = ?
+    `;
+
+    const queryParams = [mainrstatus_ID, mainr_ID];
+
+    if (mainrstatus_ID === "STA000016") {
+      updateQuery = `
+        UPDATE maintenancerequests 
+        SET mainr_Stat_ID = ?, mainr_SuccessDate = NOW()
+        WHERE mainr_ID = ?
+      `;
+    }
+
+    const [result] = await db.promise().query(updateQuery, queryParams);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลที่ต้องการอัปเดต" });
+    }
+
+    res.status(200).json({ message: "สถานะการแจ้งซ่อมถูกอัปเดตเรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
 module.exports = {
   getReq,
   denyReq,
@@ -353,4 +469,7 @@ module.exports = {
   getMacReqById,
   getStock,
   submitRequisition,
+  getSuccessReq,
+  getStatusReq,
+  updateStatusReq,
 };

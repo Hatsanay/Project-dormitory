@@ -4,7 +4,7 @@ const { registerUser, getAutotid ,getRole ,getUser, getUserById, updateUser, upd
 const { getProvince,getAmphures,getTambons,getZipcode } = require('../controllers/addressControler');
 const {getStatus,getStatusUserDelete,registerStatus} = require('../controllers/statusControler');
 const {getReqById, getHisReqById, getUserByIdfromReq, getPetitiontype, submitRepairRequest, upload, getImgById, cancelReq,getroomByID,successReq} = require('../controllers/reqController');
-const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById,getStock,submitRequisition} = require('../controllers/manageRequetsControler');
+const {getReq,denyReq,sendtomacReq,getMacReq,sendAssessProblemReq,getMacReqById,getStock,submitRequisition,getSuccessReq,getStatusReq,updateStatusReq} = require('../controllers/manageRequetsControler');
 const {getWithdrawReqlist,getWithdrawReq,putReqWithdraw,getWithdraw,putAcceptWithdraw,cancelWithdraw} = require('../controllers/WithdrawControler');
 const {getreqtime,getMacForShc,getReqwaitForShc,assignWork} = require('../controllers/TimeReqControler');
 
@@ -59,10 +59,13 @@ router.get('/getReq',authenticateToken, getReq);
 router.get('/getMacReq',authenticateToken, getMacReq);
 router.get('/getMacReqById',authenticateToken, getMacReqById);
 router.get('/getStock',authenticateToken, getStock);
+router.get('/getSuccessReq',authenticateToken, getSuccessReq);
+router.get('/getStatusReq',authenticateToken, getStatusReq);
 
 router.get('/getWithdrawReq',authenticateToken, getWithdrawReq);
 router.get('/getWithdrawReqlist',authenticateToken, getWithdrawReqlist);
 router.get('/getWithdraw',authenticateToken, getWithdraw);
+
 
 router.get('/getreqtime',authenticateToken, getreqtime);
 router.get('/getMacForShc',authenticateToken, getMacForShc);
@@ -99,6 +102,8 @@ router.put('/successReq',authenticateToken, successReq);
 
 router.put('/denyReq',authenticateToken, denyReq);
 router.put('/sendtomacReq',authenticateToken, sendtomacReq);
+router.put('/updateStatusReq',authenticateToken, updateStatusReq);
+
 
 router.put('/putReqWithdraw',authenticateToken, putReqWithdraw);
 router.put('/putAcceptWithdraw',authenticateToken, putAcceptWithdraw);
