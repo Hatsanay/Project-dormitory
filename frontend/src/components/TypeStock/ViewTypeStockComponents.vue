@@ -58,7 +58,8 @@
                     </button>
                   </td>
                   <td>
-                    <button class="btn btn-danger btn-sm fontwhite" @click="showModalDelete(item)">
+                    <button class="btn btn-danger btn-sm fontwhite" 
+                    @click="showModalDelete(item)">
                       <i class="fa-solid fa-trash"></i>
                       ลบ
                     </button>
@@ -104,6 +105,29 @@
       </div>
     </div>
 
+    <!--//////////////////////////////////Delete////////////////////////////////////////-->
+    <CModal
+      alignment="center"
+      :visible="visibleDeleteModal"
+      @close="closeDeleteModal"
+      size="lg"
+    >
+      <CModalHeader>
+        <CModalTitle>ยืนยันการลบข้อมูล</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <DeleteTypeStockComponent
+          :selectedTypeStock="selectedTypeStock"
+          :closeModal="closeDeleteModal"
+          :refreshViewData="fetchStatus"
+        />
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeDeleteModal">Close</CButton>
+      </CModalFooter>
+    </CModal>
+<!--//////////////////////////////////////////////////////////////////////////-->
+
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
@@ -119,12 +143,14 @@
 import { ref, watch, onMounted, computed } from "vue";
 import axios from "axios";
 import RegisTypeStockComponent from "./RegisTypeStockComponent.vue";
+import DeleteTypeStockComponent from "./DeleteTypeStockComponent.vue";
 
 
 export default {
   name: "ViewTypeStockComponents",
   components: {
     RegisTypeStockComponent,
+    DeleteTypeStockComponent
     },
   setup() {
     const columns = ref([
@@ -132,12 +158,14 @@ export default {
       { key: "name", label: "ชื่อประเภท" },
       { key: "stat_Name", label: "สถานะ" },
     ]);
-    const types = ref([]); // Store the stock types
-    const filteredItems = ref([]); // Filtered items for display
-    const searchQuery = ref(""); // Search query for filtering
-    const rowsPerPage = ref(10); // Number of rows to display per page
-    const currentPage = ref(1); // Current page in pagination
-    const toasts = ref([]); // Toast messages
+    const types = ref([]); 
+    const filteredItems = ref([]); 
+    const searchQuery = ref(""); 
+    const rowsPerPage = ref(10); 
+    const currentPage = ref(1); 
+    const toasts = ref([]); 
+    const selectedTypeStock = ref({});
+    const visibleDeleteModal = ref(false);
 
     const totalPages = computed(() => {
       return Math.ceil(filteredItems.value.length / rowsPerPage.value);
@@ -180,6 +208,18 @@ export default {
         .sort((a, b) => a.ID - b.ID); // Sort numerically by ID
     };
 
+    const showModalDelete = (item) => {
+      selectedTypeStock.value = item;
+      visibleDeleteModal.value = true;
+    };
+
+    const closeDeleteModal = () => {
+      visibleDeleteModal.value = false;
+      selectedTypeStock.value = {};
+      fetchStatus();
+    };
+
+
     const setPage = (page) => {
       currentPage.value = page;
       filterItems(); // Refetch filtered items for pagination
@@ -208,6 +248,10 @@ export default {
       setPage,
       showToast,
       toasts,
+      selectedTypeStock,
+      showModalDelete,
+      closeDeleteModal,
+      visibleDeleteModal
     };
   },
 };

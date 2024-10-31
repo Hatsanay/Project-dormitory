@@ -10,12 +10,11 @@ const {getWithdrawReqlist,getWithdrawReq,putReqWithdraw,getWithdraw,putAcceptWit
 // const { registerRoom } = require('../controllers/RoomController');
 
 const { registerRoom, getAutotidRoom, getRoom, getRoomByNumber, updateRoom, updateRoomStatus ,getStatusRoom,getStatusRoomDelete} = require('../controllers/RoomController');
-const { registerUnit, getAutotidUnit, getUnit, getUnitByID, updateUnit} = require('../controllers/unitController');
-const { registerStock, getAutotidStock, getStockforstock, getStockByID, updateStock} = require('../controllers/stockController');
-const { registerTypeStock, getAutotidTypeStock, getTypeStock, getTypeStockByID, updateTypeStock} = require('../controllers/stockTypeController');
-const { registerStatusType,getStatusType,getStatusTypeByID,getAutotidStatusType,updateStatusType} = require('../controllers/statusTypeControler');
-const { registerRole, getRolesForView, getRoleByID, getAutoRoleID,updateRole} = require('../controllers/roleControler');
-const { registerPermission,getPermissions,getPermissionByID,getAutoPermissionID,updatePermission, } = require('../controllers/perrmissionController');
+const { registerUnit, getAutotidUnit, getUnit, getUnitByID, updateUnit,updateStatusUnit,getDeletableUnits} = require('../controllers/unitController');
+const { registerStock, getAutotidStock, getStockforstock, getStockByID, updateStock,updateStatusStock,getDeletableStock} = require('../controllers/stockController');
+const { registerTypeStock, getAutotidTypeStock, getTypeStock, getTypeStockByID, updateTypeStock,updateStatusTypeStock,getDeletableTypeStock} = require('../controllers/stockTypeController');
+const { registerStatusType,getStatusType,getStatusTypeByID,getAutotidStatusType,updateStatusType,getDeletableTypeStatus,updateStatusTypeStatus} = require('../controllers/statusTypeControler');
+const { registerRole, getRolesForView, getRoleByID, getAutoRoleID,updateRole,getAutoPermissionID} = require('../controllers/roleControler');
 
 
 const authenticateToken = require('../middleware/auth');
@@ -30,7 +29,6 @@ router.post('/registerStatusType', authenticateToken, registerStatusType);
 router.post('/registerStock', authenticateToken, registerStock);
 router.post('/registerTypeStock', authenticateToken, registerTypeStock);
 router.post('/registerRole', authenticateToken, registerRole);
-router.post('/registerPermission', authenticateToken, registerPermission);
 
 
 router.get('/getAutotidRoom',authenticateToken, getAutotidRoom);
@@ -42,18 +40,24 @@ router.get('/getStatusRoomDelete',authenticateToken,getStatusRoomDelete);
 router.get('/getAutotidUnit',authenticateToken, getAutotidUnit);
 router.get('/getUnit',authenticateToken, getUnit);
 router.get('/getUnitByID',authenticateToken, getUnitByID);
+router.get('/getDeletableUnits',authenticateToken, getDeletableUnits);
 
 router.get('/getAutotidStock',authenticateToken, getAutotidStock);
 router.get('/getStockforstock',authenticateToken, getStockforstock);
 router.get('/getStockByID',authenticateToken, getStockByID);
+router.get('/getDeletableStock',authenticateToken, getDeletableStock);
+
 
 router.get('/getAutotidTypeStock',authenticateToken, getAutotidTypeStock);
 router.get('/getTypeStock',authenticateToken, getTypeStock);
 router.get('/getTypeStockByID',authenticateToken, getTypeStockByID);
+router.get('/getDeletableTypeStock',authenticateToken, getDeletableTypeStock);
+
 
 router.get('/getAutotidStatusType',authenticateToken, getAutotidStatusType);
 router.get('/getStatusType',authenticateToken, getStatusType);
 router.get('/getStatusTypeByID',authenticateToken, getStatusTypeByID);
+router.get('/getDeletableTypeStatus',authenticateToken, getDeletableTypeStatus);
 /////////////////////////////////////////////////////////////////////////////
 router.get('/getStatusForView',authenticateToken, getStatusForView);
 router.get('/getStatusByID',authenticateToken, getStatusByID);
@@ -63,10 +67,7 @@ router.get('/getDeletableStatus',authenticateToken, getDeletableStatus);
 router.get('/getRolesForView',authenticateToken, getRolesForView);
 router.get('/getRoleByID',authenticateToken, getRoleByID);
 router.get('/getAutoRoleID',authenticateToken, getAutoRoleID);
-
-router.get('/getPermissions',authenticateToken, getPermissions);
-router.get('/getPermissionByID',authenticateToken, getPermissionByID);
-router.get('/getAutoRoleID',getAutoPermissionID, getAutoPermissionID);
+router.get('/getAutoPermissionID',authenticateToken, getAutoPermissionID);
 
 router.post('/submitRepairRequest', authenticateToken, upload.array('images'), submitRepairRequest);
 
@@ -119,19 +120,20 @@ router.put('/updateRoom',authenticateToken, updateRoom);
 router.put('/updateRoomStatus',authenticateToken, updateRoomStatus);
 
 router.put('/updateUnit',authenticateToken, updateUnit);
+router.put('/updateStatusUnit',authenticateToken, updateStatusUnit);
 
 router.put('/updateStock',authenticateToken, updateStock);
+router.put('/updateStatusStock',authenticateToken, updateStatusStock);
 
 router.put('/updateTypeStock',authenticateToken, updateTypeStock);
+router.put('/updateStatusTypeStock',authenticateToken, updateStatusTypeStock);
 
 router.put('/updateStatusType',authenticateToken, updateStatusType);
+router.put('/updateStatusTypeStatus',authenticateToken, updateStatusTypeStatus);
 
 router.put('/updateStatus',authenticateToken, updateStatus);
 router.put('/updateStatusSta',authenticateToken, updateStatusSta);
 
-router.put('/updateRole',authenticateToken, updateRole);
-
-router.put('/updatePermission',authenticateToken, updatePermission);
 
 // router.post('/registerRoom', authenticateToken, registerRoom);
 

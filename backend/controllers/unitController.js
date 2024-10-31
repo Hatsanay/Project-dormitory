@@ -90,7 +90,8 @@ const getUnit = async (req, res) => {
     SELECT  
       ID, 
 		  Name ,
-		  status.stat_Name
+		  status.stat_Name,
+      unit.status
     FROM 
       unit
     INNER JOIN status ON status.stat_ID = unit.status
@@ -164,10 +165,46 @@ const updateUnit = async (req, res) => {
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
 };
+
+// ฟังก์ชันสำหรับอัปเดตสถานะหน่วย
+const updateStatusUnit = async (req, res) => {
+  const { ID, statusID } = req.body; 
+  try {
+    if (!ID || !statusID) {
+      return res.status(400).json({ error: "กรุณาระบุ ID และ statusID" });
+    }
+    const [itemCheck] = await db.promise().query("SELECT * FROM unit WHERE ID = ?", [ID]);
+    if (itemCheck.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลหน่วยที่ต้องการอัปเดต" });
+    }
+
+    const updateQuery = "UPDATE unit SET status = ? WHERE ID = ?";
+    await db.promise().query(updateQuery, [statusID, ID]);
+
+    res.status(200).json({ message: "อัปเดตสถานะหน่วยเรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาดในการอัปเดตสถานะหน่วย:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+const getDeletableUnits = async (req, res) => {
+  try {
+    const query = 'SELECT * FROM status WHERE stat_StatTypID = "STT000002"'; 
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
 module.exports = {
   registerUnit,
   getUnit,
   getUnitByID,
   getAutotidUnit,
   updateUnit,
+  updateStatusUnit,
+  getDeletableUnits
 };

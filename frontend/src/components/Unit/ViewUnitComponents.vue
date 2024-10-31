@@ -126,45 +126,29 @@
         </div>
         <div class="col-md-6"></div>
       </div>
+      
       <CModal
-        alignment="center"
-        :visible="visibleViewModal"
-        @close="closeModal"
-        aria-labelledby="VerticallyCenteredExample"
-        size="lg"
-      >
-        <CModalHeader>
-          <CModalTitle id="VerticallyCenteredExample">ข้อมูลหน่วย</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <!--<modelViewRoomComponents :selectedUnit="selectedUnit" />-->
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" @click="closeModal">Close</CButton>
-        </CModalFooter>
-      </CModal>
+      alignment="center"
+      :visible="visibleDeleteModal"
+      @close="closeDeleteModal"
+      size="lg"
+    >
+      <CModalHeader>
+        <CModalTitle>ยืนยันการลบข้อมูล</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <DeleteUnitComponent
+          :selectedUnit="selectedUnit"
+          :closeModal="closeDeleteModal"
+          :refreshViewData="fetchStatus"
+        />
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeDeleteModal">Close</CButton>
+      </CModalFooter>
+    </CModal>
   
-      <CModal
-        alignment="center"
-        :visible="visibleDeleteModal"
-        @close="closeDeleteModal"
-        aria-labelledby="VerticallyCenteredExample"
-        size="lg"
-      >
-        <CModalHeader>
-          <CModalTitle id="VerticallyCenteredExample">ข้อมูลหน่วย</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <DeleteRoomComponent
-            :selectedUnit="selectedUnit"
-            :closeModal="closeDeleteModal"
-            :refreshViewData="fetchUnit"
-          />
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" @click="closeDeleteModal">Close</CButton>
-        </CModalFooter>
-      </CModal>
+
       <CToaster class="p-3" placement="top-end">
         <CToast v-for="(toast, index) in toasts" :key="index" visible>
           <CToastHeader closeButton>
@@ -181,11 +165,13 @@ import { ref, watch, onMounted, computed } from "vue";
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from "@coreui/vue";
 import axios from "axios";
 import RegisUnitComponent from "./RegisUnitComponent.vue";
+import DeleteUnitComponent from "./DeleteUnitComponent.vue";
 
 export default {
     name: "ViewUnitComponents",
     components: {
       RegisUnitComponent,
+      DeleteUnitComponent
     },
     setup() {
         const columns = ref([
@@ -199,9 +185,8 @@ export default {
         const filteredItems = ref([]);
         const rowsPerPage = ref(10);
         const currentPage = ref(1);
-        const visibleViewModal = ref(false);
-        const visibleDeleteModal = ref(false);
         const selectedUnit = ref({});
+        const visibleDeleteModal = ref(false);
 
         const totalPages = computed(() => {
             return Math.ceil(filteredItems.value.length / rowsPerPage.value);
@@ -234,16 +219,16 @@ export default {
             (a.ID < b.ID ? -1 : a.ID > b.ID ? 1 : 0));
         };
 
-        const showModal = (item) => {
-            selectedUnit.value = item;
-            visibleViewModal.value = true;
-            console.log("View Modal Opened:", selectedUnit.value);
-        };
+        const showModalDelete = (item) => {
+      selectedUnit.value = item;
+      visibleDeleteModal.value = true;
+    };
 
-        const closeModal = () => {
-            visibleViewModal.value = false;
-            selectedUnit.value = {};
-        };
+    const closeDeleteModal = () => {
+      visibleDeleteModal.value = false;
+      selectedUnit.value = {};
+      fetchStatus();
+    };
 
         const paginatedItems = computed(() => {
             const start = (currentPage.value - 1) * rowsPerPage.value;
@@ -269,10 +254,10 @@ export default {
             rowsPerPage,
             currentPage,
             totalPages,
-            showModal,
-            closeModal,
-            visibleViewModal,
             selectedUnit,
+            showModalDelete,
+            closeDeleteModal,
+            visibleDeleteModal
         };
     },
 };

@@ -71,7 +71,8 @@
                     </button>
                   </td>
                   <td>
-                    <button class="btn btn-danger btn-sm fontwhite" @click="showModalDelete(item)">
+                    <button class="btn btn-danger btn-sm fontwhite" 
+                    @click="showModalDelete(item)">
                       <i class="fa-solid fa-trash"></i>
                       ลบ
                     </button>
@@ -118,6 +119,27 @@
       <div class="col-md-6"></div>
     </div>
 
+    <CModal
+      alignment="center"
+      :visible="visibleDeleteModal"
+      @close="closeDeleteModal"
+      size="lg"
+    >
+      <CModalHeader>
+        <CModalTitle>ยืนยันการลบข้อมูล</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <DeleteStockComponent
+          :selectedStock="selectedStock"
+          :closeModal="closeDeleteModal"
+          :refreshViewData="fetchStatus"
+        />
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeDeleteModal">Close</CButton>
+      </CModalFooter>
+    </CModal>
+
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
@@ -134,13 +156,15 @@ import { ref, watch, onMounted, computed } from "vue";
 import axios from "axios";
 import RegisStockComponent from "./RegisStockComponent.vue";
 import EditeStockComponents from "./EditeStockComponents.vue";
+import DeleteStockComponent from "./DeleteStockComponent.vue";
 
 
 export default {
   name: "ViewStockComponents",
   components: {
     RegisStockComponent,
-    EditeStockComponents
+    EditeStockComponents,
+    DeleteStockComponent
     },
   setup() {
     const columns = ref([
@@ -159,6 +183,8 @@ export default {
     const currentPage = ref(1);
     const toasts = ref([]);
     const types = ref([]);
+    const selectedStock = ref({});
+    const visibleDeleteModal = ref(false);
 
     const totalPages = computed(() => {
       return Math.ceil(filteredItems.value.length / rowsPerPage.value);
@@ -217,10 +243,19 @@ export default {
       return matchesClass && matchesSearch;
     })
     .sort((a, b) => {
-      return a.ID - b.ID; // Numeric sorting
+      return a.ID - b.ID; 
     });
 };
+const showModalDelete = (item) => {
+  selectedStock.value = item;
+      visibleDeleteModal.value = true;
+    };
 
+    const closeDeleteModal = () => {
+      visibleDeleteModal.value = false;
+      selectedStock.value = {};
+      fetchStatus();
+    };
 
     const setPage = (page) => {
       currentPage.value = page;
@@ -254,6 +289,10 @@ export default {
       showToast,
       toasts,
       types,
+      selectedStock,
+      showModalDelete,
+      closeDeleteModal,
+      visibleDeleteModal
     };
   },
 };

@@ -61,7 +61,8 @@
                     </button>
                   </td>
                   <td>
-                    <button class="btn btn-danger btn-sm fontwhite" @click="showToast('Feature not implemented yet', 'error')">
+                    <button class="btn btn-danger btn-sm fontwhite"
+                     @click="showModalDelete(item)">
                       <i class="fa-solid fa-trash"></i>
                       ลบ
                     </button>
@@ -106,7 +107,28 @@
         </div>
       </div>
     </div>
-
+<!--//////////////////////////////////Delete////////////////////////////////////////-->
+    <CModal
+      alignment="center"
+      :visible="visibleDeleteModal"
+      @close="closeDeleteModal"
+      size="lg"
+    >
+      <CModalHeader>
+        <CModalTitle>ยืนยันการลบข้อมูล</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <DeleteTypeStatusComponent
+          :selectedTypeStatus="selectedTypeStatus"
+          :closeModal="closeDeleteModal"
+          :refreshViewData="fetchStatus"
+        />
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeDeleteModal">Close</CButton>
+      </CModalFooter>
+    </CModal>
+<!--//////////////////////////////////////////////////////////////////////////-->
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
@@ -123,12 +145,14 @@ import { ref, watch, onMounted, computed } from "vue";
 import axios from "axios";
 import RegisTypeStatusComponent from "./RegisTypeStatusComponent.vue";
 import EditeTypeStatusComponents from "./EditeTypeStatusComponents.vue";
+import DeleteTypeStatusComponent from "./DeleteTypeStatusComponent.vue";
 
 export default {
   name: "ViewTypeStatusComponents",
   components: {
     RegisTypeStatusComponent,
-    EditeTypeStatusComponents
+    EditeTypeStatusComponents,
+    DeleteTypeStatusComponent
     },
 
   setup() {
@@ -138,12 +162,14 @@ export default {
       { key: "stat_Name", label: "สถานะ" },
     ]);
 
-    const statusTypes = ref([]); // Store the status types
-    const filteredItems = ref([]); // Filtered items for display
-    const searchQuery = ref(""); // Search query for filtering
-    const rowsPerPage = ref(10); // Number of rows to display per page
-    const currentPage = ref(1); // Current page in pagination
-    const toasts = ref([]); // Toast messages
+    const statusTypes = ref([]);
+    const filteredItems = ref([]); 
+    const searchQuery = ref(""); 
+    const rowsPerPage = ref(10); 
+    const currentPage = ref(1); 
+    const toasts = ref([]); 
+    const selectedTypeStatus = ref({});
+    const visibleDeleteModal = ref(false);
 
     const totalPages = computed(() => {
       return Math.ceil(filteredItems.value.length / rowsPerPage.value);
@@ -200,6 +226,17 @@ export default {
         .sort((a, b) => a.statTyp_ID - b.statTyp_ID); // Sort numerically by ID
     };
 
+    const showModalDelete = (item) => {
+      selectedTypeStatus.value = item;
+      visibleDeleteModal.value = true;
+    };
+
+    const closeDeleteModal = () => {
+      visibleDeleteModal.value = false;
+      selectedTypeStatus.value = {};
+      fetchStatus();
+    };
+
     const setPage = (page) => {
       currentPage.value = page;
       filterItems(); // Refetch filtered items for pagination
@@ -230,6 +267,10 @@ export default {
       prevPage,
       nextPage,
       toasts,
+      selectedTypeStatus,
+      showModalDelete,
+      closeDeleteModal,
+      visibleDeleteModal
     };
   },
 };

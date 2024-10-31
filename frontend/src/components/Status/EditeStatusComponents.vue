@@ -74,7 +74,7 @@ import axios from "axios";
 import { useRoute } from "vue-router";
 
 export default {
-  name: "EditStatusView", // เปลี่ยนเป็นชื่อ EditStatusView
+  name: "EditeStatusComponents", 
   setup() {
     const route = useRoute();
     const statusID = ref(route.query.id || ""); // รหัสสถานะจาก query

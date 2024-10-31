@@ -95,7 +95,7 @@ export default [
   {
     component: 'CNavItem',
     name: 'จัดการตำแหน่ง',
-    to: '/',
+    to: '/ViewRoleView',
     icon: 'cilPuzzle',
   },
 

@@ -8,24 +8,24 @@
             <CForm
               class="row g-3 needs-validation"
               novalidate
-              @submit="handleSubmitRoom"
+              @submit="handleSubmitStock"
             >
               <CCol md="12">
                 <CRow class="mb-3">
                   <CCol md="3">
-                    <CFormLabel for="roomId">รหัสห้อง</CFormLabel>
-                    <CFormInput v-model="roomID" type="text" id="roomId" disabled />
+                    <CFormLabel for="typestock_Id">รหัสวัสดุ</CFormLabel>
+                    <CFormInput v-model="typestock_ID" type="text" id="typestock_Id" disabled />
                   </CCol>
                   <CCol md="9">
-                    <CFormLabel for="roomStatus">สถานะห้อง</CFormLabel>
-                    <CFormSelect v-model="roomStatus" id="roomStatus" required>
+                    <CFormLabel for="stocksta">สถานะรายการ</CFormLabel>
+                    <CFormSelect v-model="stocksta" id="stocksta" required>
                       <option value="">กรุณาเลือกสถานะ</option>
                       <option
-                        v-for="status in statusRoom"
-                        :key="status.stat_ID"
-                        :value="String(status.stat_ID)"
+                        v-for="stock in stocks"
+                        :key="stock.stat_ID"
+                        :value="String(stock.stat_ID)"
                       >
-                        {{ status.stat_Name }}
+                        {{ stock.stat_Name }}
                       </option>
                     </CFormSelect>
                   </CCol>
@@ -38,6 +38,7 @@
       </CCol>
     </CRow>
 
+    <!--Notifications -->
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
@@ -48,59 +49,60 @@
     </CToaster>
   </div>
 </template>
+
 <script>
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 
 export default {
-  name: "DeleteRoomComponent",
+  name: "DeleteStockComponent",
   props: {
-    selectedRoom: {
+    selectedTypeStock: {
       type: Object,
       required: true,
     },
   },
   setup(props) {
-    const roomID = ref(props.selectedRoom?.room_ID || "");
-    const roomStatus = ref(props.selectedRoom?.stat_Name || "");
-    const statusRoom = ref([]);
+    const typestock_ID = ref(props.selectedTypeStock?.ID || "");
+    const stocksta = ref(props.selectedTypeStock?.status || "");
+    const stocks = ref([]);
     const toasts = ref([]);
 
     watch(
-      () => props.selectedRoom,
-      (newRoom) => {
-        roomID.value = newRoom?.room_ID || "";
-        roomStatus.value = newRoom?.room_status_ID || "";
+      () => props.selectedTypeStock,
+      (newStock) => {
+        typestock_ID.value = newStock?.ID || "";
+        stocksta.value = newStock?.status || "";
       },
       { immediate: true }
     );
 
-    const fetchStatusRoom = async () => {
+    const fetchStocks = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getStatusRoomDelete", {
+        const response = await axios.get("/api/auth/getDeletableTypeStock", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        statusRoom.value = response.data;
+        stocks.value = response.data;
       } catch (error) {
-        console.error("Error fetching status:", error);
+        console.error("Error fetching stocks:", error);
       }
     };
-
-    const handleSubmitRoom = async (e) => {
+    
+    const handleSubmitStock = async (e) => {
       e.preventDefault();
       try {
         const payload = {
-          roomID: roomID.value,
-          room_status_ID: roomStatus.value,
+          ID: typestock_ID.value,
+          status: stocksta.value,
         };
 
-        await axios.put("/api/auth/updateRoomStatus", payload);
+        await axios.put("/api/auth/updateStatusTypeStock", payload);
         toasts.value.push({
           title: "สำเร็จ",
-          content: "สถานะห้องถูกอัปเดตเรียบร้อยแล้ว",
+          content: "ข้อมูลสต็อกวัสดุถูกอัปเดตเรียบร้อยแล้ว",
         });
         setTimeout(() => window.location.reload(), 1000);
       } catch (error) {
@@ -108,20 +110,20 @@ export default {
           title: "ข้อผิดพลาด",
           content: "เกิดข้อผิดพลาดในการบันทึกข้อมูล",
         });
-        console.error("Error updating status:", error);
+        console.error("Error updating stock:", error);
       }
     };
 
     onMounted(() => {
-      fetchStatusRoom();
+      fetchStocks();
     });
 
     return {
-      roomID,
-      roomStatus,
-      statusRoom,
+      typestock_ID,
+      stocksta,
+      stocks,
       toasts,
-      handleSubmitRoom,
+      handleSubmitStock,
     };
   },
 };

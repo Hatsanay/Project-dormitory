@@ -88,10 +88,12 @@ const getStatusType = async (req, res) => {
     SELECT 
       statTyp_ID, 
       statustype.stat_Name AS Name,
-      status.stat_Name
+      status.stat_Name,
+      statustype.statTyp_stat_ID
     FROM 
       statustype
       INNER JOIN status ON status.stat_ID = statustype.statTyp_stat_ID
+      WHERE statustype.statTyp_stat_ID = "STA000006"
       `;
     const [result] = await db.promise().query(query);
     res.status(200).json(result);
@@ -159,10 +161,42 @@ const updateStatusType = async (req, res) => {
   }
 };
 
+const updateStatusTypeStatus = async (req, res) => {
+  const { statTyp_ID, statTyp_stat_ID } = req.body; 
+  try {
+    if (!statTyp_ID || !statTyp_stat_ID) {
+      return res.status(400).json({ error: "กรุณาระบุ statTyp_ID และ status" });
+    }
+    const [itemCheck] = await db.promise().query("SELECT * FROM statustype WHERE statTyp_ID = ?", [statTyp_ID]);
+    if (itemCheck.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลวัสดุที่ต้องการอัปเดต" });
+    }
+    const updateQuery = "UPDATE statustype SET statTyp_stat_ID = ? WHERE statTyp_ID = ?";
+    await db.promise().query(updateQuery, [statTyp_stat_ID, statTyp_ID]);
+
+    res.status(200).json({ message: "อัปเดตข้อมูลประเภทสถานะสำเร็จ" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลประเภทสถานะ:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+const getDeletableTypeStatus = async (req, res) => {
+  try {
+    const query = 'SELECT * FROM status WHERE stat_StatTypID = "STT000002"'; 
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
 module.exports = {
   registerStatusType,
   getStatusType,
   getStatusTypeByID,
   getAutotidStatusType,
   updateStatusType,
+  getDeletableTypeStatus,
+  updateStatusTypeStatus
 };

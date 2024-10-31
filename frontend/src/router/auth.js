@@ -40,9 +40,12 @@ export const decodeJWTTH = (token) => {
   
   export const hasPermission = (permission) => {
     const permissionsMap = [
-      'view_users_dashboard',
-      'view_admin_dashboard',
-
+      'logout',
+      'home',
+      'userdashboard',
+      'addmindashboard',
+      'macdashboard',
+      'managerdashboard',
       ///ระบบแจ้งปัญหา///
       'add_reques',
       'view_reques',
@@ -82,10 +85,11 @@ export const decodeJWTTH = (token) => {
       'add_Unit',
       'edit_Unit',
       
+      'View_Role',
+      'add_Role',
+      'edit_Role'
       
       ///ตั้งค่า///
-
-
         ];
     
     const permissionsToken = getPermissions();

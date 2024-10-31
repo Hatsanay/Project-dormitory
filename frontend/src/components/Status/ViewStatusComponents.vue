@@ -15,11 +15,12 @@
       </CCol>
     </CRow>
 
+    
     <CRow style="margin-bottom: 10px">
       <CCol :md="2">
-        <CFormSelect v-model="selectedType" aria-label="Filter by Type" @change="filterItems">
+        <CFormSelect v-model="selectedType" aria-label="Filter by Type">
           <option value="">ประเภท</option>
-          <option v-for="type in types" :key="type.ID" :value="type.name">
+          <option v-for="type in types" :key="type.ID" :value="type.Name">
             {{ type.Name }}
           </option>
         </CFormSelect>
@@ -27,7 +28,7 @@
       <CCol :md="7"></CCol>
       <CCol :md="3">
         <CInputGroup>
-          <CFormInput placeholder="Search..." v-model="searchQuery" @input="filterItems" />
+          <CFormInput placeholder="Search..." v-model="searchQuery" />
           <CInputGroupText>
             <CIcon name="cil-magnifying-glass" />
           </CInputGroupText>
@@ -35,6 +36,7 @@
       </CCol>
     </CRow>
 
+    
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
@@ -52,36 +54,36 @@
                 <tr v-if="paginatedItems.length === 0">
                   <td colspan="8" class="text-center">ไม่มีข้อมูลที่ตรงกับการค้นหา</td>
                 </tr>
-                <tr v-for="item in paginatedItems" :key="item.ID">
+                <tr v-for="item in paginatedItems" :key="item.stat_ID">
                   <td>{{ item.stat_ID }}</td>
                   <td>{{ item.Name }}</td>
                   <td>{{ item.sta_name }}</td>
                   <td>{{ item.stat }}</td>
                   <td>
                     <button
-                      class="btn btn-warning btn-sm fontwhite"
+                      class="btn btn-warning btn-sm"
                       @click="$router.push({ path: '/EditStatusView', query: { id: item.stat_ID } })"
-                    ><i class="fa-solid fa-user-pen"></i>
-                      แก้ไข
+                    >
+                      <i class="fa-solid fa-user-pen"></i> แก้ไข
                     </button>
                   </td>
                   <td>
-                    <button class="btn btn-danger btn-sm fontwhite" @click="showModalDelete(item)"
-                    >
-                    <i class="fa-solid fa-trash"></i> 
-                      ลบ
+                    <button class="btn btn-danger btn-sm" @click="showModalDelete(item)">
+                      <i class="fa-solid fa-trash"></i> ลบ
                     </button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
+
+         
           <div class="card-footer">
             <div class="row">
               <div class="col-md-4">
                 <div class="d-flex align-items-center">
                   <span>Show</span>
-                  <select v-model="rowsPerPage" class="form-select mx-2" @change="filterItems" style="width: auto">
+                  <select v-model="rowsPerPage" class="form-select mx-2" style="width: auto">
                     <option :value="5">5</option>
                     <option :value="10">10</option>
                     <option :value="20">20</option>
@@ -92,7 +94,7 @@
                 </div>
               </div>
               <div class="col-md-8 d-flex justify-content-end">
-                <button class="btn btn-secondary" :disabled="currentPage === 1" @click="currentPage--">
+                <button class="btn btn-secondary" :disabled="currentPage === 1" @click="setPage(currentPage - 1)">
                   Previous
                 </button>
                 <button
@@ -103,7 +105,7 @@
                 >
                   {{ page }}
                 </button>
-                <button class="btn btn-secondary" :disabled="currentPage === totalPages" @click="currentPage++">
+                <button class="btn btn-secondary" :disabled="currentPage === totalPages" @click="setPage(currentPage + 1)">
                   Next
                 </button>
               </div>
@@ -111,8 +113,23 @@
           </div>
         </div>
       </div>
-      <div class="col-md-6"></div>
     </div>
+
+    <CModal alignment="center" :visible="visibleDeleteModal" @close="closeDeleteModal" size="lg">
+      <CModalHeader>
+        <CModalTitle>ยืนยันการลบข้อมูล</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <DeleteStatusComponent
+          :selectedStatus="selectedStatus"
+          :closeModal="closeDeleteModal"
+          :refreshViewData="fetchStatus"
+        />
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeDeleteModal">Close</CButton>
+      </CModalFooter>
+    </CModal>
 
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
@@ -127,14 +144,19 @@
 
 <script>
 import { ref, watch, onMounted, computed } from "vue";
+import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from "@coreui/vue";
 import axios from "axios";
+import DeleteStatusComponent from "./DeleteStatusComponent.vue";
 
 export default {
   name: "ViewStatusComponents",
+  components: {
+    DeleteStatusComponent,
+  },
   setup() {
     const columns = ref([
-      { key: "ID", label: "รหัสสถานะ" },
-      { key: "name", label: "ชื่อสถานะ" },
+      { key: "stat_ID", label: "รหัสสถานะ" },
+      { key: "Name", label: "ชื่อสถานะ" },
       { key: "sta_name", label: "ประเภท" },
       { key: "stat", label: "สถานะ" },
     ]);
@@ -147,10 +169,10 @@ export default {
     const currentPage = ref(1);
     const toasts = ref([]);
     const types = ref([]);
+    const selectedStatus = ref({});
+    const visibleDeleteModal = ref(false);
 
-    const totalPages = computed(() => {
-      return Math.ceil(filteredItems.value.length / rowsPerPage.value);
-    });
+    const totalPages = computed(() => Math.ceil(filteredItems.value.length / rowsPerPage.value));
 
     const fetchStatus = async () => {
       try {
@@ -160,10 +182,9 @@ export default {
             Authorization: `Bearer ${token}`,
           },
         });
-        status.value = response.data; // Ensure this matches the structure of response
-        filterItems(); // Filter after fetching data
+        status.value = response.data;
+        filterItems(); 
       } catch (error) {
-        console.error("Error fetching status data:", error);
         showToast("Error fetching status data", "error");
       }
     };
@@ -178,7 +199,7 @@ export default {
         });
         types.value = response.data;
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลประเภทสถานะ:", error);
+        showToast("Error fetching status types", "error");
       }
     };
 
@@ -202,7 +223,18 @@ export default {
 
           return matchesType && matchesSearch;
         })
-        .sort((a, b) => a.ID - b.ID); // Sort numerically by ID
+        .sort((a, b) => a.stat_ID - b.stat_ID); // Fixed sorting by stat_ID
+    };
+
+    const showModalDelete = (item) => {
+      selectedStatus.value = item;
+      visibleDeleteModal.value = true;
+    };
+
+    const closeDeleteModal = () => {
+      visibleDeleteModal.value = false;
+      selectedStatus.value = {};
+      fetchStatus();
     };
 
     const setPage = (page) => {
@@ -237,6 +269,10 @@ export default {
       showToast,
       toasts,
       types,
+      selectedStatus,
+      showModalDelete,
+      closeDeleteModal,
+      visibleDeleteModal
     };
   },
 };

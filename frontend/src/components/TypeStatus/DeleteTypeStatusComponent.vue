@@ -8,24 +8,24 @@
             <CForm
               class="row g-3 needs-validation"
               novalidate
-              @submit="handleSubmitRoom"
+              @submit="handleSubmitTypeStatus"
             >
               <CCol md="12">
                 <CRow class="mb-3">
                   <CCol md="3">
-                    <CFormLabel for="roomId">รหัสห้อง</CFormLabel>
-                    <CFormInput v-model="roomID" type="text" id="roomId" disabled />
+                    <CFormLabel for="typeStatus_Id">รหัสประเภทวัสดุ</CFormLabel>
+                    <CFormInput v-model="typeStatus_ID" type="text" id="typeStatus_Id" disabled />
                   </CCol>
                   <CCol md="9">
-                    <CFormLabel for="roomStatus">สถานะห้อง</CFormLabel>
-                    <CFormSelect v-model="roomStatus" id="roomStatus" required>
+                    <CFormLabel for="typeStatusName">สถานะรายการ</CFormLabel>
+                    <CFormSelect v-model="typeStatusName" id="typeStatusName" required>
                       <option value="">กรุณาเลือกสถานะ</option>
                       <option
-                        v-for="status in statusRoom"
-                        :key="status.stat_ID"
-                        :value="String(status.stat_ID)"
+                        v-for="typeStatus in typeStatuss"
+                        :key="typeStatus.stat_ID"
+                        :value="String(typeStatus.stat_ID)"
                       >
-                        {{ status.stat_Name }}
+                        {{ typeStatus.stat_Name }}
                       </option>
                     </CFormSelect>
                   </CCol>
@@ -38,6 +38,7 @@
       </CCol>
     </CRow>
 
+    <!--Notifications -->
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
@@ -48,59 +49,60 @@
     </CToaster>
   </div>
 </template>
+
 <script>
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 
 export default {
-  name: "DeleteRoomComponent",
+  name: "DeleteTypeStatusComponent",
   props: {
-    selectedRoom: {
+    selectedTypeStatus: {
       type: Object,
       required: true,
     },
   },
   setup(props) {
-    const roomID = ref(props.selectedRoom?.room_ID || "");
-    const roomStatus = ref(props.selectedRoom?.stat_Name || "");
-    const statusRoom = ref([]);
+    const typeStatus_ID = ref(props.selectedTypeStatus?.statTyp_ID || "");
+    const typeStatusName = ref(props.selectedTypeStatus?.statTyp_stat_ID || "");
+    const typeStatuss = ref([]);
     const toasts = ref([]);
 
     watch(
-      () => props.selectedRoom,
-      (newRoom) => {
-        roomID.value = newRoom?.room_ID || "";
-        roomStatus.value = newRoom?.room_status_ID || "";
+      () => props.selectedTypeStatus,
+      (newTypeStatus) => {
+        typeStatus_ID.value = newTypeStatus?.statTyp_ID || "";
+        typeStatusName.value = newTypeStatus?.statTyp_stat_ID || "";
       },
       { immediate: true }
     );
 
-    const fetchStatusRoom = async () => {
+    const fetchTypeStatuss = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getStatusRoomDelete", {
+        const response = await axios.get("/api/auth/getDeletableTypeStatus", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        statusRoom.value = response.data;
+        typeStatuss.value = response.data;
       } catch (error) {
-        console.error("Error fetching status:", error);
+        console.error("Error fetching typeStatuss:", error);
       }
     };
-
-    const handleSubmitRoom = async (e) => {
+    
+    const handleSubmitTypeStatus = async (e) => {
       e.preventDefault();
       try {
         const payload = {
-          roomID: roomID.value,
-          room_status_ID: roomStatus.value,
+          statTyp_ID: typeStatus_ID.value,
+          statTyp_stat_ID: typeStatusName.value,
         };
 
-        await axios.put("/api/auth/updateRoomStatus", payload);
+        await axios.put("/api/auth/updateStatusTypeStatus", payload);
         toasts.value.push({
           title: "สำเร็จ",
-          content: "สถานะห้องถูกอัปเดตเรียบร้อยแล้ว",
+          content: "ข้อมูลประเภทวัสดุถูกอัปเดตเรียบร้อยแล้ว",
         });
         setTimeout(() => window.location.reload(), 1000);
       } catch (error) {
@@ -108,20 +110,20 @@ export default {
           title: "ข้อผิดพลาด",
           content: "เกิดข้อผิดพลาดในการบันทึกข้อมูล",
         });
-        console.error("Error updating status:", error);
+        console.error("Error updating typeStatus:", error);
       }
     };
 
     onMounted(() => {
-      fetchStatusRoom();
+      fetchTypeStatuss();
     });
 
     return {
-      roomID,
-      roomStatus,
-      statusRoom,
+      typeStatus_ID,
+      typeStatusName,
+      typeStatuss,
       toasts,
-      handleSubmitRoom,
+      handleSubmitTypeStatus,
     };
   },
 };

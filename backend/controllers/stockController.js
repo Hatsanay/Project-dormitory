@@ -98,7 +98,8 @@ const getStockforstock = async (req, res) => {
       stock.quantity, 
       type_stock.name AS Type, 
       unit.name AS unit,
-      status.stat_Name
+      status.stat_Name,
+      stock.stock_statID
     FROM 
       stock
     INNER JOIN type_stock ON stock.stock_type_stock_ID = type_stock.ID 
@@ -178,6 +179,36 @@ const updateStock = async (req, res) => {
   }
 };
 
+const updateStatusStock = async (req, res) => {
+  const { ID, stock_statID } = req.body; 
+  try {
+    if (!ID || !stock_statID) {
+      return res.status(400).json({ error: "กรุณาระบุ ID และ ID" });
+    }
+    const [itemCheck] = await db.promise().query("SELECT * FROM stock WHERE ID = ?", [ID]);
+    if (itemCheck.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลวัสดุที่ต้องการอัปเดต" });
+    }
+    const updateQuery = "UPDATE stock SET stock_StatID = ? WHERE ID = ?";
+    await db.promise().query(updateQuery, [stock_statID, ID]);
+
+    res.status(200).json({ message: "อัปเดตข้อมูลวัสดุสำเร็จ" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาดในการอัปเดตวัสดุ:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+const getDeletableStock = async (req, res) => {
+  try {
+    const query = 'SELECT * FROM status WHERE stat_StatTypID = "STT000002"'; 
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
 
 module.exports = {
   registerStock,
@@ -185,4 +216,6 @@ module.exports = {
   getStockByID,
   getAutotidStock,
   updateStock,
+  updateStatusStock,
+  getDeletableStock
 };

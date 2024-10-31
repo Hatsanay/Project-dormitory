@@ -8,20 +8,20 @@
             <CForm
               class="row g-3 needs-validation"
               novalidate
-              @submit="handleSubmitRoom"
+              @submit="handleSubmitStatus"
             >
               <CCol md="12">
                 <CRow class="mb-3">
                   <CCol md="3">
-                    <CFormLabel for="roomId">รหัสห้อง</CFormLabel>
-                    <CFormInput v-model="roomID" type="text" id="roomId" disabled />
+                    <CFormLabel for="stat_Id">รหัสรายการ</CFormLabel>
+                    <CFormInput v-model="stat_ID" type="text" id="stat_Id" disabled />
                   </CCol>
                   <CCol md="9">
-                    <CFormLabel for="roomStatus">สถานะห้อง</CFormLabel>
-                    <CFormSelect v-model="roomStatus" id="roomStatus" required>
+                    <CFormLabel for="statusName">สถานะรายการ</CFormLabel>
+                    <CFormSelect v-model="statusName" id="statusName" required>
                       <option value="">กรุณาเลือกสถานะ</option>
                       <option
-                        v-for="status in statusRoom"
+                        v-for="status in statuses"
                         :key="status.stat_ID"
                         :value="String(status.stat_ID)"
                       >
@@ -48,59 +48,60 @@
     </CToaster>
   </div>
 </template>
+
 <script>
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 
 export default {
-  name: "DeleteRoomComponent",
+  name: "DeleteStatusComponent",
   props: {
-    selectedRoom: {
+    selectedStatus: {
       type: Object,
       required: true,
     },
   },
   setup(props) {
-    const roomID = ref(props.selectedRoom?.room_ID || "");
-    const roomStatus = ref(props.selectedRoom?.stat_Name || "");
-    const statusRoom = ref([]);
+    const stat_ID = ref(props.selectedStatus?.stat_ID || "");
+    const statusName = ref(props.selectedStatus?.stat || "");
+    const statuses = ref([]);
     const toasts = ref([]);
 
     watch(
-      () => props.selectedRoom,
-      (newRoom) => {
-        roomID.value = newRoom?.room_ID || "";
-        roomStatus.value = newRoom?.room_status_ID || "";
+      () => props.selectedStatus,
+      (newstat) => {
+        stat_ID.value = newstat?.stat_ID || "";
+        statusName.value = newstat?.stat_stat_ID || "";
       },
       { immediate: true }
     );
 
-    const fetchStatusRoom = async () => {
+    const fetchStatuses = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getStatusRoomDelete", {
+        const response = await axios.get("/api/auth/getDeletableStatus", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        statusRoom.value = response.data;
+        statuses.value = response.data;
       } catch (error) {
-        console.error("Error fetching status:", error);
+        console.error("Error fetching statuses:", error);
       }
     };
 
-    const handleSubmitRoom = async (e) => {
+    const handleSubmitStatus = async (e) => {
       e.preventDefault();
       try {
         const payload = {
-          roomID: roomID.value,
-          room_status_ID: roomStatus.value,
+          ID: stat_ID.value,
+          statusID: statusName.value,
         };
 
-        await axios.put("/api/auth/updateRoomStatus", payload);
+        await axios.put("/api/auth/updateStatusSta", payload);
         toasts.value.push({
           title: "สำเร็จ",
-          content: "สถานะห้องถูกอัปเดตเรียบร้อยแล้ว",
+          content: "สถานะรายการถูกอัปเดตเรียบร้อยแล้ว",
         });
         setTimeout(() => window.location.reload(), 1000);
       } catch (error) {
@@ -113,15 +114,15 @@ export default {
     };
 
     onMounted(() => {
-      fetchStatusRoom();
+      fetchStatuses();
     });
 
     return {
-      roomID,
-      roomStatus,
-      statusRoom,
+      stat_ID,
+      statusName,
+      statuses,
       toasts,
-      handleSubmitRoom,
+      handleSubmitStatus,
     };
   },
 };

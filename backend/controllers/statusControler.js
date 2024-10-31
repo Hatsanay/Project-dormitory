@@ -110,7 +110,8 @@ const getStatusForView = async (req, res) => {
       status.stat_ID,
       status.stat_Name AS Name,
       statustype.stat_Name AS sta_name,
-      Sta.stat_Name AS stat
+      Sta.stat_Name AS stat,
+      status.stat_stat_ID
     FROM  
       status
     INNER JOIN statustype on statustype.statTyp_ID = status.stat_StatTypID
@@ -176,21 +177,17 @@ const getStatusUserDelete = async (req, res) => {
   };
 
   const updateStatusSta = async (req, res) => {
-    const { ID, statusName } = req.body; 
-  
+    const { ID, statusID } = req.body; 
     try {
-      if (!ID || !statusName) {
-        return res.status(400).json({ error: "กรุณาระบุ ID และ statusName" });
+      if (!ID || !statusID) {
+        return res.status(400).json({ error: "กรุณาระบุ ID และ statusID" });
       }
-  
       const [itemCheck] = await db.promise().query("SELECT * FROM status WHERE stat_ID = ?", [ID]);
       if (itemCheck.length === 0) {
         return res.status(404).json({ error: "ไม่พบข้อมูลรายการที่ต้องการอัปเดต" });
       }
-  
-      const updateQuery = "UPDATE items SET stat_Name = ? WHERE stat_ID = ?";
-      await db.promise().query(updateQuery, [statusName, ID]);
-  
+      const updateQuery = "UPDATE status SET stat_stat_ID = ? WHERE stat_ID = ?";
+      await db.promise().query(updateQuery, [statusID, ID]);
       res.status(200).json({ message: "อัปเดตสถานะเรียบร้อยแล้ว" });
     } catch (err) {
       console.error("เกิดข้อผิดพลาดในการอัปเดตสถานะ:", err);
@@ -199,8 +196,7 @@ const getStatusUserDelete = async (req, res) => {
   };
   const getDeletableStatus = async (req, res) => {
     try {
-      // ดึงสถานะที่เกี่ยวข้องกับการลบได้
-      const query = 'SELECT * FROM status WHERE status_type_ID = "STT000002"'; 
+      const query = 'SELECT * FROM status WHERE stat_StatTypID = "STT000002"'; 
       const [result] = await db.promise().query(query);
       res.status(200).json(result);
     } catch (err) {
@@ -210,6 +206,13 @@ const getStatusUserDelete = async (req, res) => {
   };
   
   
-  
-
-module.exports = {registerStatus,getStatus,getStatusUserDelete,getStatusForView,getStatusByID,getAutotidSta,updateStatus,updateStatusSta,getDeletableStatus};
+module.exports = {
+  registerStatus,
+  getStatus,
+  getStatusUserDelete,
+  getStatusForView,
+  getStatusByID,
+  getAutotidSta,
+  updateStatus,
+  updateStatusSta,
+  getDeletableStatus};

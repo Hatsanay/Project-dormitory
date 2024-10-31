@@ -40,7 +40,6 @@
       </CCol>
     </CRow>
 
-    <!-- Toast notifications -->
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>

@@ -37,6 +37,9 @@ import ViewStatusView from '../views/staticStatus/ViewStatusView.vue';
 import RegisStatus from '../views/staticStatus/RegisStatus.vue';
 import EditStatusView from '../views/staticStatus/EditStatusView.vue';
 
+import ViewRoleView from '../views/staticRole/ViewRoleView.vue';
+import RegisRole from '../views/staticRole/RegisRole.vue';
+
 import { clearToken, hasPermission, isAuthenticated } from './auth';
 
 const routes = [
@@ -49,7 +52,7 @@ const routes = [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        meta: { permission: 'view_users_dashboard', requiresAuth: true },
+        meta: { permission: 'home', requiresAuth: true },
         component: userDasboard,
       },
       {
@@ -245,6 +248,16 @@ const routes = [
         meta: { permission: 'edit_Status', requiresAuth: true },
         component: EditStatusView,
       },
+
+      ///จัดการค่าคงที่ตำแหน่ง///
+      {
+        path: '/ViewRoleView',
+        name: 'จัดการข้อมูลตำแหน่ง',
+        meta: { permission: 'View_Role', requiresAuth: true },
+        component: ViewRoleView,
+      },
+
+
 
       ///ตั้งค่า///
       {

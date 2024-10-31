@@ -8,33 +8,14 @@
           class="w-100"
           block
           style="margin-bottom: 10px"
-          @click="$router.push('/')"
+          @click="$router.push('')"
         ><i class="fa-solid fa-user-plus"></i>
           New
         </CButton>
       </CCol>
     </CRow>
 
-    <CRow style="margin-bottom: 10px">
-      <CCol :md="2">
-        <CFormSelect v-model="selectedStatus" aria-label="Filter by Status" @change="filterItems">
-          <option value="">สถานะ</option>
-          <option v-for="status in statuses" :key="status.stat_ID" :value="status.stat_Name">
-            {{ status.stat_Name }}
-          </option>
-        </CFormSelect>
-      </CCol>
-      <CCol :md="7"> </CCol>
-      <CCol :md="3">
-        <CInputGroup>
-          <CFormInput placeholder="Search..." v-model="searchQuery" @input="filterItems" />
-          <CInputGroupText>
-            <CIcon name="cil-magnifying-glass" />
-          </CInputGroupText>
-        </CInputGroup>
-      </CCol>
-    </CRow>
-
+  
     <div class="row">
       <div class="col-md-12">
         <div class="card mb-4">
@@ -52,7 +33,7 @@
                 <tr v-for="item in paginatedItems" :key="item.role_ID">
                   <td>{{ item.role_ID }}</td>
                   <td>{{ item.role_Name }}</td>
-                  <td>{{ item.Status }}</td>
+                  <td>{{ item.stat_Name }}</td>
                   <td>
                     <button
                       class="btn btn-warning btn-sm fontwhite"
@@ -164,6 +145,7 @@ import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from "@co
 import axios from "axios";
 
 
+
 export default {
   name: "ViewRoleComponents",
 
@@ -171,13 +153,10 @@ export default {
     const columns = ref([
       { key: "role_ID", label: "รหัสตำแหน่ง" },
       { key: "role_Name", label: "ชื่อตำแหน่ง" },
-      { key: "Status", label: "สถานะ" },
+      { key: "stat_Name", label: "สถานะ" },
     ]);
-
     const roles = ref([]);
-    const statuses = ref([]);
     const searchQuery = ref("");
-    const selectedStatus = ref("");
     const filteredItems = ref([]);
     const rowsPerPage = ref(10);
     const currentPage = ref(1);
@@ -191,7 +170,7 @@ export default {
     const fetchRoles = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getRoles", {
+        const response = await axios.get("/api/auth/getRolesForView", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -203,32 +182,14 @@ export default {
       }
     };
 
-    const fetchStatuses = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getStatusRole", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        statuses.value = response.data;
-      } catch (error) {
-        console.error("Error fetching statuses:", error);
-      }
-    };
-
     const filterItems = () => {
       filteredItems.value = roles.value
         .filter((item) => {
-          const matchesStatus = selectedStatus.value
-            ? item.stat_Name === selectedStatus.value
-            : true;
-
           const matchesSearch =
             item.role_ID?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
             item.role_Name?.toLowerCase().includes(searchQuery.value.toLowerCase());
 
-          return matchesStatus && matchesSearch;
+          return matchesSearch;
         })
         .sort((a, b) => a.role_ID.localeCompare(b.role_ID));
     };
@@ -254,10 +215,9 @@ export default {
 
     onMounted(() => {
       fetchRoles();
-      fetchStatuses();
     });
 
-    watch([selectedStatus, searchQuery], () => {
+    watch([searchQuery], () => {
       filterItems();
       currentPage.value = 1;
     });
@@ -265,9 +225,7 @@ export default {
     return {
       columns,
       roles,
-      statuses,
       searchQuery,
-      selectedStatus,
       filteredItems,
       paginatedItems,
       rowsPerPage,

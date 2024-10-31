@@ -96,7 +96,8 @@ const getRoom = async (req, res) => {
       room_ID, 
       room_Number, 
       status.stat_Name ,
-      sta.stat_Name AS status
+      sta.stat_Name AS status,
+      room.room_status_ID 
     FROM
       room
     INNER JOIN

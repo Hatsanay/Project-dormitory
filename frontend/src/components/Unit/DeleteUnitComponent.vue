@@ -8,24 +8,24 @@
             <CForm
               class="row g-3 needs-validation"
               novalidate
-              @submit="handleSubmitRoom"
+              @submit="handleSubmitUnit"
             >
               <CCol md="12">
                 <CRow class="mb-3">
                   <CCol md="3">
-                    <CFormLabel for="roomId">รหัสห้อง</CFormLabel>
-                    <CFormInput v-model="roomID" type="text" id="roomId" disabled />
+                    <CFormLabel for="unit_Id">รหัสหน่วย</CFormLabel>
+                    <CFormInput v-model="unit_ID" type="text" id="unit_Id" disabled />
                   </CCol>
                   <CCol md="9">
-                    <CFormLabel for="roomStatus">สถานะห้อง</CFormLabel>
-                    <CFormSelect v-model="roomStatus" id="roomStatus" required>
+                    <CFormLabel for="unitStatus">สถานะหน่วย</CFormLabel>
+                    <CFormSelect v-model="unitStatus" id="unitStatus" required>
                       <option value="">กรุณาเลือกสถานะ</option>
                       <option
-                        v-for="status in statusRoom"
-                        :key="status.stat_ID"
-                        :value="String(status.stat_ID)"
+                        v-for="sta in status"
+                        :key="sta.stat_ID"
+                        :value="String(sta.stat_ID)"
                       >
-                        {{ status.stat_Name }}
+                        {{ sta.stat_Name }}
                       </option>
                     </CFormSelect>
                   </CCol>
@@ -38,6 +38,7 @@
       </CCol>
     </CRow>
 
+    <!--Notifications -->
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
@@ -48,59 +49,58 @@
     </CToaster>
   </div>
 </template>
+
 <script>
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 
 export default {
-  name: "DeleteRoomComponent",
+  name: "DeleteUnitComponent",
   props: {
-    selectedRoom: {
+    selectedUnit: {
       type: Object,
       required: true,
     },
   },
   setup(props) {
-    const roomID = ref(props.selectedRoom?.room_ID || "");
-    const roomStatus = ref(props.selectedRoom?.stat_Name || "");
-    const statusRoom = ref([]);
+    const unit_ID = ref(props.selectedUnit?.ID || "");
+    const unitStatus = ref(props.selectedUnit?.status || "");
+    const status = ref([]);
     const toasts = ref([]);
 
     watch(
-      () => props.selectedRoom,
-      (newRoom) => {
-        roomID.value = newRoom?.room_ID || "";
-        roomStatus.value = newRoom?.room_status_ID || "";
+      () => props.selectedUnit,
+      (newUnit) => {
+        unit_ID.value = newUnit?.ID || "";
+        unitStatus.value = newUnit?.status || "";
       },
       { immediate: true }
     );
 
-    const fetchStatusRoom = async () => {
+    const fetchUnits = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getStatusRoomDelete", {
+        const response = await axios.get("/api/auth/getDeletableUnits", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        statusRoom.value = response.data;
+        status.value = response.data;
       } catch (error) {
-        console.error("Error fetching status:", error);
+        console.error("Error fetching units:", error);
       }
     };
-
-    const handleSubmitRoom = async (e) => {
+    const handleSubmitUnit = async (e) => {
       e.preventDefault();
       try {
         const payload = {
-          roomID: roomID.value,
-          room_status_ID: roomStatus.value,
+          ID: unit_ID.value,
+          statusID: unitStatus.value,
         };
-
-        await axios.put("/api/auth/updateRoomStatus", payload);
+        await axios.put("/api/auth/updateStatusUnit", payload);
         toasts.value.push({
           title: "สำเร็จ",
-          content: "สถานะห้องถูกอัปเดตเรียบร้อยแล้ว",
+          content: "ข้อมูลหน่วยถูกอัปเดตเรียบร้อยแล้ว",
         });
         setTimeout(() => window.location.reload(), 1000);
       } catch (error) {
@@ -108,20 +108,20 @@ export default {
           title: "ข้อผิดพลาด",
           content: "เกิดข้อผิดพลาดในการบันทึกข้อมูล",
         });
-        console.error("Error updating status:", error);
+        console.error("Error updating unit:", error);
       }
     };
 
     onMounted(() => {
-      fetchStatusRoom();
+      fetchUnits();
     });
 
     return {
-      roomID,
-      roomStatus,
-      statusRoom,
+      unit_ID,
+      unitStatus,
+      status,
       toasts,
-      handleSubmitRoom,
+      handleSubmitUnit,
     };
   },
 };

@@ -8,7 +8,6 @@ const registerPermission = async (req, res) => {
   const { permission_name } = req.body;
 
   try {
-    ////////////Auto-generate ID/////////////
     const query = "SELECT permission_ID FROM permissions ORDER BY permission_ID DESC LIMIT 1";
     const [result] = await db.promise().query(query);
     let maxId;
@@ -21,13 +20,11 @@ const registerPermission = async (req, res) => {
     const num = maxId + 1;
     const newPermissionID = "PER" + String(num).padStart(6, "0");
 
-    // Check if the permission name already exists
     const permissionChecked = await checkPermission(permission_name);
     if (permissionChecked) {
       return res.status(400).json({ error: "มีชื่อสิทธิ์นี้อยู่แล้ว" });
     }
 
-    /////// Insert into the database ////////
     const insertQuery = `
       INSERT INTO permissions
       (permission_ID, permission_name)
