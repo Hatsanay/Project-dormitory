@@ -1,30 +1,8 @@
 import DefaultLayout from '@/layouts/DefaultLayout';
 import { createRouter, createWebHashHistory } from 'vue-router';
-<<<<<<< HEAD
-=======
-
-import RegisResView from '../views/Admin/RegisResView.vue';
-import EditResView from '../views/Admin/EditResView.vue';
-import ViewResView from '../views/Admin/ViewResView.vue';
-
-import RegisRoom from '../views/Admin/RegisRoom.vue';
-import ViewRoomView from '../views/Admin/ViewRoomView.vue';
-import EditRoomView from '../views/Admin/EditRoomView.vue';
-
-import ViewUnitView from '../views/Admin/ViewUnitView.vue';
-import RegisUnit from '../views/Admin/RegisUnit.vue';
-
-import ViewStockView from '../views/Admin/ViewStockView.vue';
-import RegisStock from '../views/Admin/RegisStock.vue';
-
-import ViewTypeStockView from '../views/Admin/ViewTypeStockView.vue';
-import RegisTypeStock from '../views/Admin/RegisTypeStock.vue';
-
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
 import userDasboard from '../views/dashboard/Dashboard.vue';
 import AddReqView from '../views/Request/UserAddReqView.vue';
 import ReqView from '../views/Request/UserReqView.vue';
-//import Room from '../views/staticRoom/Room.vue';
 import EditResView from '../views/staticUsers/EditResView.vue';
 import RegisResView from '../views/staticUsers/RegisResView.vue';
 import ViewResView from '../views/staticUsers/ViewResView.vue';
@@ -34,20 +12,46 @@ import StaffMgnReqView from '../views/ManageRequets/StaffMgnReqView.vue';
 import starffTimeReqView from '../views/ManageRequets/starffTimeReqView.vue';
 import starffWithdrawReqView from '../views/ManageRequets/starffWithdrawReqView.vue';
 
+
+
+import EditRoomView from '../views/staticRoom/EditRoomView.vue';
 import RegisRoom from '../views/staticRoom/RegisRoom.vue';
 import ViewRoomView from '../views/staticRoom/ViewRoomView.vue';
-import EditRoomView from '../views/staticRoom/EditRoomView.vue';
 
-import ViewUnitView from '../views/staticUnit/ViewUnitView.vue';
+import EditUnitView from '../views/staticUnit/EditUnitView.vue';
 import RegisUnit from '../views/staticUnit/RegisUnit.vue';
+import ViewUnitView from '../views/staticUnit/ViewUnitView.vue';
 
-import ViewStockView from '../views/staticStock/ViewStockView.vue';
+import EditStockView from '../views/staticStock/EditStockView.vue';
 import RegisStock from '../views/staticStock/RegisStock.vue';
+import ViewStockView from '../views/staticStock/ViewStockView.vue';
 
-import ViewTypeStockView from '../views/staticTypeStock/ViewTypeStockView.vue';
+import EditTypeStockView from '../views/staticTypeStock/EditTypeStockView.vue';
 import RegisTypeStock from '../views/staticTypeStock/RegisTypeStock.vue';
+import ViewTypeStockView from '../views/staticTypeStock/ViewTypeStockView.vue';
 
+import EditTypeStatusView from '../views/staticTypeStatus/EditTypeStatusView.vue';
+import RegisTypeStatus from '../views/staticTypeStatus/RegisTypeStatus.vue';
 import ViewTypeStatusView from '../views/staticTypeStatus/ViewTypeStatusView.vue';
+
+import EditStatusView from '../views/staticStatus/EditStatusView.vue';
+import RegisStatus from '../views/staticStatus/RegisStatus.vue';
+import ViewStatusView from '../views/staticStatus/ViewStatusView.vue';
+
+import EditRoleView from '../views/staticRole/EditRoleView.vue';
+import RegisRole from '../views/staticRole/RegisRole.vue';
+import ViewRoleView from '../views/staticRole/ViewRoleView.vue';
+
+import RegisRenting from '../views/staticRenting/RegisRenting.vue';
+import ViewRentingView from '../views/staticRenting/ViewRentingView.vue';
+
+
+import EditPetitionTypeView from '../views/staticPetitionType/EditPetitionTypeView.vue';
+import RegisPetitionType from '../views/staticPetitionType/RegisPetitionType.vue';
+import ViewPetitionTypeView from '../views/staticPetitionType/ViewPetitionTypeView.vue';
+
+
+
 
 import { clearToken, hasPermission, isAuthenticated } from './auth';
 
@@ -61,14 +65,8 @@ const routes = [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        meta: { permission: 'view_users_dashboard', requiresAuth: true },
+        meta: { permission: 'home', requiresAuth: true },
         component: userDasboard,
-      },
-      {
-        path: '/adminDashboard',
-        name: 'AdminDashboard',
-        meta: { permission: 'view_admin_dashboard', requiresAuth: true },
-        component: () => import('../views/Admin/Dashboard.vue'),
       },
 
       ///ระบบแจ้งปัญหา///
@@ -126,62 +124,32 @@ const routes = [
       {
         path: '/RegisResident',
         name: 'เพิ่มผู้ใช้งาน',
-<<<<<<< HEAD
-=======
-        id: '5',
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
         meta: { permission: 'add_RegisResident', requiresAuth: true },
         component: RegisResView,
       },
       {
-<<<<<<< HEAD
         path: '/EditResView',
         name: 'แก้ไขข้อมูลผู้ใช้งาน',
         meta: { permission: 'edit_Resident', requiresAuth: true },
         component: EditResView,
       },
-
 
       ///จัดการค่าคงที่ห้องพัก///
       {
         path: '/ViewRoomView',
         name: 'จัดการห้องพัก',
-=======
-        path: '/ViewResident',
-        name: 'จัดการผู้ใช้งาน',
-        id: '6',
-        meta: { permission: 'view_RegisResident', requiresAuth: true },
-        component: ViewResView,
-      },
-      {
-        path: '/EditResView',
-        name: 'แก้ไขข้อมูลผู้ใช้งาน',
-        id: '7',
-        meta: { permission: 'edit_Resident', requiresAuth: true },
-        component: EditResView,
-      },
-      {
-        path: '/ViewRoomView',
-        name: 'จัดการห้องพัก',
-        id: '8',
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
         meta: { permission: 'view_Room', requiresAuth: true },
         component: ViewRoomView,
       },
       {
         path: '/RegisRoom',
         name: 'เพิ่มห้องพัก',
-<<<<<<< HEAD
-=======
-        id: '9',
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
         meta: { permission: 'add_RegisRoom', requiresAuth: true },
         component: RegisRoom,
       },
       {
         path: '/EditRoomView',
         name: 'เเก้ไขห้องพัก',
-<<<<<<< HEAD
         meta: { permission: 'Edit_Room', requiresAuth: true },
         component: EditRoomView,
       },
@@ -190,50 +158,40 @@ const routes = [
       {
         path: '/ViewUnitView',
         name: 'จัดการหน่วยสต็อก',
-=======
-        id: '10',
-        meta: { permission: 'Edit_Room', requiresAuth: true },
-        component: EditRoomView,
-      },
-      {
-        path: '/ViewUnitView',
-        name: 'จัดการหน่วยสต็อก',
-        id: '11',
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
         meta: { permission: 'View_Unit', requiresAuth: true },
         component: ViewUnitView,
       },
       {
         path: '/RegisUnit',
         name: 'เพิ่มหน่วยสต็อก',
-<<<<<<< HEAD
         meta: { permission: 'add_Unit', requiresAuth: true },
         component: RegisUnit,
+      },
+      {
+        path: '/EditUnitView',
+        name: 'ตั้งค่าหน่วยสต็อก',
+        meta: { permission: 'edit_Unit', requiresAuth: true },
+        component: EditUnitView,
       },
 
       ///จัดการค่าคงที่ประเภทสต็อก///
       {
         path: '/ViewTypeStockView',
         name: 'จัดการข้อมูลประเภทสต็อก',
-=======
-        id: '12',
-        meta: { permission: 'add_Unit', requiresAuth: true },
-        component: RegisUnit,
-      },
-      {
-        path: '/ViewTypeStockView',
-        name: 'จัดการข้อมูลประเภทสต็อก',
-        id: '13',
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
         meta: { permission: 'View_TypeStock', requiresAuth: true },
         component: ViewTypeStockView,
       },
       {
         path: '/RegisTypeStock',
         name: 'เพิ่มข้อมูลประเภทสต็อก',
-<<<<<<< HEAD
         meta: { permission: 'add_TypeStock', requiresAuth: true },
         component: RegisTypeStock,
+      },
+      {
+        path: '/EditTypeStockView',
+        name: 'แก้ไขข้อมูลประเภทสต็อก',
+        meta: { permission: 'edit_TypeStock', requiresAuth: true },
+        component: EditTypeStockView,
       },
 
       ///จัดการค่าคงที่สต็อก///
@@ -249,15 +207,104 @@ const routes = [
         meta: { permission: 'add_Stock', requiresAuth: true },
         component: RegisStock,
       },
+      
+      {
+        path: '/EditStockView',
+        name: 'แก้ไขข้อมูลสต็อก',
+        meta: { permission: 'edit_Stock', requiresAuth: true },
+        component: EditStockView,
+      },
 
-      ///จัดการค่าคงที่สต็อก///
+      ///จัดการค่าคงที่ประเภทสถานะ///
       {
         path: '/ViewTypeStatusView',
         name: 'จัดการข้อมูลประเภทสถานะ',
         meta: { permission: 'View_TypeStatus', requiresAuth: true },
         component: ViewTypeStatusView,
       },
+      {
+        path: '/RegisTypeStatus',
+        name: 'เพิ่มข้อมูลประเภทสถานะ',
+        meta: { permission: 'add_TypeStatus', requiresAuth: true },
+        component: RegisTypeStatus,
+      },
+      {
+        path: '/EditTypeStatusView',
+        name: 'แก้ไขข้อมูลประเภทสถานะ',
+        meta: { permission: 'edit_TypeStatus', requiresAuth: true },
+        component: EditTypeStatusView,
+      },
 
+      ///จัดการค่าคงที่สถานะ///
+      {
+        path: '/ViewStatusView',
+        name: 'จัดการข้อมูลสถานะ',
+        meta: { permission: 'View_Status', requiresAuth: true },
+        component: ViewStatusView,
+      },
+      {
+        path: '/RegisStatus',
+        name: 'เพิ่มข้อมูลสถานะ',
+        meta: { permission: 'add_Status', requiresAuth: true },
+        component: RegisStatus,
+      },
+      {
+        path: '/EditStatusView',
+        name: 'แก้ไขข้อมูลสถานะ',
+        meta: { permission: 'edit_Status', requiresAuth: true },
+        component: EditStatusView,
+      },
+
+      ///จัดการค่าคงที่ตำแหน่ง///
+      {
+        path: '/ViewRoleView',
+        name: 'จัดการข้อมูลตำแหน่ง',
+        meta: { permission: 'View_Role', requiresAuth: true },
+        component: ViewRoleView,
+      },
+      {
+        path: '/RegisRole',
+        name: 'เพิ่มข้อมูลตำแหน่ง',
+        meta: { permission: 'add_Role', requiresAuth: true },
+        component: RegisRole,
+      },
+      {
+        path: '/EditRoleView',
+        name: 'แก้ไขข้อมูลตำแหน่ง',
+        meta: { permission: 'edit_Role', requiresAuth: true },
+        component: EditRoleView,
+      },
+
+      {
+        path: '/ViewRentingView',
+        name: 'จัดการข้อมูลการเช่า',
+        meta: { permission: 'View_Renting', requiresAuth: true },
+        component: ViewRentingView,
+      },
+      {
+        path: '/RegisRenting',
+        name: 'เพิ่มข้อมูลการเช่า',
+        meta: { permission: 'add_Renting', requiresAuth: true },
+        component: RegisRenting,
+      },
+      {
+        path: '/ViewPetitionTypeView',
+        name: 'จัดการข้อมูลประเภทคำร้อง',
+        meta: { permission: 'View_PetitionType', requiresAuth: true },
+        component: ViewPetitionTypeView,
+      },
+      {
+        path: '/RegisPetitionType',
+        name: 'เพิ่มข้อมูลประเภทคำร้อง',
+        meta: { permission: 'add_PetitionType', requiresAuth: true },
+        component: RegisPetitionType,
+      },
+      {
+        path: '/EditPetitionTypeView',
+        name: 'แก้ไขข้อมูลประเภทคำร้อง',
+        meta: { permission: 'edit_PetitionType', requiresAuth: true },
+        component: EditPetitionTypeView,
+      },
 
       ///ตั้งค่า///
       {
@@ -269,24 +316,6 @@ const routes = [
       
 
 
-=======
-        id: '14',
-        meta: { permission: 'add_TypeStock', requiresAuth: true },
-        component: RegisTypeStock,
-      },
-      {
-        path: '/ViewStockView',
-        name: 'จักการข้อมูลสต็อก',
-        id: '15',
-        meta: { permission: 'View_Stock', requiresAuth: true },
-        component: ViewStockView,
-      },
-
-
-
-      
-      
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
     ],
   },
   {
@@ -296,79 +325,6 @@ const routes = [
   },
 ];
 
-<<<<<<< HEAD
-=======
-const permissionsMap = [
-  'view_users_dashboard',  // Bit 1
-  'view_users_reques',     // Bit 2
-  'view_users_Setting',    // Bit 3
-  'view_admin_dashboard',  // Bit 4
-  'view_RegisResident',    // Bit 5
-  'add_RegisResident',
-  'edit_Resident',
-  'view_Room',
-  'add_RegisRoom',
-  'Edit_Room',
-  'View_Unit',
-  'add_Unit',
-  'View_TypeStock',
-  'add_TypeStock',
-  'View_Stock',
-
-
-];
-
-
-const decodeJWTTH = (token) => {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-  var payload = decodeURIComponent(
-    atob(base64)
-      .split("")
-      .map(function (c) {
-        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-      })
-      .join("")
-  );
-  return JSON.parse(payload);
-};
-
-const token = localStorage.getItem("token");
-
-let permissionsToken = "";
-if (token) {
-  const decodedPayload = decodeJWTTH(token);
-  // console.log(decodedPayload);
-  permissionsToken = decodedPayload.permissions;
-  // console.log("permissions:", permissions);
-} else {
-  console.log("Token not found");
-}
-
-
-permissionsToken = "1111111111111111111111111111";
-// console.log(permissionsToken);
-
-let permissions = permissionsToken.split('').map(bit => bit === '1');
-function hasPermission(permission) {
-  const index = permissionsMap.indexOf(permission);
-  if (index === -1) {
-    console.error('Permission not found:', permission);
-    return false;
-  }
-  return permissions[index] === true;
-}
-
-function clearToken() {
-  localStorage.removeItem('token');
-  sessionStorage.removeItem('token');
-}
-
-function isAuthenticated() {
-  return  !!localStorage.getItem('token') || !!sessionStorage.getItem('token');
-}
-
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes,

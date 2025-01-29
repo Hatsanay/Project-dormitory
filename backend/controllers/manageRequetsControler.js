@@ -24,6 +24,7 @@ const getReq = async (req, res) => {
     ORDER BY
       maintenancerequests.mainr_ID ASC
     `;
+    //STA000011 = รอนิติบุคคลตรวจสอบ
 
     const [result] = await db.promise().query(query);
     if (result.length === 0) {
@@ -52,7 +53,7 @@ const getReq = async (req, res) => {
 };
 
 const denyReq = async (req, res) => {
-  const { mainr_ID, mainrstatus_ID = "STA000018" } = req.body;
+  const { mainr_ID, mainrstatus_ID = "STA000018" } = req.body; //STA000018 = เจ้าหน้าที่ปฎิเสธคำร้อง
 
   try {
     if (!mainr_ID) {
@@ -75,7 +76,7 @@ const denyReq = async (req, res) => {
 };
 
 const sendtomacReq = async (req, res) => {
-  const { mainr_ID, mainrstatus_ID = "STA000012" } = req.body;
+  const { mainr_ID, mainrstatus_ID = "STA000012" } = req.body; //STA000012 = รอเจ้าหน้าที่ซ่อมบำรุงตรวจสอบ
 
   try {
     if (!mainr_ID) {
@@ -122,6 +123,7 @@ const getMacReq = async (req, res) => {
       ORDER BY
         maintenancerequests.mainr_ID ASC
     `;
+    //STA000012 = รอเจ้าหน้าที่ซ่อมบำรุงตรวจสอบ
 
     const [result] = await db.promise().query(query);
     if (result.length === 0) {
@@ -151,11 +153,11 @@ const getMacReq = async (req, res) => {
 
 const getMacReqById = async (req, res) => {
   try {
-    const userId = req.query.id;
+    // const userId = req.query.id;
 
-    if (!userId) {
-      return res.status(400).json({ error: "โปรดระบุ id" });
-    }
+    // if (!userId) {
+    //   return res.status(400).json({ error: "โปรดระบุ id" });
+    // }
 
     const query = `
     SELECT
@@ -177,13 +179,13 @@ const getMacReqById = async (req, res) => {
         INNER JOIN room on room.room_ID = renting.renting_room_ID
         INNER JOIN assessproblem ON assessproblem.asp_mainr_ID = maintenancerequests.mainr_ID
     WHERE
-      users.user_ID = ?
-      AND maintenancerequests.mainr_Stat_ID = "STA000012"
+      maintenancerequests.mainr_Stat_ID = "STA000012"
     ORDER BY
       maintenancerequests.mainr_ID ASC
     `;
+    //STA000012 = รอเจ้าหน้าที่ซ่อมบำรุงตรวจสอบ
 
-    const [result] = await db.promise().query(query, [userId]);
+    const [result] = await db.promise().query(query);
 
     if (result.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลการแจ้งซ่อม" });
@@ -303,6 +305,7 @@ const submitRequisition = async (req, res) => {
       "STA000020", // สถานะเริ่มต้น "ยังไม่เบิก"
     ]);
 
+
     // บันทึกข้อมูลในตาราง reqlist (รายละเอียดการเบิก)
     const insertReqlistQuery = `
       INSERT INTO requisition_list (reqlist_order, reqlist_stock_ID, reqlist_requisition_ID, quantity , reqlist_stat_ID)
@@ -337,11 +340,143 @@ const submitRequisition = async (req, res) => {
 
       await db.promise().query(updateQuery, [ "STA000023", requisition_mainr_ID]);
     }
+    //STA000023 = กำลังดำเนินการตรวจสอบ
 
     res.status(201).json({ message: "บันทึกข้อมูลการเบิกวัสดุสำเร็จ" });
   } catch (error) {
     console.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล:", error);
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการบันทึกข้อมูล" });
+  }
+};
+
+
+const getSuccessReq = async (req, res) => {
+  try {
+    const userId = req.query.id;
+
+    if (!userId) {
+      return res.status(400).json({ error: "โปรดระบุ id" });
+    }
+
+    const query = `
+    SELECT
+    maintenancerequests.mainr_ID,
+    CONCAT(users.user_Fname, ' ', users.user_Lname) AS fullname,
+    room.room_Number AS roomNumber,
+    maintenancerequests.mainr_ProblemTitle,
+    maintenancerequests.mainr_ProblemDescription,
+    maintenancerequests.mainr_Date,
+    petitiontype.Type AS Type,
+    status.stat_Name AS status,
+    CONCAT(
+        MIN(schedulerepairs.Date), ' ', 
+        MIN(schedulerepairs.startTime), ' - ', 
+        MIN(schedulerepairs.endTime)
+    ) AS scheduleTime,
+    MIN(schedulerepairs.Date) AS Date,
+    MIN(schedulerepairs.startTime) AS startTime,
+    MIN(schedulerepairs.endTime) AS endTime
+FROM 
+    maintenancerequests
+    INNER JOIN renting ON renting.renting_ID = maintenancerequests.mainr_renting_ID
+    INNER JOIN users ON users.user_ID = renting.renting_user_ID
+    INNER JOIN petitiontype ON petitiontype.ID = maintenancerequests.mainr_pattyp_ID
+    INNER JOIN status ON status.stat_ID = maintenancerequests.mainr_Stat_ID
+    INNER JOIN room ON room.room_ID = renting.renting_room_ID
+    LEFT JOIN schedulerepairs ON schedulerepairs.sdr_mainr_ID = maintenancerequests.mainr_ID
+    LEFT JOIN scheculerepairsn_list ON scheculerepairsn_list.srl_sdr_ID = schedulerepairs.ID
+WHERE
+    scheculerepairsn_list.srl_user_ID = ? 
+    AND maintenancerequests.mainr_Stat_ID IN ('STA000014', 'STA000015')
+GROUP BY
+    maintenancerequests.mainr_ID
+ORDER BY
+    maintenancerequests.mainr_ID ASC;
+
+    `;
+    //STA000014 = รอซ่อม
+    //STA000015 = กำลังดำเนินการซ่อม
+
+
+    const [result] = await db.promise().query(query, [userId]);
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลการแจ้งซ่อม" });
+    }
+    const formattedResult = result.map((item) => ({
+      ...item,
+      mainr_Date:
+        new Date(item.mainr_Date).toLocaleDateString("th-TH", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }) +
+        " " +
+        new Date(item.mainr_Date).toLocaleTimeString("th-TH", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+    }));
+
+    res.status(200).json(formattedResult);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+const getStatusReq = async (req, res) => {
+  try {
+    const query = `SELECT * FROM status 
+    WHERE stat_ID = "STA000014"
+    OR stat_ID = "STA000015"
+    OR stat_ID = "STA000016"
+    `;
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+    //STA000014 = รอซ่อม
+    //STA000015 = กำลังดำเนินการซ่อม
+    //STA000016 = เสร็จสิ้น
+
+const updateStatusReq = async (req, res) => {
+  const { mainr_ID, mainrstatus_ID } = req.body;
+
+  try {
+    if (!mainr_ID || !mainrstatus_ID) {
+      return res.status(400).json({ error: "โปรดระบุ mainr_ID และ mainrstatus_ID" });
+    }
+
+    let updateQuery = `
+      UPDATE maintenancerequests 
+      SET mainr_Stat_ID = ?
+      WHERE mainr_ID = ?
+    `;
+
+    const queryParams = [mainrstatus_ID, mainr_ID];
+
+    if (mainrstatus_ID === "STA000016") {
+      updateQuery = `
+        UPDATE maintenancerequests 
+        SET mainr_Stat_ID = ?, mainr_SuccessDate = NOW()
+        WHERE mainr_ID = ?
+      `;
+    }
+
+    const [result] = await db.promise().query(updateQuery, queryParams);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลที่ต้องการอัปเดต" });
+    }
+
+    res.status(200).json({ message: "สถานะการแจ้งซ่อมถูกอัปเดตเรียบร้อยแล้ว" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
 };
 
@@ -354,4 +489,7 @@ module.exports = {
   getMacReqById,
   getStock,
   submitRequisition,
+  getSuccessReq,
+  getStatusReq,
+  updateStatusReq,
 };

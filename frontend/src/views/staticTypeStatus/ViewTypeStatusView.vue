@@ -9,7 +9,6 @@ import ViewTypeStatusComponents from '../../components/TypeStatus/ViewTypeStatus
 </template>
 
 <script>
-// console.log(token);
 export default {
   name: "ViewTypeStatusView",
 };

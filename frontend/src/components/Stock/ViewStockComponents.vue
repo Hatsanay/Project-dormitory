@@ -62,13 +62,18 @@
                   <td>
                     <button
                       class="btn btn-warning btn-sm fontwhite"
-                      @click="$router.push({ path: '', query: { id: item.ID } })"
-                    >
+                      @click="
+                      $router.push({ 
+                        path: '/EditStockView', 
+                        query: { id: item.ID } })"
+                    ><i class="fa-solid fa-user-pen"></i>
                       แก้ไข
                     </button>
                   </td>
                   <td>
-                    <button class="btn btn-danger btn-sm fontwhite" @click="showModalDelete(item)">
+                    <button class="btn btn-danger btn-sm fontwhite" 
+                    @click="showModalDelete(item)">
+                      <i class="fa-solid fa-trash"></i>
                       ลบ
                     </button>
                   </td>
@@ -114,6 +119,27 @@
       <div class="col-md-6"></div>
     </div>
 
+    <CModal
+      alignment="center"
+      :visible="visibleDeleteModal"
+      @close="closeDeleteModal"
+      size="lg"
+    >
+      <CModalHeader>
+        <CModalTitle>ยืนยันการลบข้อมูล</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <DeleteStockComponent
+          :selectedStock="selectedStock"
+          :closeModal="closeDeleteModal"
+          :refreshViewData="fetchStatus"
+        />
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeDeleteModal">Close</CButton>
+      </CModalFooter>
+    </CModal>
+
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
@@ -128,16 +154,17 @@
 <script>
 import { ref, watch, onMounted, computed } from "vue";
 import axios from "axios";
-import RegisStockComponent from "./RegisStockComponent.vue";
+// import RegisStockComponent from "./RegisStockComponent.vue";
+// import EditeStockComponents from "./EditeStockComponents.vue";
+import DeleteStockComponent from "./DeleteStockComponent.vue";
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
 export default {
   name: "ViewStockComponents",
   components: {
-    RegisStockComponent,
+    // RegisStockComponent,
+    // EditeStockComponents,
+    DeleteStockComponent
     },
   setup() {
     const columns = ref([
@@ -156,6 +183,8 @@ export default {
     const currentPage = ref(1);
     const toasts = ref([]);
     const types = ref([]);
+    const selectedStock = ref({});
+    const visibleDeleteModal = ref(false);
 
     const totalPages = computed(() => {
       return Math.ceil(filteredItems.value.length / rowsPerPage.value);
@@ -164,7 +193,7 @@ export default {
     const fetchStock = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/auth/getStock", {
+        const response = await axios.get("/api/auth/getStockforstock", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -214,10 +243,19 @@ export default {
       return matchesClass && matchesSearch;
     })
     .sort((a, b) => {
-      return a.ID - b.ID; // Numeric sorting
+      return a.ID - b.ID; 
     });
 };
+const showModalDelete = (item) => {
+  selectedStock.value = item;
+      visibleDeleteModal.value = true;
+    };
 
+    const closeDeleteModal = () => {
+      visibleDeleteModal.value = false;
+      selectedStock.value = {};
+      fetchStatus();
+    };
 
     const setPage = (page) => {
       currentPage.value = page;
@@ -251,6 +289,10 @@ export default {
       showToast,
       toasts,
       types,
+      selectedStock,
+      showModalDelete,
+      closeDeleteModal,
+      visibleDeleteModal
     };
   },
 };

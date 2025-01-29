@@ -61,7 +61,7 @@ export default {
     const toasts = ref([]);
     const unitStatus = ref("");
     const isUnitInvalid = computed(() => {
-      return validatedTooltip01.value && (unitName.value.trim() === "" || !/^[\u0E00-\u0E7F\s]+$/.test(unitName.value));
+      return validatedTooltip01.value && unitName.value.trim() === "" ;
     });
 
     const unitErrorMessage = computed(() => {
@@ -86,13 +86,10 @@ export default {
       try {
         const response = await axios.post("/api/auth/registerUnit", {
           unitName: unitName.value,
-          userPost: "USE000001", // Replace with actual user ID if necessary
           unitStatus: unitStatus.value,
         });
 
         createToast("Success", response.data.message);
-
-        // Delay 1 second before refreshing the page
         setTimeout(() => {
           window.location.reload();
         }, 1000);

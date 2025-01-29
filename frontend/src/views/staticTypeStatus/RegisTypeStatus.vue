@@ -3,9 +3,9 @@ import RegisTypeStatusComponent from '../../components/TypeStatus/RegisTypeStatu
 </script>
 
 <template>
-  <div>
+<div>
     <RegisTypeStatusComponent></RegisTypeStatusComponent>
-  </div>
+</div>
 </template>
 
 <script>

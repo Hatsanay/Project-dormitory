@@ -40,46 +40,65 @@ export const decodeJWTTH = (token) => {
   
   export const hasPermission = (permission) => {
     const permissionsMap = [
-      'view_users_dashboard',
-      'view_admin_dashboard',
-
+      'logout',                   //0
+      'home',                     //1
+      'userdashboard',            //2
+      'addmindashboard',          //3
+      'macdashboard',             //4
+      'managerdashboard',         //5
       ///ระบบแจ้งปัญหา///
-      'add_reques',
-      'view_reques',
+      'view_reques',              //6
+      'add_reques',               //7
       ///ระบบจัดการการแจ้งปัญหา///
-      'view_manage_reques',
-      'view_macmanage_reques',
+      'view_manage_reques',       //8
+      'view_macmanage_reques',    //9
       ///ระบบจัดการการเบิกวัสดุ///
-      'view_WithdrawReq',
+      'view_WithdrawReq',         //10
       ///ระบบนัดเวลาเข้าซ่อม///
-      'view_TimeReq',
+      'view_TimeReq',             //11
       ///จัดการค่าคงที่ผู้ใช้งาน///
-      'view_RegisResident', 
-      'add_RegisResident',
-      'edit_Resident',
-      ///จัดการค่าคงที่ห้องพัก///
-      'view_Room',
-      'add_RegisRoom',
-      'Edit_Room',
-      
-      'View_Unit',
-      'add_Unit',
-      
-      'View_TypeStock',
-      'add_TypeStock',
-            
-      'View_Stock',
-      'add_Stock',
+      'view_RegisResident',       //12
+      'add_RegisResident',        //13
+      'edit_Resident',            //14
+      ///จัดการค่าคงที่ผู้ใช้งาน///
+      'view_Room',                //15
+      'add_RegisRoom',            //16
+      'Edit_Room',                //17
 
-      'View_TypeStatus',
+      'View_Stock',               //18
+      'add_Stock',                //19
+      'edit_Stock',               //20
 
+      'View_TypeStock',           //21
+      'add_TypeStock',            //22
+      'edit_TypeStock',           //23
 
-      ///ตั้งค่า///
-      'view_users_Setting',
+      'View_Status',              //24
+      'add_Status',               //25
+      'edit_Status',              //26
 
-        ];
+      'View_TypeStatus',          //27
+      'add_TypeStatus',           //28
+      'edit_TypeStatus',          //29
+
+      'View_Unit',                //30
+      'add_Unit',                 //31
+      'edit_Unit',                //32
+
+      'View_Role',                //33
+      'add_Role',                 //34
+      'edit_Role',                //35
+
+      'View_Renting',             //36
+      'add_Renting',              //37
+
+      'View_PetitionType',        //38
+      'add_PetitionType',         //39
+      'edit_PetitionType',        //40
+    ];
     
     const permissionsToken = getPermissions();
+    localStorage.setItem("permissions", permissionsToken);
     const UserID = getUserID();
     localStorage.setItem("userID", UserID);
     let lUserId = localStorage.getItem('userID');

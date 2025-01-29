@@ -432,11 +432,7 @@ export default {
     const isPostInvalid = computed(() => {
       return validatedTooltip01.value && resPost.value.trim() === "";
     });
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
     const resPostErrorMessage = computed(() => {
       if (resPost.value.trim() === "") {
         return "กรุณากรอกรหัสไปรษณีย์";
@@ -469,10 +465,6 @@ export default {
 
     const handleSubmit = async () => {
       try {
-<<<<<<< HEAD
-=======
-       
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
         const response = await axios.post("/api/auth/registerUser", {
           userFname: resFname.value,
           userLname: resLname.value,
@@ -493,7 +485,6 @@ export default {
           userStatus_ID: "STA000003",
         });
 
-<<<<<<< HEAD
         await Swal.fire({
           icon: "success",
           title: "บันทึกสำเร็จ",
@@ -508,13 +499,6 @@ export default {
         // setTimeout(() => {
         //   window.location.reload();
         // }, 1500);
-=======
-        
-        createToast("Success", response.data.message);
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
       } catch (error) {
         let errorMessage = "เกิดข้อผิดพลาดในการลงทะเบียนผู้ใช้";
 
@@ -522,7 +506,6 @@ export default {
           errorMessage = error.response.data.error;
         }
 
-<<<<<<< HEAD
         await Swal.fire({
           icon: "error",
           title: "เกิดข้อผิดพลาด",
@@ -530,10 +513,6 @@ export default {
           confirmButtonText: "ตกลง",
         });
         // createToast("Error", errorMessage);
-=======
-        
-        createToast("Error", errorMessage);
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
         console.error("Error:", error);
       }
     };
@@ -561,11 +540,7 @@ export default {
         resPost.value = response.data.zip_code || "";
       } catch (error) {
         console.error("เกิดข้อผิดพลาดในการดึงรหัสไปรษณีย์:", error);
-<<<<<<< HEAD
         resPost.value = "";
-=======
-        resPost.value = ""; 
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
       }
     };
 
@@ -667,8 +642,6 @@ export default {
       fetchAmphures();
     });
 
-
-
     watch(resAmphures, () => {
       fetchTambons();
     });
@@ -678,7 +651,6 @@ export default {
         await fetchZipcode(resTambons.value);
       }
     });
-
 
     return {
       selectedDate,

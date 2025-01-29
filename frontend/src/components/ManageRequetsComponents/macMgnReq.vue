@@ -23,6 +23,28 @@
           แจ้งเบิกวัสดุอุปกรณ์
         </a>
       </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          :class="{ active: activeTab === '3' }"
+          @click.prevent="setActiveTab('3')"
+          href="#"
+        >
+          <i class="fa-solid fa-list-check"></i>
+          กำลังดำเนินการซ่อม
+        </a>
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          :class="{ active: activeTab === '4' }"
+          @click.prevent="setActiveTab('4')"
+          href="#"
+        >
+          <i class="fa-solid fa-calendar-check"></i>
+          ปฎิทินตารางเวลานัดหมาย
+        </a>
+      </li>
     </ul>
 
     <div class="tab-content mt-3">
@@ -601,6 +623,237 @@
         <CButton color="primary" @click="submitAmountSelection">ยืนยัน</CButton>
       </CModalFooter>
     </CModal>
+
+    <div v-if="activeTab === '3'" class="tab-pane active">
+      <CRow style="margin-bottom: 10px">
+        <CCol :md="9"></CCol>
+        <CCol :md="3" style="margin-bottom: 10px">
+          <CInputGroup>
+            <CFormInput placeholder="ค้นหา..." v-model="searchQueryTab3" />
+            <CInputGroupText>
+              <CIcon name="cil-magnifying-glass" />
+            </CInputGroupText>
+          </CInputGroup>
+        </CCol>
+      </CRow>
+
+      <CRow>
+        <CCol
+          v-for="item in paginatedItemsTab3"
+          :key="item.mainr_ID"
+          md="12"
+          class="mb-4"
+        >
+          <CCard class="card-modern" @click="showModalTab3(item)">
+            <CCardHeader class="card-header-modern">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="m-0 card-title-modern">
+                  <i class="fa-solid fa-circle-user"></i> ผู้แจ้ง: {{ item.fullname }}
+                </h5>
+                <span class="date-modern">{{ item.mainr_Date }}</span>
+              </div>
+            </CCardHeader>
+            <CCardBody>
+              <div class="d-flex flex-column">
+                <p>
+                  <strong><i class="fa-regular fa-id-card"></i> รหัส: </strong>
+                  {{ item.mainr_ID }}
+                </p>
+                <p>
+                  <strong><i class="fa-solid fa-igloo"></i> ห้อง:</strong>
+                  {{ item.roomNumber }}
+                </p>
+                <p>
+                  <strong><i class="fa-regular fa-newspaper"></i> หัวเรื่อง:</strong>
+                  {{ item.mainr_ProblemTitle }}
+                </p>
+                <p>
+                  <strong><i class="fa-solid fa-screwdriver-wrench"></i> ประเภท:</strong>
+                  {{ item.Type }}
+                </p>
+              </div>
+              <div
+                v-if="item.scheduleTime"
+                class="d-flex justify-content-between align-items-center"
+              >
+                <p></p>
+                <p class="status-modern mb-0">
+                  <strong>เวลานัด:</strong> {{ item.scheduleTime }}
+                </p>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <p></p>
+                <p class="status-modern mb-0">
+                  <strong>สถานะ:</strong> {{ item.status }}
+                </p>
+              </div>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
+
+      <div class="card-footer-modern">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <CButton
+            class="btn-modern"
+            :disabled="currentPageTab3 === 1"
+            @click="currentPageTab3--"
+          >
+            Previous
+          </CButton>
+
+          <div>
+            <span>Showing page {{ currentPageTab3 }} of {{ totalPagesTab3 }}</span>
+          </div>
+
+          <CButton
+            class="btn-modern"
+            :disabled="currentPageTab3 === totalPagesTab3"
+            @click="currentPageTab3++"
+          >
+            Next
+          </CButton>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <span>Show</span>
+          <select
+            v-model="rowsPerPageTab3"
+            class="form-select-modern mx-2"
+            style="width: auto"
+          >
+            <option :value="3">3</option>
+            <option :value="5">5</option>
+            <option :value="10">10</option>
+            <option :value="20">20</option>
+            <option :value="50">50</option>
+            <option :value="100">100</option>
+          </select>
+          <span>entries</span>
+        </div>
+      </div>
+
+      <CModal
+        alignment="center"
+        :visible="visibleModelDetailRequestTab3"
+        @close="closeModelDetailRequestTab3"
+        aria-labelledby="VerticallyCenteredExample"
+        size="xl"
+        backdrop="static"
+      >
+        <CModalHeader>
+          <CModalTitle id="ModelDetailRequest">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+            รายละเอียดการแจ้งซ่อม ID: {{ selectedUserTab3.mainr_ID }}
+            <span>วันที่: {{ selectedUserTab3.mainr_Date }}</span>
+          </CModalTitle>
+        </CModalHeader>
+        <CModalBody style="max-height: 400px; overflow-y: auto">
+          <p><strong>ผู้แจ้ง: </strong> {{ selectedUserTab3.fullname }}</p>
+          <p><strong>ห้อง:</strong> {{ selectedUserTab3.roomNumber }}</p>
+          <p><strong>หัวเรื่อง:</strong> {{ selectedUserTab3.mainr_ProblemTitle }}</p>
+          <p>
+            <strong>รายละเอียด:</strong> {{ selectedUserTab3.mainr_ProblemDescription }}
+          </p>
+          <p><strong>ประเภท:</strong> {{ selectedUserTab3.Type }}</p>
+          <p><strong>สถานะ:</strong> {{ selectedUserTab3.status }}</p>
+
+          <div v-if="imageUrls.length > 0" class="mt-3">
+            <div
+              style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center"
+            >
+              <img
+                v-for="(url, index) in imageUrls"
+                :key="index"
+                :src="getImageUrl(url)"
+                alt="รูปภาพแจ้งซ่อม"
+                style="
+                  max-width: 500px;
+                  max-height: 500px;
+                  object-fit: cover;
+                  cursor: pointer;
+                "
+                @click="openImageModal(index)"
+              />
+            </div>
+          </div>
+        </CModalBody>
+
+        <CModalFooter>
+          <CButton color="secondary" @click="closeModelDetailRequestTab3">ปิด</CButton>
+          <CButton color="primary" @click="showStatusModal()">
+            <i class="fa-solid fa-check"></i>
+            ปรับสถานะ
+          </CButton>
+        </CModalFooter>
+      </CModal>
+
+      <CModal
+        alignment="center"
+        :visible="visibleStatusModal"
+        @close="closeStatusModal"
+        aria-labelledby="VerticallyCenteredExample"
+        size="lg"
+      >
+        <CModalHeader>
+          <CModalTitle id="VerticallyCenteredExample">เลือกสถา่นะ</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow>
+            <CCol :md="12">
+              <CCard class="mb-4">
+                <CCardBody>
+                  <CForm
+                    class="row g-3 needs-validation"
+                    novalidate
+                    @submit="handleSubmitTooltip01"
+                  >
+                    <CCol md="12">
+                      <CRow class="mb-3">
+                        <CCol md="3">
+                          <CFormLabel for="resId">รหัส</CFormLabel>
+                          <CFormInput
+                            :value="selectedUserTab3.mainr_ID"
+                            type="text"
+                            id="resId"
+                            disabled
+                          />
+                        </CCol>
+                        <CCol md="9">
+                          <CFormLabel for="resStatus">สถานะ</CFormLabel>
+                          <CFormSelect
+                            v-model="resStatus"
+                            id="resStatus"
+                            required
+                            @change="() => console.log('Status selected:', resStatus)"
+                          >
+                            <option value="">กรุณาเลือกสถานะ</option>
+                            <option
+                              v-for="status in statusUser"
+                              :key="status.stat_ID"
+                              :value="status.stat_ID"
+                            >
+                              {{ status.stat_Name }}
+                            </option>
+                          </CFormSelect>
+                        </CCol>
+                      </CRow>
+                    </CCol>
+                    <CButton type="submit" color="primary">บันทึก</CButton>
+                  </CForm>
+                </CCardBody>
+              </CCard>
+            </CCol>
+          </CRow>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" @click="closeDeleteModal">ปิด</CButton>
+        </CModalFooter>
+      </CModal>
+    </div>
+    <div v-if="activeTab === '4'" class="tab-pane active">
+      <div align="center">ฟีเจอร์กำลังพัฒนา</div>
+    </div>
   </div>
 </template>
 
@@ -619,28 +872,94 @@ export default {
     const activeTab = ref("1");
     const searchQueryTab1 = ref("");
     const searchQueryTab2 = ref("");
+    const searchQueryTab3 = ref("");
     const searchQueryStock = ref("");
     const itemsTab1 = ref([]);
+    const itemsTab3 = ref([]);
+    const statusUser = ref([]);
     const withdrawItems = ref([]);
     const stockItems = ref([]);
     const selectedStockItems = ref([]);
     const rowsPerPageTab1 = ref(3);
+    const rowsPerPageTab3 = ref(3);
     const rowsPerPageWithdraw = ref(3);
     const rowsPerPageStock = ref(5);
     const currentPageTab1 = ref(1);
+    const currentPageTab3 = ref(1);
     const currentPageWithdraw = ref(1);
     const currentPageStock = ref(1);
     const visibleModelDetailRequestTab1 = ref(false);
     const visibleModelDetailRequestTab2 = ref(false);
+    const visibleModelDetailRequestTab3 = ref(false);
     const visibleModelStockWithdraw = ref(false);
     const visibleModelStockAmount = ref(false);
     const visibleImageModal = ref(false);
     const selectedUserTab1 = ref({});
     const selectedUserTab2 = ref({});
+    const selectedUserTab3 = ref({});
     const imageUrls = ref([]);
     const currentImageIndex = ref(0);
     const selectedStockAmount = ref(1);
     const selectedStockToEdit = ref(null);
+    const visibleStatusModal = ref(false);
+    const selectedStatus = ref("");
+    const resStatus = ref("");
+
+    const handleSubmitTooltip01 = (event) => {
+      console.log("สถานะ", resStatus.value);
+      event.preventDefault();
+      if (resStatus.value) {
+        updateStatus();
+      } else {
+        Swal.fire({
+          icon: "warning",
+          title: "โปรดเลือกสถานะ",
+          text: "กรุณาเลือกสถานะก่อนบันทึก",
+        });
+      }
+    };
+
+    const updateStatus = async () => {
+      if (!selectedUserTab3.value.mainr_ID) {
+        console.error("mainr_ID is missing in selectedUserTab3:", selectedUserTab3.value);
+        Swal.fire({
+          icon: "error",
+          title: "ไม่สามารถปรับปรุงสถานะ",
+          text: "ข้อมูล mainr_ID ไม่ถูกต้อง",
+        });
+        return;
+      }
+
+      try {
+        const response = await axios.put(`/api/auth/updateStatusReq`, {
+          mainr_ID: selectedUserTab3.value.mainr_ID,
+          mainrstatus_ID: resStatus.value,
+        });
+
+        if (response.status === 200) {
+          Swal.fire({
+            icon: "success",
+            title: "สถานะถูกปรับปรุงเรียบร้อย",
+            text: "สถานะใหม่ได้ถูกบันทึกแล้ว",
+          });
+          closeStatusModal();
+          fetchRequestsTab3();
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถปรับปรุงสถานะได้",
+          });
+        }
+      } catch (error) {
+        console.error("Error updating status:", error);
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถปรับปรุงสถานะได้",
+        });
+      }
+    };
 
     const filteredItemsTab1 = computed(() => {
       return itemsTab1.value.filter((item) => {
@@ -651,6 +970,19 @@ export default {
           item.mainr_ProblemTitle
             ?.toLowerCase()
             .includes(searchQueryTab1.value.toLowerCase())
+        );
+      });
+    });
+
+    const filteredItemsTab3 = computed(() => {
+      return itemsTab3.value.filter((item) => {
+        return (
+          item.mainr_ID.toLowerCase().includes(searchQueryTab3.value.toLowerCase()) ||
+          item.fullname.toLowerCase().includes(searchQueryTab3.value.toLowerCase()) ||
+          item.roomNumber?.toLowerCase().includes(searchQueryTab3.value.toLowerCase()) ||
+          item.mainr_ProblemTitle
+            ?.toLowerCase()
+            .includes(searchQueryTab3.value.toLowerCase())
         );
       });
     });
@@ -699,6 +1031,30 @@ export default {
       }
     };
 
+    const fetchRequestsTab3 = async () => {
+      const userId = localStorage.getItem("userID");
+      try {
+        const response = await axios.get(`/api/auth/getSuccessReq?id=${userId}`);
+        itemsTab3.value = response.data;
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลการแจ้งซ่อม:", error);
+      }
+    };
+
+    const fetchgetStatusReq = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("/api/auth/getStatusReq", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        statusUser.value = response.data;
+      } catch (error) {
+        console.error("Error fetching status:", error);
+      }
+    };
+
     const fetchWithdrawRequestsTab2 = async () => {
       try {
         const userId = localStorage.getItem("userID");
@@ -722,6 +1078,9 @@ export default {
       activeTab.value = tab;
       if (tab === "2") {
         fetchWithdrawRequestsTab2();
+      } else if (tab === "3") {
+        fetchRequestsTab3();
+      } else if (tab === "4") {
       }
     };
 
@@ -733,6 +1092,16 @@ export default {
 
     const totalPagesTab1 = computed(() => {
       return Math.ceil(filteredItemsTab1.value.length / rowsPerPageTab1.value);
+    });
+
+    const paginatedItemsTab3 = computed(() => {
+      const start = (currentPageTab3.value - 1) * rowsPerPageTab3.value;
+      const end = start + rowsPerPageTab3.value;
+      return filteredItemsTab3.value.slice(start, end);
+    });
+
+    const totalPagesTab3 = computed(() => {
+      return Math.ceil(filteredItemsTab3.value.length / rowsPerPageTab3.value);
     });
 
     const paginatedWithdrawItems = computed(() => {
@@ -757,6 +1126,12 @@ export default {
       visibleModelDetailRequestTab2.value = true;
     };
 
+    const showModalTab3 = (item) => {
+      selectedUserTab3.value = { ...item };
+      fetchImages(item.mainr_ID);
+      visibleModelDetailRequestTab3.value = true;
+    };
+
     const showModelStockWithdraw = () => {
       fetchStockData();
       visibleModelStockWithdraw.value = true;
@@ -764,6 +1139,9 @@ export default {
 
     const showModelStockAmount = () => {
       visibleModelStockAmount.value = true;
+    };
+    const showStatusModal = () => {
+      visibleStatusModal.value = true;
     };
 
     const closeModelDetailRequestTab1 = () => {
@@ -777,6 +1155,11 @@ export default {
       selectedUserTab2.value = {};
       imageUrls.value = [];
     };
+    const closeModelDetailRequestTab3 = () => {
+      visibleModelDetailRequestTab3.value = false;
+      selectedUserTab3.value = {};
+      imageUrls.value = [];
+    };
 
     const closeModelStockWithdraw = () => {
       visibleModelStockWithdraw.value = false;
@@ -785,6 +1168,9 @@ export default {
     const closeModelStockAmount = () => {
       visibleModelStockAmount.value = false;
       selectedStockToEdit.value = null;
+    };
+    const closeStatusModal = () => {
+      visibleStatusModal.value = false;
     };
 
     const fetchImages = async (mainr_ID) => {
@@ -798,7 +1184,8 @@ export default {
     };
 
     const getImageUrl = (path) => {
-      return `http://localhost:3030/uploads/${path}`;
+      // return `http://localhost:3030/uploads/${path}`; //local
+      return `https://manageserver.dktimeh.com/uploads/${path}`; //hosting
     };
 
     const openImageModal = (index) => {
@@ -841,14 +1228,13 @@ export default {
           cancelButtonText: "ยกเลิก",
         }).then((result) => {
           if (result.isConfirmed) {
-            showModelStockAmount(); // เปิด modal แก้ไขจำนวน
+            showModelStockAmount();
           }
         });
       } else {
-        // หากยังไม่ถูกเลือก ให้เปิด modal สำหรับกรอกจำนวน
         selectedStockToEdit.value = { ...stock }; // ตั้งค่าวัสดุที่เลือก
         selectedStockAmount.value = 1; // ตั้งค่าเริ่มต้นให้ 1
-        showModelStockAmount(); // เปิด modal
+        showModelStockAmount();
       }
     };
 
@@ -862,13 +1248,11 @@ export default {
         return;
       }
 
-      // Calculate the difference for quantity_orders
       const quantityOrders = Math.max(
         selectedStockAmount.value - selectedStockToEdit.value.stockquantity,
         0
       );
 
-      // Check if stock item already exists in the selectedStockItems
       if (!selectedStockItems.value.includes(selectedStockToEdit.value)) {
         selectedStockItems.value.push({
           ...selectedStockToEdit.value,
@@ -880,7 +1264,6 @@ export default {
               : "จำนวนคงเหลือเพียงพอ",
         });
       } else {
-        // Update existing stock item
         selectedStockToEdit.value.quantity = selectedStockAmount.value;
         selectedStockToEdit.value.quantity_orders = quantityOrders;
         selectedStockToEdit.value.status =
@@ -895,15 +1278,13 @@ export default {
         icon: "success",
       });
 
-      closeModelStockAmount(); // Close the modal after confirming the selection
+      closeModelStockAmount();
     };
 
     const editSelectedStock = (index) => {
-      // ตั้งค่า stock ที่จะถูกแก้ไข
       selectedStockToEdit.value = selectedStockItems.value[index];
-      selectedStockAmount.value = selectedStockToEdit.value.quantity; // กำหนดจำนวนใน input
+      selectedStockAmount.value = selectedStockToEdit.value.quantity;
 
-      // เปิด modal สำหรับการแก้ไขจำนวน
       showModelStockAmount();
     };
 
@@ -1022,8 +1403,8 @@ export default {
             title: "บันทึกสำเร็จ",
             text: "การแจ้งเบิกวัสดุของคุณถูกบันทึกแล้ว",
           }).then(() => {
-                window.location.reload();
-              });
+            window.location.reload();
+          });
 
           // ล้างรายการวัสดุที่เลือกหลังบันทึกสำเร็จ
           selectedStockItems.value = [];
@@ -1046,40 +1427,56 @@ export default {
     };
 
     const assessProblemReqTab2 = async (selectedUser) => {};
+    const assessProblemReqTab3 = async (selectedUser) => {};
+
+    
 
     onMounted(() => {
       fetchRequestsTab1();
+      fetchgetStatusReq();
     });
 
     return {
       activeTab,
       searchQueryTab1,
       searchQueryTab2,
+      searchQueryTab3,
       searchQueryStock,
       paginatedItemsTab1,
+      paginatedItemsTab3,
       paginatedWithdrawItems,
       totalPagesTab1,
+      totalPagesTab3,
       totalWithdrawPages,
       rowsPerPageTab1,
+      rowsPerPageTab3,
       rowsPerPageWithdraw,
       rowsPerPageStock,
       currentPageTab1,
+      currentPageTab3,
       currentPageWithdraw,
       currentPageStock,
       visibleModelDetailRequestTab1,
       visibleModelDetailRequestTab2,
+      visibleModelDetailRequestTab3,
       visibleModelStockWithdraw,
       visibleModelStockAmount,
+      visibleStatusModal,
       closeModelDetailRequestTab1,
       closeModelDetailRequestTab2,
+      closeModelDetailRequestTab3,
       closeModelStockAmount,
+      closeStatusModal,
       closeModelStockWithdraw,
       showModalTab1,
       showModalTab2,
+      showModalTab3,
       showModelStockWithdraw,
       showModelStockAmount,
+      showStatusModal,
       selectedUserTab1,
       selectedUserTab2,
+      selectedUserTab3,
       stockItems,
       selectedStockItems,
       paginatedStockItems,
@@ -1097,12 +1494,17 @@ export default {
       submitAmountSelection,
       assessProblemReqTab1,
       assessProblemReqTab2,
+      assessProblemReqTab3,
       setActiveTab,
       selectedStockAmount,
       selectedStockToEdit,
       removeSelectedStock,
       editSelectedStock,
       submitRequisition,
+      statusUser,
+      handleSubmitTooltip01,
+      updateStatus,
+      resStatus,
     };
   },
 };

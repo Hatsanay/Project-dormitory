@@ -8,7 +8,7 @@
           class="w-100"
           block
           style="margin-bottom: 10px"
-          @click="$router.push('/')"
+          @click="$router.push('/RegisTypeStatus')"
         >
           New
         </CButton>
@@ -46,19 +46,24 @@
                   <td colspan="8" class="text-center">ไม่มีข้อมูลที่ตรงกับการค้นหา</td>
                 </tr>
                 <tr v-for="item in paginatedItems" :key="item.ID">
-                  <td>{{ item.ID }}</td>
-                  <td>{{ item.name }}</td>
+                  <td>{{ item.statTyp_ID }}</td>
+                  <td>{{ item.Name }}</td>
                   <td>{{ item.stat_Name }}</td>
                   <td>
                     <button
                       class="btn btn-warning btn-sm fontwhite"
-                      @click="$router.push({ path: '', query: { id: item.ID } })"
-                    >
+                      @click="
+                      $router.push({ 
+                        path: '/EditTypeStatusView', 
+                        query: { id: item.statTyp_ID } })"
+                    ><i class="fa-solid fa-user-pen"></i>
                       แก้ไข
                     </button>
                   </td>
                   <td>
-                    <button class="btn btn-danger btn-sm fontwhite" @click="showModalDelete(item)">
+                    <button class="btn btn-danger btn-sm fontwhite"
+                     @click="showModalDelete(item)">
+                      <i class="fa-solid fa-trash"></i>
                       ลบ
                     </button>
                   </td>
@@ -82,7 +87,7 @@
                 </div>
               </div>
               <div class="col-md-8 d-flex justify-content-end">
-                <button class="btn btn-secondary" :disabled="currentPage === 1" @click="currentPage--">
+                <button class="btn btn-secondary" :disabled="currentPage === 1" @click="prevPage">
                   Previous
                 </button>
                 <button
@@ -93,7 +98,7 @@
                 >
                   {{ page }}
                 </button>
-                <button class="btn btn-secondary" :disabled="currentPage === totalPages" @click="currentPage++">
+                <button class="btn btn-secondary" :disabled="currentPage === totalPages" @click="nextPage">
                   Next
                 </button>
               </div>
@@ -102,7 +107,28 @@
         </div>
       </div>
     </div>
-
+<!--//////////////////////////////////Delete////////////////////////////////////////-->
+    <CModal
+      alignment="center"
+      :visible="visibleDeleteModal"
+      @close="closeDeleteModal"
+      size="lg"
+    >
+      <CModalHeader>
+        <CModalTitle>ยืนยันการลบข้อมูล</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <DeleteTypeStatusComponent
+          :selectedTypeStatus="selectedTypeStatus"
+          :closeModal="closeDeleteModal"
+          :refreshViewData="fetchStatus"
+        />
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeDeleteModal">Close</CButton>
+      </CModalFooter>
+    </CModal>
+<!--//////////////////////////////////////////////////////////////////////////-->
     <CToaster class="p-3" placement="top-end">
       <CToast v-for="(toast, index) in toasts" :key="index" visible>
         <CToastHeader closeButton>
@@ -117,24 +143,33 @@
 <script>
 import { ref, watch, onMounted, computed } from "vue";
 import axios from "axios";
-
-
+import RegisTypeStatusComponent from "./RegisTypeStatusComponent.vue";
+import EditeTypeStatusComponents from "./EditeTypeStatusComponents.vue";
+import DeleteTypeStatusComponent from "./DeleteTypeStatusComponent.vue";
 
 export default {
   name: "ViewTypeStatusComponents",
+  components: {
+    RegisTypeStatusComponent,
+    EditeTypeStatusComponents,
+    DeleteTypeStatusComponent
+    },
 
   setup() {
     const columns = ref([
-      { key: "ID", label: "รหัสประเภทสถานะ" },
-      { key: "name", label: "ชื่อประเภท" },
+      { key: "statTyp_ID", label: "รหัสประเภทสถานะ" },
+      { key: "Name", label: "ชื่อประเภท" },
       { key: "stat_Name", label: "สถานะ" },
     ]);
-    const statusTypes = ref([]); // Store the status types
-    const filteredItems = ref([]); // Filtered items for display
-    const searchQuery = ref(""); // Search query for filtering
-    const rowsPerPage = ref(10); // Number of rows to display per page
-    const currentPage = ref(1); // Current page in pagination
-    const toasts = ref([]); // Toast messages
+
+    const statusTypes = ref([]);
+    const filteredItems = ref([]); 
+    const searchQuery = ref(""); 
+    const rowsPerPage = ref(10); 
+    const currentPage = ref(1); 
+    const toasts = ref([]); 
+    const selectedTypeStatus = ref({});
+    const visibleDeleteModal = ref(false);
 
     const totalPages = computed(() => {
       return Math.ceil(filteredItems.value.length / rowsPerPage.value);
@@ -163,18 +198,43 @@ export default {
       });
     };
 
+    const prevPage = () => {
+      if (currentPage.value > 1) {
+        currentPage.value--;
+        filterItems();
+      }
+    };
+
+    const nextPage = () => {
+      if (currentPage.value < totalPages.value) {
+        currentPage.value++;
+        filterItems();
+      }
+    };
+
     // Filter items based on search query
     const filterItems = () => {
       filteredItems.value = statusTypes.value
         .filter((item) => {
           const matchesSearch =
-            item.ID?.toString().includes(searchQuery.value) ||
-            item.name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            item.statTyp_ID?.toString().includes(searchQuery.value) ||
+            item.Name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
             item.stat_Name?.toLowerCase().includes(searchQuery.value.toLowerCase());
 
           return matchesSearch;
         })
-        .sort((a, b) => a.ID - b.ID); // Sort numerically by ID
+        .sort((a, b) => a.statTyp_ID - b.statTyp_ID); // Sort numerically by ID
+    };
+
+    const showModalDelete = (item) => {
+      selectedTypeStatus.value = item;
+      visibleDeleteModal.value = true;
+    };
+
+    const closeDeleteModal = () => {
+      visibleDeleteModal.value = false;
+      selectedTypeStatus.value = {};
+      fetchStatus();
     };
 
     const setPage = (page) => {
@@ -204,7 +264,13 @@ export default {
       totalPages,
       setPage,
       showToast,
+      prevPage,
+      nextPage,
       toasts,
+      selectedTypeStatus,
+      showModalDelete,
+      closeDeleteModal,
+      visibleDeleteModal
     };
   },
 };

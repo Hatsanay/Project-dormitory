@@ -31,7 +31,7 @@ const registerStock = async (req, res) => {
       return res.status(400).json({ error: "มีชื่อวัสดุนี้อยู่แล้ว" }); // "This material name already exists"
     }
 
-    const stock_statID = "STA000006";
+    const stock_statID = "SUS000001";
     /////// Insert into Database ///////
     const insertQuery = `
       INSERT INTO stock
@@ -89,11 +89,7 @@ const getAutotidStock = async (req, res) => {
 //////////////API//////////////
 ///////////getStock/////////////
 ///////////////////////////////
-<<<<<<< HEAD
 const getStockforstock = async (req, res) => {
-=======
-const getStock = async (req, res) => {
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
   try {
     const query = `
     SELECT 
@@ -102,13 +98,14 @@ const getStock = async (req, res) => {
       stock.quantity, 
       type_stock.name AS Type, 
       unit.name AS unit,
-      status.stat_Name
+      stause.StaUse_Name as stat_Name,
+      stock.stock_statID
     FROM 
       stock
     INNER JOIN type_stock ON stock.stock_type_stock_ID = type_stock.ID 
     INNER JOIN unit ON unit.ID = stock_unit_ID
-    INNER JOIN status ON status.stat_ID = stock.stock_statID
-    WHERE stock_statID = "STA000006" `;
+    INNER JOIN stause ON stause.StaUse_ID = stock.stock_statID
+    WHERE stock_statID = "SUS000001" `;
     
     const [result] = await db.promise().query(query);
     res.status(200).json(result);
@@ -133,7 +130,7 @@ const getStockByID = async (req, res) => {
         name, 
         quantity, 
         stock_unit_id, 
-        stock_type_stock_ID ,
+        stock_type_stock_ID,
         stock_statID
       FROM 
         stock 
@@ -155,13 +152,13 @@ const getStockByID = async (req, res) => {
 ///////////////////////////////
 const updateStock = async (req, res) => {
   const ID = req.query.ID;
-  const { newName, quantity, stock_unit_id, stock_type_stock_ID,stock_statID } = req.body;
+  const { newName, quantity, stock_unit_id, stock_type_stock_ID, } = req.body;
 
   try {
     if (!ID) {
       return res.status(400).json({ error: "โปรดระบุชื่อวัสดุ" });
     }
-    const [stockCheck] = await db.promise().query("SELECT * FROM stock WHERE name = ?", [ID]);
+    const [stockCheck] = await db.promise().query("SELECT * FROM stock WHERE ID = ?", [ID]);
     if (stockCheck.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลวัสดุ" });
     }
@@ -170,11 +167,11 @@ const updateStock = async (req, res) => {
         name = ?, 
         quantity = ?, 
         stock_unit_id = ?, 
-        stock_type_stock_ID = ?,
-        stock_statID
-      WHERE name = ?
+        stock_type_stock_ID = ?
+      WHERE 
+        ID = ?
     `;
-    await db.promise().query(updateQuery, [newName , quantity, stock_unit_id, stock_type_stock_ID, stock_statID , ID]);
+    await db.promise().query(updateQuery, [newName , quantity, stock_unit_id, stock_type_stock_ID, ID]);
     res.status(200).json({ message: "อัปเดตข้อมูลวัสดุเรียบร้อยแล้ว" });
   } catch (err) {
     console.error("เกิดข้อผิดพลาด:", err);
@@ -182,15 +179,43 @@ const updateStock = async (req, res) => {
   }
 };
 
+const updateStatusStock = async (req, res) => {
+  const { ID, stock_statID } = req.body; 
+  try {
+    if (!ID || !stock_statID) {
+      return res.status(400).json({ error: "กรุณาระบุ ID และ ID" });
+    }
+    const [itemCheck] = await db.promise().query("SELECT * FROM stock WHERE ID = ?", [ID]);
+    if (itemCheck.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลวัสดุที่ต้องการอัปเดต" });
+    }
+    const updateQuery = "UPDATE stock SET stock_StatID = ? WHERE ID = ?";
+    await db.promise().query(updateQuery, [stock_statID, ID]);
+
+    res.status(200).json({ message: "อัปเดตข้อมูลวัสดุสำเร็จ" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาดในการอัปเดตวัสดุ:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+const getDeletableStock = async (req, res) => {
+  try {
+    const query = 'SELECT * FROM status WHERE stat_StatTypID = "STT000002"'; 
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
 
 module.exports = {
   registerStock,
-<<<<<<< HEAD
   getStockforstock,
-=======
-  getStock,
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
   getStockByID,
   getAutotidStock,
   updateStock,
+  updateStatusStock,
+  getDeletableStock
 };

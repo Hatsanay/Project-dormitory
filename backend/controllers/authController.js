@@ -10,7 +10,7 @@ const login = async (req, res) => {
   const { username, password, logsID, logsDatein, logsDateout, logsUser_ID } = req.body;
 
   const query =
-    "SELECT * FROM users INNER JOIN roles on users.user_Role_ID = roles.role_ID INNER JOIN permissions on roles.role_permissions = permissions.permission_id WHERE user_Name = ?"; //หาว่ามี username ไหม
+    "SELECT * FROM users INNER JOIN roles on users.user_Role_ID = roles.role_ID WHERE user_Name  = ?"; //หาว่ามี username ไหม
   db.query(query, [username], async (err, results) => {
     if (err) {
       console.error("ข้อผิดพลาดในการสืบค้นฐานข้อมูล:", err);
@@ -28,7 +28,7 @@ const login = async (req, res) => {
 
     ///////////สร้าง JWT token/////////////
     const token = jwt.sign(
-      { id: user.user_ID, username: user.user_Name,permissions: user.permission_name, },
+      { id: user.user_ID, username: user.user_Name,permissions: user.role_permissions, },
       process.env.JWT_SECRET,
       { expiresIn: "12h", algorithm: "HS256" }
     );

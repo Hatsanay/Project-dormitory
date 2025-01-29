@@ -23,13 +23,9 @@ const registerTypeStock = async (req, res) => {
 
     const typeStockChecked = await checkTypeStock(name);
     if (typeStockChecked) {
-<<<<<<< HEAD
       return res.status(400).json({ error: "มีชื่อประเภทวัสดุนี้อยู่แล้ว" });
-=======
-      return res.status(400).json({ error: "มีชื่อประเภทสินค้านี้อยู่แล้ว" });
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
     }
-    const status = "STA000006";
+    const status = "SUS000001";
     ///////บันทึกลงฐานข้อมูล//////////
     const insertQuery = `
       INSERT INTO type_stock
@@ -38,11 +34,7 @@ const registerTypeStock = async (req, res) => {
     `;
     await db.promise().query(insertQuery, [newTypeStockID, name,status]);
 
-<<<<<<< HEAD
     res.status(201).json({ message: "ลงทะเบียนประเภทวัสดุสำเร็จแล้ว!" });
-=======
-    res.status(201).json({ message: "ลงทะเบียนประเภทสินค้าสำเร็จแล้ว!" });
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
   } catch (err) {
     console.error("เกิดข้อผิดพลาด:", err);
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
@@ -57,11 +49,7 @@ async function checkTypeStock(name) {
     const [rows] = await db.promise().query(query, [name]);
     return rows[0].count > 0;
   } catch (err) {
-<<<<<<< HEAD
     console.error("ไม่สามารถตรวจสอบชื่อประเภทวัสดุได้:", err);
-=======
-    console.error("ไม่สามารถตรวจสอบชื่อประเภทสินค้าได้:", err);
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
     throw err;
   }
 }
@@ -97,11 +85,12 @@ const getTypeStock = async (req, res) => {
     SELECT 
       ID, 
       name,
-      status.stat_Name
+      stause.StaUse_Name as stat_Name,
+      type_stock.status
     FROM 
       type_stock
-    INNER JOIN status ON status.stat_ID = type_stock.status
-    WHERE type_stock.status = 'STA000006'`;
+    INNER JOIN stause ON stause.StaUse_ID = type_stock.status
+    WHERE type_stock.status = 'SUS000001'`;
     const [result] = await db.promise().query(query);
     res.status(200).json(result);
   } catch (err) {
@@ -111,17 +100,13 @@ const getTypeStock = async (req, res) => {
 };
 
 //////////////API//////////////
-///////getTypeStockByName/////////////
+///////getTypeStockByID/////////////
 ///////////////////////////////
-const getTypeStockByName = async (req, res) => {
+const getTypeStockByID = async (req, res) => {
   try {
-    const name = req.query.name;
-    if (!name) {
-<<<<<<< HEAD
-      return res.status(400).json({ error: "โปรดระบุชื่อประเภทวัสดุ" });
-=======
-      return res.status(400).json({ error: "โปรดระบุชื่อประเภทสินค้า" });
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
+    const ID = req.query.ID;
+    if (!ID) {
+      return res.status(400).json({ error: "โปรดระบุ ID ประเภทวัสดุ" });
     }
     const query = `
       SELECT 
@@ -129,15 +114,11 @@ const getTypeStockByName = async (req, res) => {
         name 
       FROM 
         type_stock 
-      WHERE name = ?
+      WHERE ID = ?
     `;
-    const [result] = await db.promise().query(query, [name]);
+    const [result] = await db.promise().query(query, [ID]);
     if (result.length === 0) {
-<<<<<<< HEAD
       return res.status(404).json({ error: "ไม่พบข้อมูลประเภทวัสดุ" });
-=======
-      return res.status(404).json({ error: "ไม่พบข้อมูลประเภทสินค้า" });
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
     }
     res.status(200).json(result[0]);
   } catch (err) {
@@ -150,47 +131,70 @@ const getTypeStockByName = async (req, res) => {
 //////////updateTypeStock///////////
 ///////////////////////////////
 const updateTypeStock = async (req, res) => {
-  const name = req.query.name;
+  const ID = req.query.ID;
   const { newName } = req.body;
 
   try {
-    if (!name) {
-<<<<<<< HEAD
+    if (!ID) {
       return res.status(400).json({ error: "โปรดระบุชื่อประเภทวัสดุ" });
     }
-    const [typeStockCheck] = await db.promise().query("SELECT * FROM type_stock WHERE name = ?", [name]);
+    const [typeStockCheck] = await db.promise().query("SELECT * FROM type_stock WHERE ID = ?", [ID]);
     if (typeStockCheck.length === 0) {
       return res.status(404).json({ error: "ไม่พบข้อมูลประเภทวัสดุ" });
-=======
-      return res.status(400).json({ error: "โปรดระบุชื่อประเภทสินค้า" });
-    }
-    const [typeStockCheck] = await db.promise().query("SELECT * FROM type_stock WHERE name = ?", [name]);
-    if (typeStockCheck.length === 0) {
-      return res.status(404).json({ error: "ไม่พบข้อมูลประเภทสินค้า" });
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
     }
 
     const updateQuery = `
       UPDATE type_stock SET
         name = ?
-      WHERE name = ?
+      WHERE ID = ?
     `;
-    await db.promise().query(updateQuery, [newName || name, name]);
-<<<<<<< HEAD
+    await db.promise().query(updateQuery, [newName , ID]);
     res.status(200).json({ message: "อัปเดตข้อมูลประเภทวัสดุเรียบร้อยแล้ว" });
-=======
-    res.status(200).json({ message: "อัปเดตข้อมูลประเภทสินค้าเรียบร้อยแล้ว" });
->>>>>>> 45ad983de95c8c2c2e4c37186f33d20b42af427b
   } catch (err) {
     console.error("เกิดข้อผิดพลาด:", err);
     res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
   }
 };
 
+const updateStatusTypeStock = async (req, res) => {
+  const { ID, status } = req.body; 
+  try {
+    if (!ID || !status) {
+      return res.status(400).json({ error: "กรุณาระบุ ID และ status" });
+    }
+    const [itemCheck] = await db.promise().query("SELECT * FROM type_stock WHERE ID = ?", [ID]);
+    if (itemCheck.length === 0) {
+      return res.status(404).json({ error: "ไม่พบข้อมูลประเภทวัสดุที่ต้องการอัปเดต" });
+    }
+    const updateQuery = "UPDATE type_stock SET status = ? WHERE ID = ?";
+    await db.promise().query(updateQuery, [status, ID]);
+
+    res.status(200).json({ message: "อัปเดตข้อมูลประเภทวัสดุสำเร็จ" });
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาดในการอัปเดตข้อมูลประเภทวัสดุ:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
+const getDeletableTypeStock = async (req, res) => {
+  try {
+    const query = 'SELECT * FROM status WHERE stat_StatTypID = "SUS000002"'; 
+    const [result] = await db.promise().query(query);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error("เกิดข้อผิดพลาด:", err);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการดำเนินการ" });
+  }
+};
+
+
 module.exports = {
   registerTypeStock,
   getTypeStock,
-  getTypeStockByName,
+  getTypeStockByID,
   getAutotidTypeStock,
   updateTypeStock,
+  updateStatusTypeStock,
+  getDeletableTypeStock
 };
